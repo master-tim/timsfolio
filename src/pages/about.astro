@@ -1,77 +1,82 @@
 ---
 import Layout from '@/layouts/BlogPost.astro';
-const tags = ['astro', 'react', 'svelte', 'vue', 'web-components'];
-const description = `
-  <p class="text-left">
-    Foto de <a
-      href="https://unsplash.com/es/@francescobiancoo?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash"
-      >Francesco Bianco</a
-    > en <a
-      class=" text-pgreen font-bold"
-      href="https://unsplash.com/es/fotos/arte-mural-floral-dorado-y-azul-TVsgRyKJDc0?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash"
-      >Unsplash</a
-    >
-  </p>
-`;
+const tags = ['react', 'threejs', 'webgl', 'ai', 'frontend'];
+const description = `Full-stack AI Engineer & Frontend 3D Developer`;
 ---
 
 <Layout
 	tags={tags}
-	icon="beach"
+	icon="1"
 	title="About Me"
 	description= {description}
-	pubDate={new Date('August 08 2021')}
-	heroImage="/src/assets/fran.webp"
+	pubDate={new Date('November 17 2025')}
+	heroImage="/src/assets/hero.webp"
 >
+	<h2>Background</h2>
 	<p>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-		labore et dolore magna aliqua. Vitae ultricies leo integer malesuada nunc vel risus commodo
-		viverra. Adipiscing enim eu turpis egestas pretium. Euismod elementum nisi quis eleifend quam
-		adipiscing. In hac habitasse platea dictumst vestibulum. Sagittis purus sit amet volutpat. Netus
-		et malesuada fames ac turpis egestas. Eget magna fermentum iaculis eu non diam phasellus
-		vestibulum lorem. Varius sit amet mattis vulputate enim. Habitasse platea dictumst quisque
-		sagittis. Integer quis auctor elit sed vulputate mi. Dictumst quisque sagittis purus sit amet.
+		I'm a Full-stack AI Engineer and Technical PM at Redbrick, where I build highly interactive, AI-powered user experiences using modern web technologies. My expertise lies at the intersection of <strong>Frontend 3D development</strong> (React, Next.js, Three.js/WebGL) and <strong>AI integration</strong> (RAG, LangChain, vector databases), creating immersive experiences that combine strong UI/UX foundations with cutting-edge AI functionality.
 	</p>
 
+	<h2>Education</h2>
 	<p>
-		Morbi tristique senectus et netus. Id semper risus in hendrerit gravida rutrum quisque non
-		tellus. Habitasse platea dictumst quisque sagittis purus sit amet. Tellus molestie nunc non
-		blandit massa. Cursus vitae congue mauris rhoncus. Accumsan tortor posuere ac ut. Fringilla urna
-		porttitor rhoncus dolor. Elit ullamcorper dignissim cras tincidunt lobortis. In cursus turpis
-		massa tincidunt dui ut ornare lectus. Integer feugiat scelerisque varius morbi enim nunc.
-		Bibendum neque egestas congue quisque egestas diam. Cras ornare arcu dui vivamus arcu felis
-		bibendum. Dignissim suspendisse in est ante in nibh mauris. Sed tempus urna et pharetra pharetra
-		massa massa ultricies mi.
+		<strong>MS in Design (Human Computer Interaction)</strong> — UNIST, South Korea (Feb 2023)<br/>
+		Focus on HCI and HRI (Human-Robot Interaction) • Lotte Scholarship recipient • GPA: 97% • Co-authored 6 conference papers and 4 journal articles • Co-filed 6 patents
+	</p>
+	<p>
+		<strong>BS in Computer Science and Industrial Design</strong> — UNIST, South Korea (Feb 2021)<br/>
+		Dual degree combining technical and design expertise • Global UNISTAR Silver Scholarship • GPA: 87.2%
 	</p>
 
+	<h2>Experience</h2>
+
+	<h3>Redbrick Inc. — Full-stack AI Engineer & Technical PM (Jul 2024 – Present)</h3>
+	<p>Leading development of AI-powered interactive platforms:</p>
+	<ul>
+		<li>Built an <strong>AI game creation system</strong> from scratch, enabling prompt-based content generation that contributed to securing <strong>$1.2M R&D investment</strong></li>
+		<li>Developed multiple <strong>AI agents</strong> with diverse creative and functional purposes</li>
+		<li>Optimized code generation pipelines, <strong>reducing token usage by 80%</strong></li>
+		<li>Implemented <strong>Unity WebGL support</strong>, expanding platform compatibility</li>
+		<li>Delivered modern UI frameworks and migrated core packages to boost scalability</li>
+		<li>Integrated <strong>RAG pipelines, LangChain, and vector databases</strong> for AI-powered features</li>
+		<li>Added monetization features allowing creators to earn from their games</li>
+	</ul>
+
+	<h3>Redbrick Inc. — 3D Engine Engineer (Jul 2023 – Jul 2024)</h3>
+	<p>Built and maintained web-based 3D Studio Engine:</p>
+	<ul>
+		<li>Refactored legacy code, improving scalability and maintainability</li>
+		<li>Built web-based <strong>3D Studio Engine with Three.js/WebGL</strong> rendering</li>
+		<li>Integrated <strong>Blockly</strong> for no-code/low-code content creation</li>
+		<li>Implemented <strong>WebXR support</strong> for AR/VR development in the browser</li>
+		<li>Added AI code assistants to help creators generate and debug scripts</li>
+		<li>Partnered with AI companies to integrate text-to-model and text-to-avatar features</li>
+		<li>Shipped <strong>10+ online 3D web games</strong> reaching over <strong>1M+ total plays</strong></li>
+	</ul>
+
+	<h3>UNIST — Research Assistant & Embedded Systems Engineer (Mar 2021 – Mar 2023)</h3>
+	<p>Research in Human-Computer and Human-Robot Interaction:</p>
+	<ul>
+		<li>Designed and developed expressive robotic faces to enhance HRI & HCI</li>
+		<li>Programmed and debugged embedded systems for interaction research</li>
+		<li>Published research in journals and international conferences (IEEE RO-MAN, DIS, HCI Korea)</li>
+	</ul>
+
+	<h2>Technical Skills</h2>
 	<p>
-		Mollis nunc sed id semper risus in. Convallis a cras semper auctor neque. Diam sit amet nisl
-		suscipit. Lacus viverra vitae congue eu consequat ac felis donec. Egestas integer eget aliquet
-		nibh praesent tristique magna sit amet. Eget magna fermentum iaculis eu non diam. In vitae
-		turpis massa sed elementum. Tristique et egestas quis ipsum suspendisse ultrices. Eget lorem
-		dolor sed viverra ipsum. Vel turpis nunc eget lorem dolor sed viverra. Posuere ac ut consequat
-		semper viverra nam. Laoreet suspendisse interdum consectetur libero id faucibus. Diam phasellus
-		vestibulum lorem sed risus ultricies tristique. Rhoncus dolor purus non enim praesent elementum
-		facilisis. Ultrices tincidunt arcu non sodales neque. Tempus egestas sed sed risus pretium quam
-		vulputate. Viverra suspendisse potenti nullam ac tortor vitae purus faucibus ornare. Fringilla
-		urna porttitor rhoncus dolor purus non. Amet dictum sit amet justo donec enim.
+		<strong>Frontend & 3D:</strong> JavaScript, TypeScript, React, Next.js, Three.js, WebGL, WebXR
+	</p>
+	<p>
+		<strong>AI & ML:</strong> Python, RAG integration, LangChain, LlamaIndex, vector databases, AI agents, LLM fine-tuning, embeddings, ML pipelines
+	</p>
+	<p>
+		<strong>Backend & Tools:</strong> Node.js, REST APIs, C++, Git, VS Code, Jira
+	</p>
+	<p>
+		<strong>Design:</strong> UX/UI design, product management, HCI principles
 	</p>
 
+	<h2>What Drives Me</h2>
 	<p>
-		Mattis ullamcorper velit sed ullamcorper morbi tincidunt. Tortor posuere ac ut consequat semper
-		viverra. Tellus mauris a diam maecenas sed enim ut sem viverra. Venenatis urna cursus eget nunc
-		scelerisque viverra mauris in. Arcu ac tortor dignissim convallis aenean et tortor at. Curabitur
-		gravida arcu ac tortor dignissim convallis aenean et tortor. Egestas tellus rutrum tellus
-		pellentesque eu. Fusce ut placerat orci nulla pellentesque dignissim enim sit amet. Ut enim
-		blandit volutpat maecenas volutpat blandit aliquam etiam. Id donec ultrices tincidunt arcu. Id
-		cursus metus aliquam eleifend mi.
-	</p>
-
-	<p>
-		Tempus quam pellentesque nec nam aliquam sem. Risus at ultrices mi tempus imperdiet. Id porta
-		nibh venenatis cras sed felis eget velit. Ipsum a arcu cursus vitae. Facilisis magna etiam
-		tempor orci eu lobortis elementum. Tincidunt dui ut ornare lectus sit. Quisque non tellus orci
-		ac. Blandit libero volutpat sed cras. Nec tincidunt praesent semper feugiat nibh sed pulvinar
-		proin gravida. Egestas integer eget aliquet nibh praesent tristique magna.
+		I'm passionate about creating <strong>human-centered, highly interactive systems</strong> that push the boundaries of what's possible on the web. Whether it's building immersive 3D environments, integrating AI to empower creators, or designing intuitive interfaces, I believe in combining technical excellence with thoughtful design to deliver exceptional user experiences.
 	</p>
 </Layout>

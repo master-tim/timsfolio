@@ -27,3 +27,6 @@ package-lock.json
 .netlify/
 
 bun.lock
+
+CLAUDE.md
+.claude
