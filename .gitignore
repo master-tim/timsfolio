@@ -25,6 +25,7 @@ package-lock.json
 # jetbrains setting folder
 .idea/
 .netlify/
+.vercel/
 
 bun.lock
 
