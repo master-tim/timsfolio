@@ -18,9 +18,9 @@ const images = import.meta.glob<{ default: ImageMetadata }>(
     </p>
     <a
       href="/about"
-      class="bg-pgreen px-5 py-3 border-1 border-black rounded-lg shadow-card hover:shadow-hover transition hover:scale-105"
+      class="bg-pgreen px-8 py-4 text-xl font-bold border-2 border-black rounded-xl shadow-card hover:shadow-hover transition hover:scale-110 hover:-rotate-1"
     >
-      Learn more
+      About me
     </a>
   </div>
   <div
@@ -35,19 +35,19 @@ const images = import.meta.glob<{ default: ImageMetadata }>(
         class="bg-pblue border-3 border-black rounded-2xl h-64 w-72 shadow-card group-hover:shadow-hover flex transition relative hover:rotate-1"
       >
         <div
-          class="absolute -top-8 -left-12 text-5xl bg-ppink px-5 py-1 z-10 shadow-card group-hover:shadow-hover transition rounded-t-2xl border-3 border-black rounded-bl-2xl rounded-br-sm parallax"
+          class="absolute -top-8 -left-12 text-5xl bg-ppink px-5 py-1 z-10 shadow-card group-hover:shadow-hover transition rounded-t-2xl border-3 border-black rounded-bl-2xl rounded-br-sm parallax float-1"
           data-speed="0.1"
         >
           <Icon name="1" />
         </div>
         <div
-          class="absolute top-16 -right-16 text-5xl bg-pyellow p-2 z-10 shadow-card group-hover:shadow-hover transition rounded-full border-3 border-black parallax"
+          class="absolute top-16 -right-16 text-5xl bg-pyellow p-2 z-10 shadow-card group-hover:shadow-hover transition rounded-full border-3 border-black parallax float-2"
           data-speed="0.2"
         >
           <Icon name="2" />
         </div>
         <div
-          class="absolute text-nowrap flex items-center gap-4 -bottom-12 right-0 pr-4 bg-pgreen pl-1 z-10 shadow-card1 group-hover:shadow-card transition rounded-full border-3 border-black parallax"
+          class="absolute text-nowrap flex items-center gap-4 -bottom-12 right-0 pr-4 bg-pgreen pl-1 z-10 shadow-card1 group-hover:shadow-card transition rounded-full border-3 border-black parallax float-3"
           data-speed="0.15"
         >
           <Icon name="3" />
@@ -64,4 +64,15 @@ const images = import.meta.glob<{ default: ImageMetadata }>(
     >
   </div>
 </section>
+
+<style>
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .float-1 { animation: float 4s ease-in-out infinite; }
+  .float-2 { animation: float 5s ease-in-out infinite; animation-delay: 1s; }
+  .float-3 { animation: float 4.5s ease-in-out infinite; animation-delay: 0.5s; }
+</style>
 

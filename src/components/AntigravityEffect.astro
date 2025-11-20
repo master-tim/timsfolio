@@ -111,9 +111,14 @@
       const rows = Math.floor(this.height / spacing);
       const cols = Math.floor(this.width / spacing);
 
-      // Colors matching a modern/tech aesthetic (subtle blues/purples/greys)
-      // You can adjust these to match the site's theme
-      const colors = ['rgba(0, 0, 0, 0.1)', 'rgba(100, 100, 100, 0.1)', 'rgba(50, 50, 50, 0.05)'];
+      // Colors matching the site's theme (pblue, ppink, pyellow, pgreen)
+      const colors = [
+        'rgba(150, 199, 242, 0.3)', // pblue
+        'rgba(243, 150, 229, 0.3)', // ppink
+        'rgba(242, 207, 150, 0.3)', // pyellow
+        'rgba(173, 242, 150, 0.3)', // pgreen
+        'rgba(0, 0, 0, 0.05)' // subtle black
+      ];
 
       for (let y = 0; y < rows; y++) {
         for (let x = 0; x < cols; x++) {
