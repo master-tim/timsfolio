@@ -1,0 +1,165 @@
+---
+---
+
+<canvas id="antigravity-canvas" class="fixed inset-0 pointer-events-none z-0"></canvas>
+
+<script>
+  class Particle {
+    x: number;
+    y: number;
+    originX: number;
+    originY: number;
+    color: string;
+    size: number;
+    vx: number;
+    vy: number;
+    friction: number;
+    ease: number;
+    dx: number;
+    dy: number;
+    distance: number;
+    force: number;
+    angle: number;
+
+    constructor(x: number, y: number, color: string) {
+      this.x = Math.random() * window.innerWidth;
+      this.y = Math.random() * window.innerHeight;
+      this.originX = x;
+      this.originY = y;
+      this.color = color;
+      this.size = Math.random() * 3 + 1;
+      this.vx = 0;
+      this.vy = 0;
+      this.friction = 0.9; // Damping
+      this.ease = 0.1; // Spring strength
+      this.dx = 0;
+      this.dy = 0;
+      this.distance = 0;
+      this.force = 0;
+      this.angle = 0;
+    }
+
+    draw(ctx: CanvasRenderingContext2D) {
+      ctx.fillStyle = this.color;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    update(mouse: { x: number; y: number; radius: number }) {
+      this.dx = mouse.x - this.x;
+      this.dy = mouse.y - this.y;
+      this.distance = Math.sqrt(this.dx * this.dx + this.dy * this.dy);
+
+      if (this.distance < mouse.radius) {
+        this.force = -mouse.radius / this.distance;
+        this.angle = Math.atan2(this.dy, this.dx);
+        this.vx += this.force * Math.cos(this.angle);
+        this.vy += this.force * Math.sin(this.angle);
+      }
+
+      this.x += (this.vx *= this.friction) + (this.originX - this.x) * this.ease;
+      this.y += (this.vy *= this.friction) + (this.originY - this.y) * this.ease;
+    }
+  }
+
+  class Effect {
+    canvas: HTMLCanvasElement;
+    ctx: CanvasRenderingContext2D;
+    width: number;
+    height: number;
+    particles: Particle[];
+    mouse: { x: number; y: number; radius: number };
+
+    constructor(canvas: HTMLCanvasElement) {
+      this.canvas = canvas;
+      this.ctx = canvas.getContext('2d')!;
+      this.width = window.innerWidth;
+      this.height = window.innerHeight;
+      this.particles = [];
+      this.mouse = {
+        x: 0,
+        y: 0,
+        radius: 150 // Interaction radius
+      };
+
+      this.resize(this.width, this.height);
+      this.init();
+
+      window.addEventListener('resize', () => {
+        this.resize(window.innerWidth, window.innerHeight);
+        this.init();
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        this.mouse.x = e.x;
+        this.mouse.y = e.y;
+      });
+    }
+
+    resize(width: number, height: number) {
+      this.canvas.width = width;
+      this.canvas.height = height;
+      this.width = width;
+      this.height = height;
+    }
+
+    init() {
+      this.particles = [];
+      // Create a grid of particles
+      const spacing = 25;
+      const rows = Math.floor(this.height / spacing);
+      const cols = Math.floor(this.width / spacing);
+
+      // Colors matching a modern/tech aesthetic (subtle blues/purples/greys)
+      // You can adjust these to match the site's theme
+      const colors = ['rgba(0, 0, 0, 0.1)', 'rgba(100, 100, 100, 0.1)', 'rgba(50, 50, 50, 0.05)'];
+
+      for (let y = 0; y < rows; y++) {
+        for (let x = 0; x < cols; x++) {
+           // Add some randomness to origin to make it less rigid grid
+           const randomX = (x * spacing) + (Math.random() * 10 - 5);
+           const randomY = (y * spacing) + (Math.random() * 10 - 5);
+           
+           const color = colors[Math.floor(Math.random() * colors.length)];
+           this.particles.push(new Particle(randomX, randomY, color));
+        }
+      }
+    }
+
+    animate() {
+      this.ctx.clearRect(0, 0, this.width, this.height);
+      this.particles.forEach(particle => {
+        particle.update(this.mouse);
+        particle.draw(this.ctx);
+      });
+      requestAnimationFrame(() => this.animate());
+    }
+  }
+
+  // Initialize only when the DOM is ready
+  document.addEventListener('DOMContentLoaded', () => {
+    const canvas = document.getElementById('antigravity-canvas') as HTMLCanvasElement;
+    if (canvas) {
+      const effect = new Effect(canvas);
+      effect.animate();
+    }
+  });
+  
+  // Handle Astro view transitions if enabled
+  document.addEventListener('astro:after-swap', () => {
+     const canvas = document.getElementById('antigravity-canvas') as HTMLCanvasElement;
+    if (canvas) {
+      const effect = new Effect(canvas);
+      effect.animate();
+    }
+  });
+</script>
+
+<style>
+  canvas {
+    display: block;
+    /* Ensure it stays behind everything */
+    z-index: -1; 
+  }
+</style>
