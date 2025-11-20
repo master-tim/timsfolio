@@ -31,8 +31,8 @@ const bgClasses = [
 ];
 import type { ImageMetadata } from 'astro';
 import { Image } from 'astro:assets';
-const images = import.meta.glob<{ default: ImageMetadata }>('/src/assets/*.{webp,jpeg,jpg,png,gif}')
-if (!images[heroImage]) throw new Error(`"${heroImage}" does not exist in glob: "src/assets/*.{webp,jpeg,jpg,png,gif}"`);
+const images = import.meta.glob<{ default: ImageMetadata }>('/src/assets/**/*.{webp,jpeg,jpg,png,gif}')
+if (!images[heroImage]) throw new Error(`"${heroImage}" does not exist in glob: "src/assets/**/*.{webp,jpeg,jpg,png,gif}"`);
 
 const getRandomClass = () => {
   return bgClasses[Math.floor(Math.random() * bgClasses.length)];
@@ -48,17 +48,18 @@ const getRandomClass = () => {
     <Header />
     <main class="container mx-auto text-white">
       <article >
-        <div class="relative mb-20" transition:animate="fade">
-          <span class="bg-black bg-opacity-25 w-full h-full absolute"></span>
-          <div class="absolute bottom-10 md:left-20 left-6">
-            <h1 class="text-4xl md:text-9xl font-semibold text-shadow">
-              <span class="font-kablamo text-ppink">{title.charAt(0)}</span>{
-                title.slice(1)
-              }
+        <div class="relative mb-20 h-[50vh] min-h-[400px] w-full overflow-hidden rounded-xl" transition:animate="fade">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent z-10"></div>
+          <Image src={images[heroImage]()} alt={title} class="absolute inset-0 w-full h-full object-cover" />
+          
+          <div class="absolute bottom-0 left-0 p-6 md:p-12 z-20 w-full max-w-5xl">
+            <h1 class="text-4xl md:text-6xl font-bold leading-tight text-white mb-4 drop-shadow-lg">
+              <span class="font-kablamo text-ppink">{title.charAt(0)}</span>{title.slice(1)}
             </h1>
-            <p  set:html={description} />
+            {description && (
+              <p class="text-lg md:text-xl text-gray-200 max-w-3xl leading-relaxed drop-shadow-md" set:html={description} />
+            )}
           </div>
-          <Image src={images[heroImage]()}  alt={title} class="h-96 w-full object-cover"/>
         </div>
         <div class="text-black px-6 md:px-0">
           <div class="">
@@ -80,7 +81,7 @@ const getRandomClass = () => {
             <div class="prose md:w-1/2 flex flex-col gap-6">
               <slot />
             </div>
-            <div class="flex flex-col gap-6" transition:animate="slide">
+            <div class="flex flex-col gap-6 items-start md:items-end text-right" transition:animate="slide">
               <ul class="flex flex-col gap-2 pt-10 md:pt-0 items-start md:items-end">
                 <p class="md:hidden font-semibold">Related:</p>
                 {
@@ -97,9 +98,9 @@ const getRandomClass = () => {
                   })
                 }
               </ul>
-              <hr />
+              <hr class="w-full" />
               <p>Written by</p>
-              <div class="flex -mt-4 gap-2">
+              <div class="flex -mt-4 gap-2 flex-row-reverse text-right">
                   <div class="bg-pgreen rounded-full w-12 h-12 aspect-square object-contain overflow-hidden ">
                     <Image src={images["/src/assets/tims.png"]()} alt="Temirlan" />
                   </div>
@@ -108,7 +109,7 @@ const getRandomClass = () => {
                   <p class="text-pblack">Full-stack AI Engineer<br>Frontend 3D Developer</p>
                 </div>
               </div>
-              <hr/>
+              <hr class="w-full"/>
               <div>
                 <p>Connect:</p>
                 <div class="flex items-center gap-6 text-xl">
