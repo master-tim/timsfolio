@@ -18,18 +18,21 @@ const getRandomClass = () => {
 };
 ---
 
-<section class="flex flex-col text-center gap-4 " >
+<section class="flex flex-col text-center gap-4 reveal-on-scroll opacity-0" style="transform: translateY(30px);">
   <p class="text-pblack">It is necessary to observe.</p>
   <h2 class="text-4xl font-bold">Treated like a portrait.</h2>
   <ul class="flex flex-wrap justify-center gap-8 py-20">
     {
-      posts.map((post) => {
+      posts.map((post, index) => {
         const randomClass = getRandomClass();
         return (
-          <li class="w-72 text-left rounded-3xl border-1 border-black shadow-card group hover:shadow-hover transition  px-4 py-6 flex flex-col gap-6">
+          <li 
+            class="w-72 text-left rounded-3xl border-1 border-black shadow-card group hover:shadow-hover transition px-4 py-6 flex flex-col gap-6 reveal-on-scroll opacity-0"
+            style={`transform: translateY(30px); animation-delay: ${index * 0.1}s;`}
+          >
             <a href={`/blog/${post.id}/`} class="flex flex-col gap-4">
               <div
-                class={`${randomClass} text-4xl p-2 self-start border-1 border-black shadow-card1 group-hover:shadow-card transition`}
+                class={`${randomClass} text-4xl p-2 self-start border-1 border-black shadow-card1 group-hover:shadow-card transition group-hover:rotate-12`}
               >
                 <Icon name={post.data.icon} />
               </div>
@@ -45,3 +48,4 @@ const getRandomClass = () => {
     }
   </ul>
 </section>
+

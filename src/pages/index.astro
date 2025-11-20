@@ -5,19 +5,90 @@ import Footer from "@/components/Footer.astro";
 import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
 import Hero from "@/components/Hero.astro";
 import WhatIDo from "@/components/WhatIDo.astro";
+import AnimatedBackground from "@/components/AnimatedBackground.astro";
+import Skills from "@/components/Skills.astro";
+import Stats from "@/components/Stats.astro";
+import FloatingActionButton from "@/components/FloatingActionButton.astro";
+import CTABanner from "@/components/CTABanner.astro";
 ---
+
 
 <!doctype html>
 <html lang="en">
   <head>
     <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
   </head>
-  <body class="p-0 m-0 max-w-screen">
+  <body class="p-0 m-0 max-w-screen animated-gradient">
+    <AnimatedBackground />
     <Header />
-    <main class="container mx-auto md:px-10 px-4">
+    <main class="container mx-auto md:px-10 px-4 relative z-10">
       <Hero />
+      <Stats />
+      <Skills />
       <WhatIDo />
+      <CTABanner />
     </main>
     <Footer />
+    <FloatingActionButton />
   </body>
 </html>
+
+<script>
+  // Scroll reveal animation
+  function initScrollReveal() {
+    const revealElements = document.querySelectorAll('.reveal-on-scroll');
+    
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, {
+      threshold: 0.1,
+      rootMargin: '0px 0px -100px 0px'
+    });
+
+    revealElements.forEach(el => {
+      observer.observe(el);
+    });
+  }
+
+  // Parallax effect on scroll
+  function initParallax() {
+    let ticking = false;
+    
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const scrolled = window.pageYOffset;
+          const parallaxElements = document.querySelectorAll('.parallax');
+          
+          parallaxElements.forEach((el) => {
+            const speed = parseFloat(el.getAttribute('data-speed') || '0.5');
+            const yPos = -(scrolled * speed);
+            (el as HTMLElement).style.transform = `translateY(${yPos}px)`;
+          });
+          
+          ticking = false;
+        });
+        ticking = true;
+      }
+    });
+  }
+
+  // Initialize on page load
+  function init() {
+    initScrollReveal();
+    initParallax();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+  // Re-initialize on Astro page transitions
+  document.addEventListener('astro:after-swap', init);
+</script>

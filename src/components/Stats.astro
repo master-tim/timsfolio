@@ -1,0 +1,96 @@
+---
+const stats = [
+  { number: 5, suffix: "+", label: "Years Experience", color: "pblue" },
+  { number: 20, suffix: "+", label: "Projects Delivered", color: "pgreen" },
+  { number: 100, suffix: "K+", label: "Lines of Code", color: "ppink" },
+  { number: 10, suffix: "+", label: "Technologies", color: "pyellow" },
+];
+---
+
+<section class="py-20 reveal-on-scroll opacity-0">
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-5xl mx-auto">
+    {stats.map((stat, index) => (
+      <div 
+        class={`stat-card bg-${stat.color} border-3 border-black rounded-2xl p-8 shadow-card hover:shadow-hover transition-all text-center group`}
+        data-number={stat.number}
+        data-suffix={stat.suffix}
+        style={`animation-delay: ${index * 0.15}s`}
+      >
+        <div class="text-5xl font-bold mb-2 counter group-hover:scale-110 transition-transform" data-target={stat.number}>
+          0<span class="suffix">{stat.suffix}</span>
+        </div>
+        <div class="text-sm font-semibold uppercase tracking-wide">{stat.label}</div>
+      </div>
+    ))}
+  </div>
+</section>
+
+<style>
+  .stat-card {
+    animation: popIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+    opacity: 0;
+  }
+
+  @keyframes popIn {
+    from {
+      opacity: 0;
+      transform: scale(0.8);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+</style>
+
+<script>
+  function animateCounter(element: HTMLElement, target: number) {
+    const duration = 2000;
+    const steps = 60;
+    const increment = target / steps;
+    let current = 0;
+    const timer = setInterval(() => {
+      current += increment;
+      if (current >= target) {
+        current = target;
+        clearInterval(timer);
+      }
+      element.textContent = Math.floor(current).toString();
+    }, duration / steps);
+  }
+
+  function initCounters() {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const counters = entry.target.querySelectorAll('.counter');
+          counters.forEach((counter) => {
+            const target = parseInt(counter.getAttribute('data-target') || '0');
+            const suffix = counter.querySelector('.suffix');
+            const suffixText = suffix?.textContent || '';
+            suffix?.remove();
+            
+            animateCounter(counter as HTMLElement, target);
+            
+            setTimeout(() => {
+              counter.innerHTML += suffixText;
+            }, 2000);
+          });
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.5 });
+
+    document.querySelectorAll('.stat-card').forEach(card => {
+      observer.observe(card);
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCounters);
+  } else {
+    initCounters();
+  }
+
+  document.addEventListener('astro:after-swap', initCounters);
+</script>

@@ -82,7 +82,80 @@
     font-weight: normal;
     font-style: normal;
 }
+
+html {
+    scroll-behavior: smooth;
+}
+
 body {
     font-family: 'Alexandria', sans-serif;
     background-color: #f2f2f2;
+    overflow-x: hidden;
+}
+
+/* Scroll reveal animations */
+.reveal-on-scroll {
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.reveal-on-scroll.visible {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+}
+
+/* Parallax effect */
+.parallax {
+    transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Gradient animation */
+@keyframes gradient-shift {
+    0%, 100% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+.animated-gradient {
+    background: linear-gradient(
+        135deg,
+        rgba(150, 199, 242, 0.05) 0%,
+        rgba(173, 242, 150, 0.05) 25%,
+        rgba(243, 150, 229, 0.05) 50%,
+        rgba(242, 207, 150, 0.05) 75%,
+        rgba(150, 199, 242, 0.05) 100%
+    );
+    background-size: 200% 200%;
+    animation: gradient-shift 15s ease infinite;
+}
+
+/* Enhanced transitions */
+* {
+    transition: box-shadow 0.3s ease;
+}
+
+/* Smooth link transitions */
+a {
+    transition: all 0.3s ease;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f2f2f2;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #96C7F2;
+    border: 2px solid #000;
+    border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #F396E5;
 }
