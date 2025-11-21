@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { clearCache } from '../../lib/redis';
+import { clearCache } from '../../../lib/redis';
 
 /**
  * Admin endpoint to clear the Redis cache
