@@ -68,6 +68,9 @@
     const input = document.getElementById('chat-input');
     const output = document.getElementById('chat-output');
     const suggestionBtns = document.querySelectorAll('.suggestion-btn');
+    
+    // Chat History State
+    let chatHistory = [];
 
     if (!form || !input || !output) {
       // console.error('Chat elements not found'); // Silent fail if not on page
@@ -263,6 +266,9 @@
         input.disabled = false;
         input.focus();
         
+        // Reset history
+        chatHistory = [];
+        
         // Also reset fullscreen output if it exists
         if (outputFullscreen) {
            outputFullscreen.innerHTML = `
@@ -308,6 +314,20 @@
         e.preventDefault();
         const message = inputEl.value.trim();
         if (!message) return;
+
+        // Block questions more than 50 words
+        if (message.split(/\s+/).length > 50) {
+          appendMessage(outputEl, 'System', 'Question is too long. Please limit to 50 words.', 'text-red-600 font-bold');
+          inputEl.value = '';
+          
+          // Sync error to other view
+          if (outputEl === output) {
+             if (outputFullscreen) outputFullscreen.innerHTML = output.innerHTML;
+          } else {
+             output.innerHTML = outputFullscreen.innerHTML;
+          }
+          return;
+        }
 
         // Check if first message
         const isFirstMessage = outputEl.classList.contains('hidden');
@@ -367,18 +387,24 @@
       
       // Extracted fetch response function
       async function fetchResponse(message, outputEl, inputEl, loadingId) {
+        // Add user message to history
+        chatHistory.push({ role: 'user', content: message });
+
         try {
           const res = await fetch('/api/stream', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ query: message }),
+            body: JSON.stringify({ query: message, history: chatHistory }),
           });
 
           // Remove loading
           const loadingEl = document.getElementById(loadingId);
           if (loadingEl) loadingEl.remove();
 
-          if (!res.ok) throw new Error(res.statusText);
+          if (!res.ok) {
+            const data = await res.json();
+            throw new Error(data.error || res.statusText);
+          }
 
           // Create AI message container
           const aiMsgDiv = document.createElement('div');
@@ -421,6 +447,10 @@
                     }
                   }
                   
+                  if (parsed.error) {
+                    throw new Error(parsed.error);
+                  }
+
                   if (parsed.chunk) {
                     fullText += parsed.chunk;
                     // Re-render markdown on every chunk
@@ -436,15 +466,30 @@
                   }
                 } catch (e) {
                   console.error('Error parsing stream:', e);
+                  if (e.message) throw e;
                 }
               }
             }
           }
+          
+          // Add assistant response to history
+          chatHistory.push({ role: 'assistant', content: fullText });
 
         } catch (err) {
           const loadingEl = document.getElementById(loadingId);
           if (loadingEl) loadingEl.remove();
-          appendMessage(outputEl, 'System', 'Connection Error.', 'text-red-600');
+          
+          // Remove the user message from history if we failed to get a response
+          chatHistory.pop();
+          
+          appendMessage(outputEl, 'System', `Error: ${err.message}`, 'text-red-600 font-bold');
+          
+          // Sync error to other view
+          if (outputEl === output) {
+             if (outputFullscreen) outputFullscreen.innerHTML = output.innerHTML;
+          } else {
+             output.innerHTML = outputFullscreen.innerHTML;
+          }
         } finally {
           inputEl.disabled = false;
           inputEl.focus();

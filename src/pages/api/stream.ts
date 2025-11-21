@@ -5,11 +5,19 @@ import { getCachedResponse, cacheResponse } from '../../lib/redis';
 export const POST: APIRoute = async ({ request }) => {
   try {
     const body = await request.json();
-    const { query, topK = 3, temperature = 0.7 } = body;
+    const { query, topK = 3, temperature = 0.7, history = [] } = body;
     
     if (!query || typeof query !== 'string') {
       return new Response(
         JSON.stringify({ error: 'Query is required and must be a string' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Block questions more than 50 words
+    if (query.trim().split(/\s+/).length > 50) {
+      return new Response(
+        JSON.stringify({ error: 'Question is too long. Please limit to 50 words.' }),
         { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }
@@ -52,6 +60,7 @@ export const POST: APIRoute = async ({ request }) => {
             topK,
             temperature,
             includeContext: true,
+            history,
           });
           
           let fullResponse = '';

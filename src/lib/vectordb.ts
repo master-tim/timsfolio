@@ -175,6 +175,7 @@ export async function* streamQueryVectorDB(
     topK?: number;
     temperature?: number;
     includeContext?: boolean;
+    history?: Array<{ role: 'user' | 'assistant'; content: string }>;
   } = {}
 ): AsyncGenerator<string, void, unknown> {
   const {
@@ -194,10 +195,15 @@ export async function* streamQueryVectorDB(
     // Construct enhanced query with context
     let enhancedQuery = query;
     if (includeContext) {
+      const historyText = options.history 
+        ? options.history.map(msg => `${msg.role === 'user' ? 'User' : 'AI'}: ${msg.content}`).join('\n')
+        : '';
+
       enhancedQuery = `
 Context about Tim:
 ${PORTFOLIO_CONTEXT}
 
+${historyText ? `Chat History:\n${historyText}\n` : ''}
 User Question: ${query}
 
 System Instruction:
@@ -208,6 +214,7 @@ Rules:
 2. Be conversational, professional, and helpful.
 3. Keep your response concise (2-3 sentences max). Use bullet points for lists.
 4. Be direct and to the point.
+5. Use the Chat History to maintain context in the conversation.
 
 Please answer the user's question following these rules.
       `.trim();
