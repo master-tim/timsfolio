@@ -13,5 +13,7 @@ export default defineConfig({
   site: 'https://mastertim.xyz',
   output:'server',
   integrations: [mdx(), sitemap(), tailwind(), icon()],
-  adapter: vercel(),
+  adapter: vercel({
+    includeFiles: ['./data/vectordb/**']
+  }),
 });

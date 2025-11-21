@@ -31,3 +31,7 @@ bun.lock
 
 CLAUDE.md
 .claude
+
+# Vector database
+# data/vectordb/  <-- Commented out to allow deployment
+data/pdfs/

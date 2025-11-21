@@ -6,7 +6,9 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "build:vectordb": "tsx scripts/build-vectordb.ts",
+    "test:vectordb": "tsx scripts/test-vectordb.ts"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.0.7",
@@ -15,16 +17,23 @@
     "@astrojs/sitemap": "^3.2.1",
     "@astrojs/tailwind": "^5.1.5",
     "@astrojs/vercel": "^9.0.0",
+    "@langchain/community": "^1.0.4",
+    "@langchain/openai": "^1.1.2",
     "@llamaindex/openai": "^0.4.21",
     "@tailwindcss/vite": "^4.0.0",
     "astro": "^5.1.9",
     "astro-icon": "^1.1.5",
+    "chromadb": "^3.1.5",
+    "dotenv": "^17.2.3",
     "hamburgers": "^1.2.1",
+    "langchain": "^1.0.6",
     "llamaindex": "^0.12.0",
+    "pdf2json": "^4.0.0",
     "tailwindcss": "^3.4.17"
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.16",
-    "sass-embedded": "^1.83.4"
+    "sass-embedded": "^1.83.4",
+    "tsx": "^4.20.6"
   }
 }
