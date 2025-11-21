@@ -328,6 +328,7 @@
           const reader = res.body.getReader();
           const decoder = new TextDecoder();
           let fullText = '';
+          let isCached = false;
 
           while (true) {
             const { done, value } = await reader.read();
@@ -343,6 +344,17 @@
                 
                 try {
                   const parsed = JSON.parse(data);
+                  
+                  // Check if this is a cache indicator
+                  if (parsed.cached === true) {
+                    isCached = true;
+                    // Add cache badge to AI label
+                    const aiLabel = aiMsgDiv.querySelector('span');
+                    if (aiLabel) {
+                      aiLabel.innerHTML = '[AI] <span class="text-pgreen" title="Response served from cache">⚡</span> ';
+                    }
+                  }
+                  
                   if (parsed.chunk) {
                     fullText += parsed.chunk;
                     // Re-render markdown on every chunk

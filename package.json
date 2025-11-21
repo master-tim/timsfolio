@@ -8,7 +8,8 @@
     "preview": "astro preview",
     "astro": "astro",
     "build:vectordb": "tsx scripts/build-vectordb.ts",
-    "test:vectordb": "tsx scripts/test-vectordb.ts"
+    "test:vectordb": "tsx scripts/test-vectordb.ts",
+    "test:cache": "tsx scripts/test-cache.ts"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.0.7",
@@ -26,6 +27,7 @@
     "chromadb": "^3.1.5",
     "dotenv": "^17.2.3",
     "hamburgers": "^1.2.1",
+    "ioredis": "^5.8.2",
     "langchain": "^1.0.6",
     "llamaindex": "^0.12.0",
     "marked": "^17.0.1",
