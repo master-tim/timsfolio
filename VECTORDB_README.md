@@ -164,7 +164,7 @@ const docs = await retrieveRelevantDocs('Three.js projects', 3);
 
 ### Models Used
 - **Embeddings**: `text-embedding-3-large` (High precision)
-- **LLM**: `gpt-4o` (Fastest and most capable)
+- **LLM**: `gpt-5-nano` (Ultra-lightweight, low latency)
 
 ### Chunk Size & Overlap
 LlamaIndex handles chunking automatically. To customize, modify the document loading in `scripts/build-vectordb.ts`.
