@@ -16,4 +16,7 @@ export default defineConfig({
   adapter: vercel({
     includeFiles: ['./data/vectordb']
   }),
+  redirects: {
+    '/cv': '/cv.pdf'
+  }
 });
