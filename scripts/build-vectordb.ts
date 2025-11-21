@@ -86,7 +86,7 @@ async function loadBlogPosts(): Promise<Document[]> {
   
   try {
     const files = await fs.promises.readdir(BLOG_DIR);
-    const mdFiles = files.filter((file: string) => file.endsWith('.md'));
+    const mdFiles = files.filter((file: string) => file.endsWith('.md') || file.endsWith('.mdx'));
     
     for (const file of mdFiles) {
       const filePath = path.join(BLOG_DIR, file);
