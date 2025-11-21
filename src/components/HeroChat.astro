@@ -54,8 +54,9 @@
   <div class="absolute -top-4 -right-4 w-full h-full bg-ppink border-2 border-black rounded-lg -z-10"></div>
 </div>
 
-<script is:inline>
-(function() {
+<script>
+  import { marked } from 'marked';
+
   function initChat() {
     // Elements
     const fullscreenBtn = document.getElementById('fullscreen-btn');
@@ -65,7 +66,7 @@
     const suggestionBtns = document.querySelectorAll('.suggestion-btn');
 
     if (!form || !input || !output) {
-      console.error('Chat elements not found');
+      // console.error('Chat elements not found'); // Silent fail if not on page
       return;
     }
 
@@ -214,6 +215,7 @@
           if (data.error) {
             appendMessage(outputEl, 'System', 'Error: ' + data.error, 'text-red-600');
           } else {
+            // Render Markdown for AI response
             appendMessage(outputEl, 'AI', data.answer, 'text-pblack', true);
           }
 
@@ -235,47 +237,34 @@
       });
     }
 
-    function appendMessage(outputEl, sender, text, className, animate) {
+    function appendMessage(outputEl, sender, text, className, isMarkdown = false) {
       if (!outputEl) return;
 
       const div = document.createElement('div');
       div.className = 'break-words ' + className;
       div.innerHTML = '<span class="opacity-50 text-xs uppercase mr-1">[' + sender + ']</span> ';
       
-      const contentSpan = document.createElement('span');
-      div.appendChild(contentSpan);
-      outputEl.appendChild(div);
-
-      if (animate) {
-        let i = 0;
-        const speed = 15;
-        const interval = setInterval(function() {
-          if (!outputEl.isConnected) {
-              clearInterval(interval);
-              return;
-          }
-          contentSpan.textContent += text.charAt(i);
-          outputEl.scrollTop = outputEl.scrollHeight;
-          i++;
-          if (i >= text.length) clearInterval(interval);
-        }, speed);
+      const contentSpan = document.createElement('div');
+      contentSpan.className = 'inline-block align-top markdown-content'; // Use div for block content
+      
+      if (isMarkdown) {
+        // Parse Markdown
+        contentSpan.innerHTML = marked.parse(text);
       } else {
         contentSpan.textContent = text;
-        outputEl.scrollTop = outputEl.scrollHeight;
       }
+      
+      div.appendChild(contentSpan);
+      outputEl.appendChild(div);
+      outputEl.scrollTop = outputEl.scrollHeight;
     }
   }
 
   // Initialize when DOM is ready
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initChat);
-  } else {
-    initChat();
-  }
-})();
+  initChat();
 </script>
 
-<style>
+<style is:global>
   /* Hide scrollbar for Chrome, Safari and Opera */
   .no-scrollbar::-webkit-scrollbar {
       display: none;
@@ -284,5 +273,39 @@
   .no-scrollbar {
       -ms-overflow-style: none;  /* IE and Edge */
       scrollbar-width: none;  /* Firefox */
+  }
+
+  /* Markdown Styles for Chat */
+  .markdown-content p {
+    margin-bottom: 0.5rem;
+  }
+  .markdown-content p:last-child {
+    margin-bottom: 0;
+  }
+  .markdown-content ul {
+    list-style-type: disc;
+    padding-left: 1.2rem;
+    margin-bottom: 0.5rem;
+  }
+  .markdown-content ol {
+    list-style-type: decimal;
+    padding-left: 1.2rem;
+    margin-bottom: 0.5rem;
+  }
+  .markdown-content li {
+    margin-bottom: 0.2rem;
+  }
+  .markdown-content strong {
+    font-weight: bold;
+  }
+  .markdown-content em {
+    font-style: italic;
+  }
+  .markdown-content code {
+    background-color: #f3f4f6;
+    padding: 0.1rem 0.3rem;
+    border-radius: 0.2rem;
+    font-family: monospace;
+    font-size: 0.9em;
   }
 </style>
