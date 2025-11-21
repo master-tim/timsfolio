@@ -209,7 +209,7 @@ async function buildVectorDB() {
   
   // Initialize OpenAI models
   Settings.llm = new OpenAI({
-    model: 'gpt-5-nano',
+    model: 'gpt-4o-mini',
     apiKey: process.env.OPENAI_API_KEY,
   });
   

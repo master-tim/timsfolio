@@ -19,9 +19,9 @@ function initializeSettings(temperature: number = 0.7) {
     throw new Error('Missing OPENAI_API_KEY environment variable');
   }
 
+  // Initialize OpenAI models
   Settings.llm = new OpenAI({
-    model: 'gpt-5-nano',
-    temperature: 1, // gpt-5-nano only supports default temperature (1)
+    model: 'gpt-4o-mini',
     apiKey,
   });
   
@@ -72,7 +72,7 @@ export async function queryVectorDB(
   } = {}
 ): Promise<string> {
   const {
-    topK = 3,
+    topK = 2,
     temperature = 0.7,
     includeContext = true,
   } = options;
@@ -171,7 +171,7 @@ export async function* streamQueryVectorDB(
   } = {}
 ): AsyncGenerator<string, void, unknown> {
   const {
-    topK = 3,
+    topK = 2,
     temperature = 0.7,
     includeContext = true,
   } = options;
