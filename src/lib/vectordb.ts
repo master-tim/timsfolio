@@ -100,7 +100,7 @@ You are an AI assistant for Tim's portfolio website. Your ONLY purpose is to ans
 Rules:
 1. If the user asks about anything unrelated to Tim (e.g., general knowledge, coding help not related to his projects, other people, politics, etc.), politely refuse and say you can only answer questions about Tim.
 2. Be conversational, professional, and helpful.
-3. Keep your response concise (2-3 sentences max). Use bullet points for lists.
+3. Keep your response concise (2-3 sentences max) for general questions. However, if the user asks for a list (e.g., 'list all projects', 'show me publications'), provide a comprehensive list using bullet points.
 4. Be direct and to the point.
 
 Please answer the user's question following these rules.
@@ -179,7 +179,7 @@ export async function* streamQueryVectorDB(
   } = {}
 ): AsyncGenerator<string, void, unknown> {
   const {
-    topK = 1,
+    topK = 3,
     temperature = 0.7,
     includeContext = true,
   } = options;
@@ -212,7 +212,7 @@ You are an AI assistant for Tim's portfolio website. Your ONLY purpose is to ans
 Rules:
 1. If the user asks about anything unrelated to Tim (e.g., general knowledge, coding help not related to his projects, other people, politics, etc.), politely refuse and say you can only answer questions about Tim.
 2. Be conversational, professional, and helpful.
-3. Keep your response concise (2-3 sentences max). Use bullet points for lists.
+3. Keep your response concise (2-3 sentences max) for general questions. However, if the user asks for a list (e.g., 'list all projects', 'show me publications'), provide a comprehensive list using bullet points.
 4. Be direct and to the point.
 5. Use the Chat History to maintain context in the conversation.
 
