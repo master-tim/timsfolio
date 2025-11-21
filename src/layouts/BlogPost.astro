@@ -6,6 +6,7 @@ import Footer from "@/components/Footer.astro";
 import FormattedDate from "@/components/FormattedDate.astro";
 import { Icon } from "astro-icon/components";
 import AntigravityEffect from "@/components/AntigravityEffect.astro";
+import  Analytics  from '@vercel/analytics/astro';
 
 type Props = CollectionEntry<"blog">["data"];
 
@@ -135,5 +136,6 @@ const getRandomClass = () => {
       </article>
     </main>
     <Footer />
+    <Analytics />
   </body>
 </html>

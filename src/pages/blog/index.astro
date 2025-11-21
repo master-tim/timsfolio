@@ -6,6 +6,7 @@ import { SITE_TITLE, SITE_DESCRIPTION } from "../../consts";
 import { getCollection } from "astro:content";
 import WhatIDo from "@/components/WhatIDo.astro";
 import AntigravityEffect from "@/components/AntigravityEffect.astro";
+import  Analytics  from '@vercel/analytics/astro';
 const posts = (await getCollection("blog")).sort(
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
 );
@@ -23,5 +24,6 @@ const posts = (await getCollection("blog")).sort(
       <WhatIDo />
     </main>
     <Footer />
+    <Analytics />
   </body>
 </html>
