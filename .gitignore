@@ -34,4 +34,4 @@ CLAUDE.md
 
 # Vector database
 # data/vectordb/  <-- Commented out to allow deployment
-data/pdfs/
+# data/pdfs/

@@ -14,6 +14,6 @@ export default defineConfig({
   output:'server',
   integrations: [mdx(), sitemap(), tailwind(), icon()],
   adapter: vercel({
-    includeFiles: ['./data/vectordb/**']
+    includeFiles: ['./data/vectordb']
   }),
 });
