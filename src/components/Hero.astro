@@ -8,32 +8,41 @@ const images = import.meta.glob<{ default: ImageMetadata }>(
 );
 ---
 
-<section class="py-20 flex md:flex-row flex-col px-4 md:px-0 gap-10 md:gap-0">
-  <div class="flex flex-col gap-6 justify-start items-start md:w-1/2 reveal-on-scroll opacity-0" style="transform: translateY(30px);">
-    <h1 class="text-pblack text-lg md:text-xl">Hi, my name is Temirlan Dzhoroev</h1>
-    <p class="text-4xl md:text-6xl font-bold">Frontend Engineer specializing in 3D & AI</p>
-    <p>
-      I build highly interactive, AI-powered user experiences using React, Next.js, and Three.js/WebGL.
-      At Redbrick, I've led development of AI-powered game creation systems and 3D Studio Engine,
-      combining strong UI/UX foundations with cutting-edge AI functionality including RAG, LangChain,
-      and vector databases.
+<section class="py-10 md:py-20 flex flex-col items-center justify-center min-h-[80vh] relative px-4">
+  
+  <!-- Main Content Wrapper -->
+  <div class="text-center mb-12 max-w-4xl relative z-10 reveal-on-scroll opacity-0" style="transform: translateY(20px);">
+    <div class="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-2px] transition-transform cursor-default">
+       <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+       <span class="font-mono font-bold text-sm">SYSTEM ONLINE</span>
+    </div>
+    
+    <h1 class="text-5xl md:text-7xl font-black mb-6 leading-tight text-pblack">
+      I'm <span class="text-pblue relative inline-block">
+        Temirlan
+        <svg class="absolute w-full h-3 -bottom-1 left-0 text-pblue opacity-30" viewBox="0 0 100 10" preserveAspectRatio="none">
+          <path d="M0 5 Q 50 10 100 5" stroke="currentColor" stroke-width="8" fill="none" />
+        </svg>
+      </span>.
+      <br />
+      <span class="text-transparent bg-clip-text bg-gradient-to-r from-ppink via-purple-500 to-pyellow drop-shadow-sm">
+        I Build AI & 3D Web Experiences.
+      </span>
+    </h1>
+    
+    <p class="text-xl md:text-2xl text-pblack/80 font-medium max-w-2xl mx-auto leading-relaxed">
+      Don't just read about me. <span class="bg-pgreen/30 px-2 py-1 rounded border border-black/10 font-bold">Ask my AI agent</span> to explore my projects and skills.
     </p>
-    <a
-      href="/about"
-      class="bg-pgreen px-8 py-4 text-xl font-bold border-2 border-black rounded-xl shadow-card hover:shadow-hover transition hover:scale-110 hover:-rotate-1"
-    >
-      About me
-    </a>
-    
-    
   </div>
-  <div
-    class="md:w-1/2 object-contain flex items-center justify-center p-10 group reveal-on-scroll opacity-0 parallax"
-    data-speed="0.3"
-    style="transform: translateY(30px);"
-  >
-  <!-- AI Chatbot Widget -->
-    <HeroChat />
+
+  <!-- The Chat Console -->
+  <div class="w-full max-w-4xl relative z-20 perspective-1000 reveal-on-scroll opacity-0" style="transform: translateY(40px); transition-delay: 0.2s;">
+     <!-- Decorative elements behind chat -->
+     <div class="absolute -inset-4 bg-gradient-to-r from-pblue/20 to-ppink/20 rounded-3xl blur-xl -z-10"></div>
+     
+     <HeroChat />
+     
+
   </div>
 </section>
 
