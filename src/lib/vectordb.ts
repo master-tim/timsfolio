@@ -21,7 +21,6 @@ function initializeSettings(temperature: number = 0.7) {
 
   Settings.llm = new OpenAI({
     model: 'gpt-5-nano',
-    temperature: 1, // gpt-5-nano only supports default temperature (1)
     apiKey,
   });
   
@@ -95,6 +94,8 @@ ${PORTFOLIO_CONTEXT}
 User Question: ${query}
 
 Please answer the question using the context provided above and any relevant information from the knowledge base. Be conversational and helpful.
+
+IMPORTANT: Keep your response concise (2-3 sentences max). Use bullet points for lists. Be direct and to the point.
       `.trim();
     }
     
@@ -192,6 +193,8 @@ ${PORTFOLIO_CONTEXT}
 User Question: ${query}
 
 Please answer the question using the context provided above and any relevant information from the knowledge base. Be conversational and helpful.
+
+IMPORTANT: Keep your response concise (2-3 sentences max). Use bullet points for lists. Be direct and to the point.
       `.trim();
     }
     
