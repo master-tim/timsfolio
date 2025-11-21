@@ -171,7 +171,7 @@ export async function* streamQueryVectorDB(
   } = {}
 ): AsyncGenerator<string, void, unknown> {
   const {
-    topK = 2,
+    topK = 1,
     temperature = 0.7,
     includeContext = true,
   } = options;
