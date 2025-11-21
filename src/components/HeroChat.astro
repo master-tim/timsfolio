@@ -409,8 +409,8 @@
     }
   }
 
-  // Initialize when DOM is ready
-  initChat();
+  // Initialize on page load and after view transitions
+  document.addEventListener('astro:page-load', initChat);
 </script>
 
 <style is:global>
