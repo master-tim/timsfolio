@@ -21,6 +21,7 @@ function initializeSettings(temperature: number = 0.7) {
 
   Settings.llm = new OpenAI({
     model: 'gpt-5-nano',
+    temperature: 1, // gpt-5-nano only supports default temperature (1)
     apiKey,
   });
   
