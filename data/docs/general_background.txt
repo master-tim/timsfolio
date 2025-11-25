@@ -35,5 +35,45 @@ For my undergraduate and graduate studies, I chose UNIST in South Korea, earning
 
 A key leadership role was mentoring design students in coding and prototyping with Arduino and Raspberry Pi, helping them translate creative concepts into functional prototypes.
 
+## Certifications
+I have earned 7 professional certifications across AI, web development, algorithms, and language:
+
+1. **Develop Generative AI Applications** (IBM, Nov 2025)
+   - Credential ID: PQLF19WPG5DO
+   - Skills: LangChain, Python
+   - Focus: Building generative AI applications using modern frameworks
+
+2. **Build RAG Applications** (IBM, Nov 2025)
+   - Credential ID: XN68GFDRPNP9
+   - Skills: LangChain, LlamaIndex
+   - Focus: Retrieval-Augmented Generation systems
+
+3. **Gen AI Agents** (Google Cloud, Nov 2025)
+   - Credential ID: 669UKR72W9KR
+   - Skills: AI Agents, Vertex AI, Gemini, Prompt Engineering
+   - Focus: Building AI agents on Google Cloud Platform
+
+4. **Advanced React** (Meta, Mar 2023)
+   - Credential ID: W5MRPJBSJXDB
+   - Skills: React.js, JavaScript, CSS, HTML
+   - Focus: Advanced React patterns and best practices
+
+5. **UX/UI Design Principles** (Meta, Mar 2023)
+   - Credential ID: 79U4TMZE73CT
+   - Skills: UX, Web Design, UI Design
+   - Focus: User experience and interface design fundamentals
+
+6. **Algorithmic Toolbox** (UC San Diego, Aug 2019)
+   - Credential ID: QEHTMEDLW76K
+   - Skills: Data Structures, Algorithms
+   - Focus: Core computer science algorithms and problem-solving
+
+7. **Korean Language Level 3** (Korea University, Feb 2019)
+   - Credential ID: 20183538
+   - Skills: Korean, Communication, Language
+   - Focus: Intermediate Korean language proficiency
+
+These certifications demonstrate my commitment to continuous learning across AI/ML technologies, modern web development frameworks, computer science fundamentals, and cross-cultural communication.
+
 ## Professional Outlook
 What excites me most about software engineering is the chance to combine front-end expertise with impactful missions. Having built complex systems like AI game creation and the 3D Studio Engine, I know the impact that well-designed, performant, and accessible interfaces can have. The opportunity to contribute to open-source toolkits and help shape consistent user experiences globally is deeply motivating. I’m also eager to grow in new technologies like Flutter, which I see as a promising step toward unifying desktop and web development. Above all, I want to be at the intersection of web technologies, open-source collaboration, and large-scale global impact.
