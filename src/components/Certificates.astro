@@ -1,0 +1,168 @@
+---
+// Certificates data extracted from LinkedIn
+const certificates = [
+  {
+    title: "Develop Generative AI Applications",
+    issuer: "IBM",
+    issueDate: "Nov 2025",
+    credentialId: "PQLF19WPG5DO",
+    credentialUrl: "https://www.coursera.org/account/accomplishments/records/PQLF19WPG5DO",
+    skills: ["LangChain", "Python"]
+  },
+  {
+    title: "Build RAG Applications",
+    issuer: "IBM",
+    issueDate: "Nov 2025",
+    credentialId: "XN68GFDRPNP9",
+    credentialUrl: "https://www.coursera.org/account/accomplishments/records/XN68GFDRPNP9",
+    skills: ["LangChain", "LlamaIndex"]
+  },
+  {
+    title: "Gen AI Agents",
+    issuer: "Google Cloud",
+    issueDate: "Nov 2025",
+    credentialId: "669UKR72W9KR",
+    credentialUrl: "https://www.coursera.org/account/accomplishments/verify/669UKR72W9KR",
+    skills: ["AI Agents", "Vertex AI", "Gemini", "Prompt Engineering"]
+  },
+  {
+    title: "Advanced React",
+    issuer: "Meta",
+    issueDate: "Mar 2023",
+    credentialId: "W5MRPJBSJXDB",
+    credentialUrl: "https://coursera.org/verify/W5MRPJBSJXDB",
+    skills: ["React.js", "JavaScript", "CSS", "HTML"]
+  },
+  {
+    title: "UX/UI Design Principles",
+    issuer: "Meta",
+    issueDate: "Mar 2023",
+    credentialId: "79U4TMZE73CT",
+    credentialUrl: "https://coursera.org/verify/79U4TMZE73CT",
+    skills: ["UX", "Web Design", "UI Design"]
+  },
+  {
+    title: "Algorithmic Toolbox",
+    issuer: "UC San Diego",
+    issueDate: "Aug 2019",
+    credentialId: "QEHTMEDLW76K",
+    credentialUrl: "https://coursera.org/verify/QEHTMEDLW76K",
+    skills: ["Data Structures", "Algorithms"]
+  },
+  {
+    title: "Korean Language Level 3",
+    issuer: "Korea University",
+    issueDate: "Feb 2019",
+    credentialId: "20183538",
+    credentialUrl: "http://klc.korea.ac.kr",
+    skills: ["Korean", "Communication", "Language"]
+  }
+];
+
+const bgClasses = [
+  { bg: "bg-pgreen", rounded: "rounded-full", text: "text-black" },
+  { bg: "bg-pblue", rounded: "rounded-2xl", text: "text-white" },
+  { bg: "bg-ppink", rounded: "", text: "text-white" },
+  { bg: "bg-pyellow", rounded: "rounded-md", text: "text-black" },
+];
+
+const getRandomClass = () => {
+  return bgClasses[Math.floor(Math.random() * bgClasses.length)];
+};
+
+// Logo path mapping function
+const getLogoPath = (issuer: string) => {
+  switch(issuer) {
+    case "IBM":
+      return "https://media.licdn.com/dms/image/v2/D560BAQGiz5ecgpCtkA/company-logo_100_100/company-logo_100_100/0/1688684715866/ibm_logo?e=1765411200&v=beta&t=yzH34uW0RCQAh9AJbJiVXsOh0h_rsCIKdfS2uR3ZBBE";
+    case "Google Cloud":
+      return "https://media.licdn.com/dms/image/v2/D560BAQFV-ds_iFfVSQ/company-logo_100_100/company-logo_100_100/0/1698660876286?e=1765411200&v=beta&t=H-6BbPS5b-4zfrQu2QLXIWfpdUcoMl6gyJ2T21EgYJ0";
+    case "Meta":
+      return "https://media.licdn.com/dms/image/v2/D560BAQHBmbxCDP0JQQ/company-logo_100_100/B56ZlkdQSaI8AQ-/0/1758327015620/meta_logo?e=1765411200&v=beta&t=3J16Y53btNhBkv-2pJoZlxFlctxKyN-YV0mNqZ9PcaU";
+    case "UC San Diego":
+      return "https://media.licdn.com/dms/image/v2/C560BAQHQYa-3EY_aaQ/company-logo_100_100/company-logo_100_100/0/1630633790917/university_of_california_at_san_diego_logo?e=1765411200&v=beta&t=-CrKSxWo5BcwfWpaubeCl4-HDYO_5yT6DCdLx3IWlI8";
+    case "Korea University":
+      return "https://media.licdn.com/dms/image/v2/C4E0BAQGlk-jTN4pzzQ/company-logo_100_100/company-logo_100_100/0/1631338821198?e=1765411200&v=beta&t=5pHWVFIZe40wrsWfvo6-5D0AjlAy7WQgE3emdVNcfZQ";
+    default:
+      return "";
+  }
+};
+---
+
+<section class="mb-12">
+  <h2 class="text-3xl font-bold mb-6 text-pblack">Certifications</h2>
+  
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    {certificates.map((cert, index) => {
+      const randomStyle = getRandomClass();
+      return (
+      <div class="bg-white p-4 rounded-2xl border-2 border-black shadow-card hover:shadow-hover transition-all group hover:-translate-y-1">
+        <div class="flex flex-col gap-3">
+          <!-- Logo and Title -->
+          <div class="flex items-start gap-3">
+            <div class={`flex-shrink-0 rounded-lg border-2 border-black ${randomStyle.bg} group-hover:scale-110 transition-transform ${randomStyle.rounded} w-14 h-14 flex items-center justify-center overflow-hidden`}>
+              <img 
+                src={getLogoPath(cert.issuer)} 
+                alt={`${cert.issuer} logo`}
+                class="w-full h-full object-cover"
+                loading="lazy"
+              />
+            </div>
+            <div class="flex-grow min-w-0">
+              <h3 class="text-base font-bold text-pblack leading-tight line-clamp-2">{cert.title}</h3>
+              <p class="text-sm text-pblack/70 font-medium">{cert.issuer}</p>
+            </div>
+          </div>
+          
+          <!-- Date and ID -->
+          <div class="text-xs text-pblack/60 space-y-1">
+            <p>{cert.issueDate}</p>
+            {cert.credentialId && (
+              <p class="font-mono">ID: {cert.credentialId}</p>
+            )}
+          </div>
+          
+          <!-- Skills -->
+          {cert.skills && cert.skills.length > 0 && (
+            <div class="flex flex-wrap gap-1.5">
+              {cert.skills.map((skill) => (
+                <span class={`${randomStyle.bg}/20 px-2 py-0.5 rounded-full text-xs border border-black`}>
+                  {skill}
+                </span>
+              ))}
+            </div>
+          )}
+          
+          <!-- Show Credential Button -->
+          <a 
+            href={cert.credentialUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class={`inline-flex items-center justify-center gap-1.5 ${randomStyle.bg} hover:${randomStyle.bg}/80 text-black px-3 py-2 rounded-lg border-2 border-black shadow-card hover:shadow-hover transition-all text-xs font-semibold mt-2`}
+          >
+            <span>View Credential</span>
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              width="12" 
+              height="12" 
+              viewBox="0 0 16 16"
+              fill="currentColor"
+            >
+              <path d="M6.22 8.72a.75.75 0 0 0 1.06 1.06l5.22-5.22v1.69a.75.75 0 0 0 1.5 0v-3.5a.75.75 0 0 0-.75-.75h-3.5a.75.75 0 0 0 0 1.5h1.69L6.22 8.72Z"/>
+              <path d="M3.5 6.75c0-.69.56-1.25 1.25-1.25H7A.75.75 0 0 0 7 4H4.75A2.75 2.75 0 0 0 2 6.75v4.5A2.75 2.75 0 0 0 4.75 14h4.5A2.75 2.75 0 0 0 12 11.25V9a.75.75 0 0 0-1.5 0v2.25c0 .69-.56 1.25-1.25 1.25h-4.5c-.69 0-1.25-.56-1.25-1.25v-4.5Z"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+    )})}
+  </div>
+</section>
+
+<style>
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>
