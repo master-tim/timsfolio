@@ -3,7 +3,7 @@
 
 <!-- Regular Chat Widget -->
 <div class="relative w-full mx-auto max-w-5xl mt-6 md:mt-2 reveal-on-scroll group">
-  <div class="text-center mb-3 font-mono text-xs tracking-[0.2em] uppercase text-pblack/70">Chat with my AI portfolio</div>
+  <div class="text-center mb-3 font-mono text-xs tracking-[0.2em] uppercase text-pblack font-bold">Chat with my AI portfolio</div>
   <!-- Chat Container -->
   <div id="chat-widget" class="chat-empty bg-white border-3 border-black shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] p-6 rounded-2xl relative z-10 transition-all duration-300 hover:shadow-[14px_14px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1.5">
     <!-- Header -->
@@ -21,14 +21,14 @@
     </div>
 
     <!-- Chat History / Output -->
-    <div id="chat-output" class="hidden min-h-[280px] max-h-[520px] overflow-y-auto mb-4 font-mono text-sm space-y-3 bg-gray-50 p-4 border-2 border-black rounded-lg shadow-inner">
+    <div id="chat-output" class="hidden min-h-[200px] max-h-[240px] overflow-y-auto mb-4 font-mono text-sm space-y-3 bg-gray-50 p-4 border-2 border-black rounded-lg shadow-inner scroll-smooth">
       <div class="text-pblack/70 hidden sm:block">
         > Ask me anything about Tim's experience, skills, or projects.
       </div>
     </div>
 
     <!-- Input Area -->
-    <form id="chat-form" class="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center justify-center max-w-2xl mx-auto">
+    <form id="chat-form" class="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center">
       <input 
         type="text" 
         id="chat-input" 
