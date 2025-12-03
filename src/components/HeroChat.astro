@@ -1,180 +1,173 @@
 ---
 ---
 
-<!-- Regular Chat Widget -->
-<div class="relative w-full mx-auto max-w-5xl mt-6 md:mt-2 reveal-on-scroll group">
-  <div class="text-center mb-3 font-mono text-xs tracking-[0.2em] uppercase text-pblack font-bold">Chat with my AI portfolio</div>
-  <!-- Chat Container -->
-  <div id="chat-widget" class="chat-empty bg-white border-3 border-black shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] p-6 rounded-2xl relative z-10 transition-all duration-300 hover:shadow-[14px_14px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1.5">
+<!-- Chat Widget Container -->
+<div class="relative w-full mx-auto max-w-4xl mt-8 md:mt-4 group font-sans">
+  
+  <!-- Decorative Shadow Element -->
+  <div class="absolute -inset-0.5 bg-black rounded-2xl translate-x-2 translate-y-2 z-0"></div>
+  
+  <!-- Main Card -->
+  <div id="chat-widget" class="relative z-10 bg-white border-2 border-black rounded-2xl overflow-hidden flex flex-col h-[500px] md:h-[600px] transition-transform duration-300">
+    
     <!-- Header -->
-    <div class="flex items-center gap-3 mb-4 border-b-2 border-black pb-3">
-      <button id="btn-reset" class="w-3 h-3 rounded-full bg-red-500 border border-black hover:scale-110 transition-transform cursor-pointer" aria-label="Reset Chat"></button>
-      <button id="btn-disable" class="w-3 h-3 rounded-full bg-yellow-500 border border-black hover:scale-110 transition-transform cursor-pointer" aria-label="Disable Input"></button>
-      <span class="w-3 h-3 rounded-full bg-green-500 border border-black" aria-hidden="true"></span>
-      <div class="flex-1 text-center text-sm md:text-base font-black text-pblack leading-tight">
-        Hey, I'm Temirlan — ask me anything about my AI + 3D web work
+    <div class="bg-gray-50 border-b-2 border-black p-4 flex items-center justify-between select-none">
+      <div class="flex items-center gap-2">
+        <div class="w-3 h-3 rounded-full bg-ppink border border-black"></div>
+        <div class="w-3 h-3 rounded-full bg-pyellow border border-black"></div>
+        <div class="w-3 h-3 rounded-full bg-pgreen border border-black"></div>
       </div>
-      <div class="ml-auto flex items-center gap-2 font-mono text-xs">
-        <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-        <span class="font-bold text-pblack/70">AI_ONLINE</span>
+      <div class="font-bold text-xs md:text-sm tracking-widest text-pblack uppercase flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-pgreen animate-pulse"></span>
+        AI_PORTFOLIO_ASSISTANT
       </div>
+      <button id="btn-reset" class="text-xs font-bold text-pblack hover:text-black hover:underline uppercase tracking-wider cursor-pointer">
+        Reset
+      </button>
     </div>
 
-    <!-- Chat History / Output -->
-    <div id="chat-output" class="hidden min-h-[200px] max-h-[240px] overflow-y-auto mb-4 font-mono text-sm space-y-3 bg-gray-50 p-4 border-2 border-black rounded-lg shadow-inner scroll-smooth">
-      <div class="text-pblack/70 hidden sm:block">
-        > Ask me anything about Tim's experience, skills, or projects.
+    <!-- Chat History -->
+    <div id="chat-output" class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 scroll-smooth bg-[#fafafa]">
+      <!-- Welcome Message -->
+      <div class="flex gap-4 message-entry">
+        <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-pblack flex items-center justify-center text-white shrink-0 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+          <span class="font-kablamo text-xs md:text-sm">AI</span>
+        </div>
+        <div class="space-y-2 max-w-[85%]">
+          <div class="bg-white border-2 border-black rounded-xl rounded-tl-none p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)]">
+            <p class="text-pblack font-medium text-sm md:text-base">Hello! I'm Tim's AI assistant.</p>
+            <p class="text-pblack/80 text-sm mt-2">I can tell you about his projects, skills, and experience. Try asking:</p>
+            <div class="flex flex-wrap gap-2 mt-3">
+              <button class="suggestion-btn text-xs bg-pblue/10 hover:bg-pblue/30 border border-black px-3 py-1.5 rounded-lg transition-all hover:-translate-y-0.5 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] font-bold text-pblack cursor-pointer">
+                What are Tim's main skills?
+              </button>
+              <button class="suggestion-btn text-xs bg-pgreen/10 hover:bg-pgreen/30 border border-black px-3 py-1.5 rounded-lg transition-all hover:-translate-y-0.5 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] font-bold text-pblack cursor-pointer">
+                Show me his latest projects
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
     <!-- Input Area -->
-    <form id="chat-form" class="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center">
-      <input 
-        type="text" 
-        id="chat-input" 
-        placeholder="e.g., Does Tim know React?" 
-        class="flex-1 bg-white border-2 border-black px-3 py-2 text-sm focus:outline-none focus:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all font-mono w-full"
-        required
-      />
-      <button 
-        type="submit" 
-        class="bg-pblue text-white border-2 border-black px-4 py-2 text-sm font-bold hover:translate-y-[-2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-y-[0px] active:shadow-none transition-all font-mono w-full sm:w-auto"
-      >
-        ASK
-      </button>
-    </form>
+    <div class="p-4 bg-white border-t-2 border-black">
+      <form id="chat-form" class="relative flex items-center gap-2">
+        <input 
+          type="text" 
+          id="chat-input" 
+          placeholder="Ask me anything about Tim..." 
+          class="w-full bg-gray-50 border-2 border-black rounded-xl px-4 py-3 md:py-4 text-sm md:text-base text-pblack placeholder:text-gray-400 focus:outline-none focus:ring-0 focus:bg-white focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all font-medium"
+          required
+          autocomplete="off"
+        />
+        <button 
+          type="submit" 
+          class="absolute right-2 top-1/2 -translate-y-1/2 bg-pblack text-white p-2 md:p-2.5 rounded-lg border-2 border-black hover:bg-black hover:scale-105 active:scale-95 transition-all cursor-pointer"
+          aria-label="Send message"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+        </button>
+      </form>
+      <div class="text-center mt-3 flex justify-center gap-4">
+         <p class="text-[10px] text-gray-400 uppercase tracking-wider font-bold">Powered by AI • May make mistakes</p>
+      </div>
+    </div>
 
-    <!-- Suggestions -->
-    <div class="flex gap-2 mt-3 overflow-x-auto pb-1 no-scrollbar">
-      <button type="button" class="suggestion-btn text-xs bg-gray-100 px-2 py-1 rounded border border-black hover:bg-gray-200 transition whitespace-nowrap font-mono">Tell me about Temirlan's skills</button>
-      <button type="button" class="suggestion-btn text-xs bg-gray-100 px-2 py-1 rounded border border-black hover:bg-gray-200 transition whitespace-nowrap font-mono">What is his experience with AI?</button>
-    </div>
-    
-    <div class="mt-2 text-[10px] text-gray-400 text-center font-mono">
-      * AI can make mistakes. Please verify important info.
-    </div>
   </div>
-
-  <!-- Decorative Background Element -->
-  <div class="absolute -top-4 -right-4 w-full h-full bg-ppink border-2 border-black rounded-lg -z-10"></div>
 </div>
 
 <script>
   import { marked } from 'marked';
 
   class ChatUI {
-    constructor(outputs, widget) {
-      this.outputs = outputs;
+    constructor(output, widget) {
+      this.output = output;
       this.widget = widget;
       this.typingId = 'typing-indicator';
     }
 
     scrollToBottom() {
-      this.outputs.forEach(el => (el.scrollTop = el.scrollHeight));
+      this.output.scrollTop = this.output.scrollHeight;
     }
 
-    addMessage(role, text, className, isMarkdown = false) {
-      if (this.widget) this.widget.classList.remove('chat-empty');
-      this.outputs.forEach(outputEl => {
-        outputEl.classList.remove('hidden');
-        const div = document.createElement('div');
-        div.className = 'break-words ' + className + ' message-entry';
-        div.innerHTML = '<span class="opacity-50 text-xs uppercase mr-1">[' + role + ']</span> ';
+    addMessage(role, text, isMarkdown = false) {
+      const isUser = role.toLowerCase() === 'user';
+      
+      const div = document.createElement('div');
+      div.className = `flex gap-4 message-entry ${isUser ? 'flex-row-reverse' : ''}`;
+      
+      // Avatar
+      const avatar = document.createElement('div');
+      avatar.className = `w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center shrink-0 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] ${isUser ? 'bg-ppink text-black' : 'bg-pblack text-white'}`;
+      avatar.innerHTML = `<span class="font-kablamo text-xs md:text-sm">${isUser ? 'ME' : 'AI'}</span>`;
+      
+      // Content Bubble
+      const bubbleWrapper = document.createElement('div');
+      bubbleWrapper.className = `space-y-2 max-w-[85%] ${isUser ? 'flex justify-end' : ''}`;
+      
+      const bubble = document.createElement('div');
+      bubble.className = `border-2 border-black rounded-xl p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] text-sm md:text-base ${
+        isUser 
+          ? 'bg-pblue/20 rounded-tr-none text-pblack font-medium' 
+          : 'bg-white rounded-tl-none text-pblack'
+      }`;
 
-        const contentDiv = document.createElement('div');
-        contentDiv.className = 'inline-block align-top markdown-content';
+      const contentDiv = document.createElement('div');
+      contentDiv.className = 'markdown-content break-words';
 
-        if (isMarkdown) {
-          contentDiv.innerHTML = marked.parse(text);
-        } else {
-          contentDiv.textContent = text;
-        }
+      if (isMarkdown) {
+        contentDiv.innerHTML = marked.parse(text);
+      } else {
+        contentDiv.textContent = text;
+      }
 
-        div.appendChild(contentDiv);
-        outputEl.appendChild(div);
-      });
+      bubble.appendChild(contentDiv);
+      bubbleWrapper.appendChild(bubble);
+      
+      div.appendChild(avatar);
+      div.appendChild(bubbleWrapper);
+      
+      this.output.appendChild(div);
       this.scrollToBottom();
+      
+      return contentDiv; // Return content div for streaming updates
     }
 
     showTyping() {
       this.hideTyping();
-      if (this.widget) this.widget.classList.remove('chat-empty');
-
-      this.outputs.forEach(outputEl => {
-        outputEl.classList.remove('hidden');
-        const div = document.createElement('div');
-        div.id = this.typingId;
-        div.className = 'flex items-center gap-1 py-2 text-gray-400';
-        div.innerHTML = `
-          <span class="text-xs font-mono mr-2">> Thinking</span>
-          <div class="typing-dot bg-gray-400"></div>
-          <div class="typing-dot bg-gray-400"></div>
-          <div class="typing-dot bg-gray-400"></div>
-        `;
-        outputEl.appendChild(div);
-      });
+      
+      const div = document.createElement('div');
+      div.id = this.typingId;
+      div.className = 'flex gap-4 message-entry';
+      
+      div.innerHTML = `
+        <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-pblack flex items-center justify-center text-white shrink-0 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+          <span class="font-kablamo text-xs md:text-sm">AI</span>
+        </div>
+        <div class="space-y-2 max-w-[85%]">
+          <div class="bg-white border-2 border-black rounded-xl rounded-tl-none p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] flex items-center gap-1">
+            <div class="typing-dot bg-pblack"></div>
+            <div class="typing-dot bg-pblack"></div>
+            <div class="typing-dot bg-pblack"></div>
+          </div>
+        </div>
+      `;
+      
+      this.output.appendChild(div);
       this.scrollToBottom();
     }
 
     hideTyping() {
-      this.outputs.forEach(outputEl => {
-        const el = outputEl.querySelector('#' + this.typingId);
-        if (el) el.remove();
-      });
-    }
-
-    createAIResponseContainer() {
-      const containerIds = [];
-      this.outputs.forEach(outputEl => {
-        const div = document.createElement('div');
-        div.className = 'break-words text-pblack message-entry';
-        div.innerHTML = '<span class="opacity-50 text-xs uppercase mr-1">[AI]</span> ';
-
-        const contentDiv = document.createElement('div');
-        contentDiv.className = 'inline-block align-top markdown-content';
-        div.appendChild(contentDiv);
-        outputEl.appendChild(div);
-
-        containerIds.push(contentDiv);
-      });
-      this.scrollToBottom();
-      return containerIds;
-    }
-
-    updateStream(containers, fullText, isCached = false) {
-      const html = marked.parse(fullText);
-      containers.forEach(container => {
-        container.innerHTML = html;
-        if (isCached) {
-          const parent = container.parentElement;
-          const label = parent.querySelector('span');
-          if (label && !label.innerHTML.includes('⚡')) {
-            label.innerHTML = '[AI] <span class="text-pgreen" title="Response served from cache">⚡</span> ';
-          }
-        }
-      });
-      this.scrollToBottom();
+      const el = this.output.querySelector('#' + this.typingId);
+      if (el) el.remove();
     }
 
     clear() {
-      if (this.widget) this.widget.classList.add('chat-empty');
-      this.outputs.forEach(outputEl => {
-        outputEl.classList.add('hidden');
-        outputEl.innerHTML = `
-          <div class="text-pblack/70 hidden sm:block">
-            > Ask me anything about Tim's experience, skills, or projects.
-          </div>
-        `;
-      });
-    }
-
-    syncFrom(sourceOutput) {
-      const html = sourceOutput.innerHTML;
-      this.outputs.forEach(out => {
-        if (out !== sourceOutput) {
-          out.innerHTML = html;
-        }
-      });
+      // Keep only the first welcome message
+      const welcome = this.output.firstElementChild;
+      this.output.innerHTML = '';
+      if (welcome) this.output.appendChild(welcome);
     }
   }
 
@@ -184,47 +177,30 @@
     const output = document.getElementById('chat-output');
     const suggestionBtns = document.querySelectorAll('.suggestion-btn');
     const btnReset = document.getElementById('btn-reset');
-    const btnDisable = document.getElementById('btn-disable');
-
-    let chatHistory = [];
-
     const chatWidget = document.getElementById('chat-widget');
+
     if (!form || !input || !output || !chatWidget) return;
 
-    const chatUI = new ChatUI([output], chatWidget);
+    let chatHistory = [];
+    const chatUI = new ChatUI(output, chatWidget);
 
-    const handleSuggestion = (btn) => {
+    // Handle Suggestions
+    suggestionBtns.forEach(btn => {
       btn.addEventListener('click', () => {
-        input.value = btn.textContent || '';
-        input.focus();
+        const text = btn.textContent.trim();
+        input.value = text;
+        handleSubmit(new Event('submit'));
       });
-    };
-    suggestionBtns.forEach(handleSuggestion);
+    });
 
+    // Handle Reset
     if (btnReset) {
       btnReset.addEventListener('click', () => {
         chatUI.clear();
         input.value = '';
         input.disabled = false;
-        input.placeholder = "e.g., Does Tim know React?";
-        input.classList.remove('bg-gray-100', 'cursor-not-allowed');
         chatHistory = [];
         input.focus();
-      });
-    }
-
-    if (btnDisable) {
-      btnDisable.addEventListener('click', () => {
-        const isDisabled = !input.disabled;
-        input.disabled = isDisabled;
-        if (isDisabled) {
-          input.placeholder = "Input disabled...";
-          input.classList.add('bg-gray-100', 'cursor-not-allowed');
-        } else {
-          input.placeholder = "e.g., Does Tim know React?";
-          input.classList.remove('bg-gray-100', 'cursor-not-allowed');
-          input.focus();
-        }
       });
     }
 
@@ -234,15 +210,15 @@
       if (!message) return;
 
       if (message.split(/\s+/).length > 50) {
-        chatUI.addMessage('System', 'Question is too long. Please limit to 50 words.', 'text-red-600 font-bold');
-        input.value = '';
+        alert('Question is too long. Please limit to 50 words.');
         return;
       }
 
       input.value = '';
       input.disabled = true;
 
-      chatUI.addMessage('User', message, 'text-pblue font-bold');
+      // Add User Message
+      chatUI.addMessage('User', message);
       chatUI.showTyping();
 
       chatHistory.push({ role: 'user', content: message });
@@ -261,12 +237,12 @@
           throw new Error(data.error || res.statusText);
         }
 
-        const containers = chatUI.createAIResponseContainer();
-
+        // Create AI Response Container
+        const contentDiv = chatUI.addMessage('AI', '', true);
+        
         const reader = res.body.getReader();
         const decoder = new TextDecoder();
         let fullText = '';
-        let isCached = false;
 
         while (true) {
           const { done, value } = await reader.read();
@@ -282,11 +258,10 @@
 
               try {
                 const parsed = JSON.parse(data);
-                if (parsed.cached === true) isCached = true;
-                if (parsed.error) throw new Error(parsed.error);
                 if (parsed.chunk) {
                   fullText += parsed.chunk;
-                  chatUI.updateStream(containers, fullText, isCached);
+                  contentDiv.innerHTML = marked.parse(fullText);
+                  chatUI.scrollToBottom();
                 }
               } catch (e) {
                 console.error('Error parsing stream:', e);
@@ -298,8 +273,7 @@
         chatHistory.push({ role: 'assistant', content: fullText });
       } catch (err) {
         chatUI.hideTyping();
-        chatHistory.pop();
-        chatUI.addMessage('System', `Error: ${err.message}`, 'text-red-600 font-bold');
+        chatUI.addMessage('AI', `Sorry, I encountered an error: ${err.message}`);
       } finally {
         input.disabled = false;
         input.focus();
@@ -313,19 +287,16 @@
 </script>
 
 <style is:global>
-  /* Hide scrollbar */
-  .no-scrollbar::-webkit-scrollbar { display: none; }
-  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
   /* Markdown Styles */
   .markdown-content p { margin-bottom: 0.5rem; }
   .markdown-content p:last-child { margin-bottom: 0; }
   .markdown-content ul { list-style-type: disc; padding-left: 1.2rem; margin-bottom: 0.5rem; }
   .markdown-content ol { list-style-type: decimal; padding-left: 1.2rem; margin-bottom: 0.5rem; }
   .markdown-content li { margin-bottom: 0.2rem; }
-  .markdown-content strong { font-weight: bold; }
+  .markdown-content strong { font-weight: 700; color: #4E6273; }
   .markdown-content em { font-style: italic; }
-  .markdown-content code { background-color: #f3f4f6; padding: 0.1rem 0.3rem; border-radius: 0.2rem; font-family: monospace; font-size: 0.9em; }
+  .markdown-content code { background-color: #f3f4f6; padding: 0.1rem 0.3rem; border-radius: 0.2rem; font-family: monospace; font-size: 0.9em; color: #d63384; }
+  .markdown-content pre { background-color: #1e1e1e; color: #f8f8f2; padding: 1rem; border-radius: 0.5rem; overflow-x: auto; margin-bottom: 0.5rem; }
 
   /* Typing Animation */
   .typing-dot {
@@ -349,19 +320,7 @@
   }
   
   @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(5px); }
+    from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
-  }
-
-  /* Empty State Styling */
-  #chat-widget.chat-empty #chat-input {
-    padding-top: 1rem;
-    padding-bottom: 1rem;
-    font-size: 1.125rem; /* text-lg */
-  }
-  #chat-widget.chat-empty #chat-form button {
-    padding-top: 1rem;
-    padding-bottom: 1rem;
-    font-size: 1.125rem;
   }
 </style>
