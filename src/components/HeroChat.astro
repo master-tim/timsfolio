@@ -200,8 +200,55 @@
 
     if (!form || !input || !output || !chatWidget) return;
 
+    const STORAGE_KEY = 'portfolio-chat-history';
     let chatHistory = [];
     const chatUI = new ChatUI(output, chatWidget);
+
+    // Load chat history from session storage
+    function loadChatHistory() {
+      try {
+        const saved = sessionStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          chatHistory = parsed;
+          
+          // Restore messages to UI
+          parsed.forEach(msg => {
+            if (msg.role === 'user') {
+              chatUI.addMessage('User', msg.content);
+            } else if (msg.role === 'assistant') {
+              chatUI.addMessage('AI', msg.content, true);
+            }
+          });
+          
+          console.log('Loaded chat history:', chatHistory.length, 'messages');
+        }
+      } catch (err) {
+        console.error('Error loading chat history:', err);
+      }
+    }
+
+    // Save chat history to session storage
+    function saveChatHistory() {
+      try {
+        sessionStorage.setItem(STORAGE_KEY, JSON.stringify(chatHistory));
+      } catch (err) {
+        console.error('Error saving chat history:', err);
+      }
+    }
+
+    // Clear chat history from session storage
+    function clearChatHistory() {
+      try {
+        sessionStorage.removeItem(STORAGE_KEY);
+        chatHistory = [];
+      } catch (err) {
+        console.error('Error clearing chat history:', err);
+      }
+    }
+
+    // Load existing chat on init
+    loadChatHistory();
 
     // Handle Suggestions
     suggestionBtns.forEach(btn => {
@@ -218,7 +265,7 @@
         chatUI.clear();
         input.value = '';
         input.disabled = false;
-        chatHistory = [];
+        clearChatHistory();
         input.focus();
       });
     }
@@ -241,6 +288,7 @@
       chatUI.showTyping();
 
       chatHistory.push({ role: 'user', content: message });
+      saveChatHistory();
 
       try {
         const res = await fetch('/api/stream', {
@@ -280,8 +328,6 @@
                 if (parsed.chunk) {
                   fullText += parsed.chunk;
                   const parsedHTML = marked.parse(fullText);
-                  console.log('Raw text:', fullText.substring(fullText.length - 100)); // Last 100 chars
-                  console.log('Parsed HTML:', parsedHTML.substring(parsedHTML.length - 200)); // Last 200 chars
                   contentDiv.innerHTML = parsedHTML;
                   chatUI.scrollToBottom();
                 }
@@ -293,6 +339,7 @@
         }
 
         chatHistory.push({ role: 'assistant', content: fullText });
+        saveChatHistory();
       } catch (err) {
         chatUI.hideTyping();
         chatUI.addMessage('AI', `Sorry, I encountered an error: ${err.message}`);
