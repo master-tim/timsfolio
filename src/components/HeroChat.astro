@@ -2,37 +2,38 @@
 ---
 
 <!-- Regular Chat Widget -->
-<div class="relative w-full mx-auto mt-8 md:mt-0 reveal-on-scroll group">
+<div class="relative w-full mx-auto max-w-5xl mt-6 md:mt-2 reveal-on-scroll group">
+  <div class="text-center mb-3 font-mono text-xs tracking-[0.2em] uppercase text-pblack/70">Chat with my AI portfolio</div>
   <!-- Chat Container -->
-  <div id="chat-widget" class="bg-white border-3 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-6 rounded-xl relative z-10 transition-all duration-300 hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1">
+  <div id="chat-widget" class="bg-white border-3 border-black shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] p-6 rounded-2xl relative z-10 transition-all duration-300 hover:shadow-[14px_14px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1.5">
     <!-- Header -->
-    <div class="flex items-center gap-3 mb-4 border-b-2 border-black pb-2">
+    <div class="flex items-center gap-3 mb-4 border-b-2 border-black pb-3">
       <button id="btn-reset" class="w-3 h-3 rounded-full bg-red-500 border border-black hover:scale-110 transition-transform cursor-pointer" aria-label="Reset Chat"></button>
       <button id="btn-disable" class="w-3 h-3 rounded-full bg-yellow-500 border border-black hover:scale-110 transition-transform cursor-pointer" aria-label="Disable Input"></button>
-      <button id="btn-expand" class="w-3 h-3 rounded-full bg-green-500 border border-black hover:scale-110 transition-transform cursor-pointer" aria-label="Fullscreen"></button>
-      <div class="ml-auto flex items-center gap-2">
-        <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-        <span class="font-mono text-xs font-bold text-pblack/70">AI_ONLINE</span>
+      <span class="w-3 h-3 rounded-full bg-green-500 border border-black" aria-hidden="true"></span>
+      <div class="flex-1 text-center text-sm md:text-base font-black text-pblack leading-tight">
+        Hey, I'm Temirlan — ask me anything about my AI + 3D web work
       </div>
-      <button id="fullscreen-btn" class="ml-2 px-3 py-1 bg-pblue text-white hover:bg-pblue/90 border-2 border-black rounded text-xs font-bold transition font-mono">
-        ▲ EXPAND
-      </button>
+      <div class="ml-auto flex items-center gap-2 font-mono text-xs">
+        <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+        <span class="font-bold text-pblack/70">AI_ONLINE</span>
+      </div>
     </div>
 
     <!-- Chat History / Output -->
-    <div id="chat-output" class="hidden min-h-[300px] max-h-[500px] overflow-y-auto mb-4 font-mono text-sm space-y-3 bg-gray-50 p-4 border-2 border-black rounded-lg shadow-inner">
+    <div id="chat-output" class="min-h-[280px] max-h-[520px] overflow-y-auto mb-4 font-mono text-sm space-y-3 bg-gray-50 p-4 border-2 border-black rounded-lg shadow-inner">
       <div class="text-pblack/70 hidden sm:block">
         > Ask me anything about Tim's experience, skills, or projects.
       </div>
     </div>
 
     <!-- Input Area -->
-    <form id="chat-form" class="flex flex-col sm:flex-row gap-2">
+    <form id="chat-form" class="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center justify-center max-w-2xl mx-auto">
       <input 
         type="text" 
         id="chat-input" 
         placeholder="e.g., Does Tim know React?" 
-        class="flex-1 bg-white border-2 border-black px-3 py-2 text-sm focus:outline-none focus:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all font-mono"
+        class="flex-1 bg-white border-2 border-black px-3 py-2 text-sm focus:outline-none focus:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all font-mono w-full"
         required
       />
       <button 
@@ -63,12 +64,12 @@
 
   class ChatUI {
     constructor(outputs) {
-      this.outputs = outputs; // Array of DOM elements (widget and fullscreen)
+      this.outputs = outputs;
       this.typingId = 'typing-indicator';
     }
 
     scrollToBottom() {
-      this.outputs.forEach(el => el.scrollTop = el.scrollHeight);
+      this.outputs.forEach(el => (el.scrollTop = el.scrollHeight));
     }
 
     addMessage(role, text, className, isMarkdown = false) {
@@ -76,16 +77,16 @@
         const div = document.createElement('div');
         div.className = 'break-words ' + className + ' message-entry';
         div.innerHTML = '<span class="opacity-50 text-xs uppercase mr-1">[' + role + ']</span> ';
-        
+
         const contentDiv = document.createElement('div');
         contentDiv.className = 'inline-block align-top markdown-content';
-        
+
         if (isMarkdown) {
           contentDiv.innerHTML = marked.parse(text);
         } else {
           contentDiv.textContent = text;
         }
-        
+
         div.appendChild(contentDiv);
         outputEl.appendChild(div);
       });
@@ -93,7 +94,6 @@
     }
 
     showTyping() {
-      // Remove existing if any (safety)
       this.hideTyping();
 
       this.outputs.forEach(outputEl => {
@@ -118,36 +118,33 @@
       });
     }
 
-    // Create a placeholder for the AI response that we will stream into
     createAIResponseContainer() {
       const containerIds = [];
       this.outputs.forEach(outputEl => {
         const div = document.createElement('div');
         div.className = 'break-words text-pblack message-entry';
         div.innerHTML = '<span class="opacity-50 text-xs uppercase mr-1">[AI]</span> ';
-        
+
         const contentDiv = document.createElement('div');
         contentDiv.className = 'inline-block align-top markdown-content';
         div.appendChild(contentDiv);
         outputEl.appendChild(div);
-        
-        // Store reference to the content div for updating
+
         containerIds.push(contentDiv);
       });
       this.scrollToBottom();
-      return containerIds; // Return array of content divs to update
+      return containerIds;
     }
 
     updateStream(containers, fullText, isCached = false) {
       const html = marked.parse(fullText);
       containers.forEach(container => {
         container.innerHTML = html;
-        // Update cache indicator if needed
         if (isCached) {
           const parent = container.parentElement;
           const label = parent.querySelector('span');
           if (label && !label.innerHTML.includes('⚡')) {
-             label.innerHTML = '[AI] <span class="text-pgreen" title="Response served from cache">⚡</span> ';
+            label.innerHTML = '[AI] <span class="text-pgreen" title="Response served from cache">⚡</span> ';
           }
         }
       });
@@ -165,250 +162,81 @@
     }
 
     syncFrom(sourceOutput) {
-       // Copy innerHTML from source to all others
-       const html = sourceOutput.innerHTML;
-       this.outputs.forEach(out => {
-         if (out !== sourceOutput) {
-           out.innerHTML = html;
-         }
-       });
+      const html = sourceOutput.innerHTML;
+      this.outputs.forEach(out => {
+        if (out !== sourceOutput) {
+          out.innerHTML = html;
+        }
+      });
     }
   }
 
   function initChat() {
-    // Elements
-    const fullscreenBtn = document.getElementById('fullscreen-btn');
     const form = document.getElementById('chat-form');
     const input = document.getElementById('chat-input');
     const output = document.getElementById('chat-output');
     const suggestionBtns = document.querySelectorAll('.suggestion-btn');
-    
-    // Chat History State
+    const btnReset = document.getElementById('btn-reset');
+    const btnDisable = document.getElementById('btn-disable');
+
     let chatHistory = [];
 
     if (!form || !input || !output) return;
 
-    // Create fullscreen modal and append to body
-    const modalBackdrop = document.createElement('div');
-    modalBackdrop.id = 'chat-modal-backdrop';
-    modalBackdrop.style.cssText = 'position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 9999; display: none; align-items: center; justify-content: center; padding: 1rem;';
-    
-    modalBackdrop.innerHTML = `
-      <div id="modal-container" style="position: relative; width: 100%; max-width: 56rem; height: 80vh; transform: scale(0.8); opacity: 0; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
-        <div class="bg-white border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-6 rounded-lg h-full flex flex-col">
-          <!-- Header -->
-          <div class="flex items-center gap-3 mb-4 border-b-2 border-black pb-2">
-            <button class="btn-minimize w-3 h-3 rounded-full bg-red-500 border border-black hover:scale-110 transition-transform cursor-pointer"></button>
-            <button class="btn-minimize w-3 h-3 rounded-full bg-yellow-500 border border-black hover:scale-110 transition-transform cursor-pointer"></button>
-            <button class="btn-minimize w-3 h-3 rounded-full bg-green-500 border border-black hover:scale-110 transition-transform cursor-pointer"></button>
-            <span class="ml-auto font-mono text-xs font-bold text-pgreen">AI_ASSISTANT.exe</span>
-            <button id="minimize-btn" class="ml-2 px-3 py-1 bg-gray-200 hover:bg-gray-300 border-2 border-black rounded text-xs font-bold transition">
-              ▼ Minimize
-            </button>
-          </div>
+    const chatUI = new ChatUI([output]);
 
-          <!-- Chat History / Output (Fullscreen) -->
-          <div id="chat-output-fullscreen" class="flex-1 overflow-y-auto mb-4 font-mono text-sm space-y-3 bg-gray-50 p-4 border-2 border-black rounded">
-            <div class="text-pblack/70">
-              > Ask me anything about Tim's experience, skills, or projects.
-            </div>
-          </div>
-
-          <!-- Input Area -->
-          <form id="chat-form-fullscreen" class="flex gap-2">
-            <input 
-              type="text" 
-              id="chat-input-fullscreen" 
-              placeholder="e.g., Does Tim know React?" 
-              class="flex-1 bg-white border-2 border-black px-3 py-2 text-sm focus:outline-none focus:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all font-mono"
-              required
-            />
-            <button 
-              type="submit" 
-              class="bg-pblue text-white border-2 border-black px-4 py-2 text-sm font-bold hover:translate-y-[-2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-y-[0px] active:shadow-none transition-all font-mono"
-            >
-              ASK
-            </button>
-          </form>
-
-          <!-- Suggestions -->
-          <div class="flex gap-2 mt-3 overflow-x-auto pb-1 no-scrollbar">
-            <button type="button" class="suggestion-btn-fullscreen text-xs bg-gray-100 px-2 py-1 rounded border border-black hover:bg-gray-200 transition whitespace-nowrap font-mono">Tell me about Temirlan's skills</button>
-            <button type="button" class="suggestion-btn-fullscreen text-xs bg-gray-100 px-2 py-1 rounded border border-black hover:bg-gray-200 transition whitespace-nowrap font-mono">What is his experience with AI?</button>
-          </div>
-          
-          <div class="mt-2 text-[10px] text-gray-400 text-center font-mono">
-            * AI can make mistakes. Please verify important info.
-          </div>
-        </div>
-      </div>
-    `;
-    
-    document.body.appendChild(modalBackdrop);
-
-    // Get fullscreen elements
-    const minimizeBtn = document.getElementById('minimize-btn');
-    const formFullscreen = document.getElementById('chat-form-fullscreen');
-    const inputFullscreen = document.getElementById('chat-input-fullscreen');
-    const outputFullscreen = document.getElementById('chat-output-fullscreen');
-    const suggestionBtnsFullscreen = document.querySelectorAll('.suggestion-btn-fullscreen');
-
-    // Initialize Chat UI Manager
-    const chatUI = new ChatUI([output, outputFullscreen]);
-
-    // Animation Elements
-    const modalContainer = document.getElementById('modal-container');
-    const chatContainer = output.closest('.bg-white');
-    const chatWidget = document.getElementById('chat-widget');
-
-    // --- Event Handlers ---
-
-    // Fullscreen Toggle
-    fullscreenBtn.addEventListener('click', function() {
-      const rect = chatContainer.getBoundingClientRect();
-      const windowWidth = window.innerWidth;
-      const windowHeight = window.innerHeight;
-      
-      const scaleX = rect.width / (Math.min(56 * 16, windowWidth - 32));
-      const scaleY = rect.height / (windowHeight * 0.8);
-      
-      const centerX = windowWidth / 2;
-      const centerY = windowHeight / 2;
-      const boxCenterX = rect.left + rect.width / 2;
-      const boxCenterY = rect.top + rect.height / 2;
-      const translateX = boxCenterX - centerX;
-      const translateY = boxCenterY - centerY;
-      
-      modalContainer.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scaleX}, ${scaleY})`;
-      modalContainer.style.opacity = '1';
-      chatWidget.style.opacity = '0';
-      modalBackdrop.style.display = 'flex';
-      document.body.style.overflow = 'hidden';
-      
-      // Sync content just in case, though ChatUI keeps them synced
-      chatUI.syncFrom(output);
-
-      setTimeout(() => {
-        modalContainer.style.transform = 'translate(0, 0) scale(1, 1)';
-      }, 10);
-    });
-
-    // Minimize
-    minimizeBtn.addEventListener('click', function() {
-      const rect = chatContainer.getBoundingClientRect();
-      const windowWidth = window.innerWidth;
-      const windowHeight = window.innerHeight;
-      
-      const scaleX = rect.width / (Math.min(56 * 16, windowWidth - 32));
-      const scaleY = rect.height / (windowHeight * 0.8);
-      
-      const centerX = windowWidth / 2;
-      const centerY = windowHeight / 2;
-      const boxCenterX = rect.left + rect.width / 2;
-      const boxCenterY = rect.top + rect.height / 2;
-      const translateX = boxCenterX - centerX;
-      const translateY = boxCenterY - centerY;
-      
-      modalContainer.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scaleX}, ${scaleY})`;
-      
-      setTimeout(() => {
-        modalBackdrop.style.display = 'none';
-        document.body.style.overflow = '';
-        modalContainer.style.transform = 'translate(0, 0) scale(1, 1)';
-        chatWidget.style.opacity = '1';
-      }, 300);
-    });
-
-    modalBackdrop.addEventListener('click', (e) => {
-      if (e.target === modalBackdrop) minimizeBtn.click();
-    });
-
-    // Suggestions
-    const handleSuggestion = (btn, targetInput) => {
+    const handleSuggestion = (btn) => {
       btn.addEventListener('click', () => {
-        targetInput.value = btn.textContent || '';
-        targetInput.focus();
+        input.value = btn.textContent || '';
+        input.focus();
       });
     };
-    suggestionBtns.forEach(btn => handleSuggestion(btn, input));
-    suggestionBtnsFullscreen.forEach(btn => handleSuggestion(btn, inputFullscreen));
+    suggestionBtns.forEach(handleSuggestion);
 
-    // Traffic Lights
-    const btnReset = document.getElementById('btn-reset');
-    const btnDisable = document.getElementById('btn-disable');
-    const btnExpand = document.getElementById('btn-expand');
-
-    if (btnExpand) btnExpand.addEventListener('click', () => fullscreenBtn.click());
-    
     if (btnReset) {
       btnReset.addEventListener('click', () => {
         chatUI.clear();
         input.value = '';
-        inputFullscreen.value = '';
         input.disabled = false;
-        inputFullscreen.disabled = false;
+        input.placeholder = "e.g., Does Tim know React?";
+        input.classList.remove('bg-gray-100', 'cursor-not-allowed');
         chatHistory = [];
+        input.focus();
       });
     }
 
     if (btnDisable) {
       btnDisable.addEventListener('click', () => {
         const isDisabled = !input.disabled;
-        [input, inputFullscreen].forEach(el => {
-          el.disabled = isDisabled;
-          if (isDisabled) {
-            el.placeholder = "Input disabled...";
-            el.classList.add('bg-gray-100', 'cursor-not-allowed');
-          } else {
-            el.placeholder = "e.g., Does Tim know React?";
-            el.classList.remove('bg-gray-100', 'cursor-not-allowed');
-          }
-        });
-        if (!isDisabled) input.focus();
+        input.disabled = isDisabled;
+        if (isDisabled) {
+          input.placeholder = "Input disabled...";
+          input.classList.add('bg-gray-100', 'cursor-not-allowed');
+        } else {
+          input.placeholder = "e.g., Does Tim know React?";
+          input.classList.remove('bg-gray-100', 'cursor-not-allowed');
+          input.focus();
+        }
       });
     }
 
-    modalBackdrop.querySelectorAll('.btn-minimize').forEach(btn => {
-      btn.addEventListener('click', () => minimizeBtn.click());
-    });
-
-    // Chat Logic
-    async function handleSubmit(e, sourceInput) {
+    async function handleSubmit(e) {
       e.preventDefault();
-      const message = sourceInput.value.trim();
+      const message = input.value.trim();
       if (!message) return;
 
-      // Validation
       if (message.split(/\s+/).length > 50) {
         chatUI.addMessage('System', 'Question is too long. Please limit to 50 words.', 'text-red-600 font-bold');
-        sourceInput.value = '';
+        input.value = '';
         return;
       }
 
-      // Clear inputs
       input.value = '';
-      inputFullscreen.value = '';
       input.disabled = true;
-      inputFullscreen.disabled = true;
 
-      // Auto-expand if first message
-      const isFirstMessage = output.classList.contains('hidden');
-      if (isFirstMessage) {
-        output.classList.remove('hidden');
-        if (sourceInput === input) {
-          fullscreenBtn.click();
-          // Small delay to allow animation to start before adding content
-          await new Promise(r => setTimeout(r, 300));
-        }
-      }
-
-      // Add User Message
       chatUI.addMessage('User', message, 'text-pblue font-bold');
-      
-      // Show Typing
       chatUI.showTyping();
 
-      // Fetch Response
       chatHistory.push({ role: 'user', content: message });
 
       try {
@@ -425,9 +253,8 @@
           throw new Error(data.error || res.statusText);
         }
 
-        // Prepare AI Response Containers
         const containers = chatUI.createAIResponseContainer();
-        
+
         const reader = res.body.getReader();
         const decoder = new TextDecoder();
         let fullText = '';
@@ -436,15 +263,15 @@
         while (true) {
           const { done, value } = await reader.read();
           if (done) break;
-          
+
           const chunk = decoder.decode(value);
           const lines = chunk.split('\n');
-          
+
           for (const line of lines) {
             if (line.startsWith('data: ')) {
               const data = line.slice(6);
               if (data === '[DONE]') break;
-              
+
               try {
                 const parsed = JSON.parse(data);
                 if (parsed.cached === true) isCached = true;
@@ -459,27 +286,19 @@
             }
           }
         }
-        
-        chatHistory.push({ role: 'assistant', content: fullText });
 
+        chatHistory.push({ role: 'assistant', content: fullText });
       } catch (err) {
         chatUI.hideTyping();
-        chatHistory.pop(); // Remove failed user message
+        chatHistory.pop();
         chatUI.addMessage('System', `Error: ${err.message}`, 'text-red-600 font-bold');
       } finally {
         input.disabled = false;
-        inputFullscreen.disabled = false;
-        // Focus the input of the currently active view
-        if (modalBackdrop.style.display === 'flex') {
-          inputFullscreen.focus();
-        } else {
-          input.focus();
-        }
+        input.focus();
       }
     }
 
-    form.addEventListener('submit', (e) => handleSubmit(e, input));
-    formFullscreen.addEventListener('submit', (e) => handleSubmit(e, inputFullscreen));
+    form.addEventListener('submit', handleSubmit);
   }
 
   document.addEventListener('astro:page-load', initChat);
