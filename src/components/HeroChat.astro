@@ -5,7 +5,7 @@
 <div class="relative w-full mx-auto max-w-5xl mt-6 md:mt-2 reveal-on-scroll group">
   <div class="text-center mb-3 font-mono text-xs tracking-[0.2em] uppercase text-pblack/70">Chat with my AI portfolio</div>
   <!-- Chat Container -->
-  <div id="chat-widget" class="bg-white border-3 border-black shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] p-6 rounded-2xl relative z-10 transition-all duration-300 hover:shadow-[14px_14px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1.5">
+  <div id="chat-widget" class="chat-empty bg-white border-3 border-black shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] p-6 rounded-2xl relative z-10 transition-all duration-300 hover:shadow-[14px_14px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1.5">
     <!-- Header -->
     <div class="flex items-center gap-3 mb-4 border-b-2 border-black pb-3">
       <button id="btn-reset" class="w-3 h-3 rounded-full bg-red-500 border border-black hover:scale-110 transition-transform cursor-pointer" aria-label="Reset Chat"></button>
@@ -21,7 +21,7 @@
     </div>
 
     <!-- Chat History / Output -->
-    <div id="chat-output" class="min-h-[280px] max-h-[520px] overflow-y-auto mb-4 font-mono text-sm space-y-3 bg-gray-50 p-4 border-2 border-black rounded-lg shadow-inner">
+    <div id="chat-output" class="hidden min-h-[280px] max-h-[520px] overflow-y-auto mb-4 font-mono text-sm space-y-3 bg-gray-50 p-4 border-2 border-black rounded-lg shadow-inner">
       <div class="text-pblack/70 hidden sm:block">
         > Ask me anything about Tim's experience, skills, or projects.
       </div>
@@ -63,8 +63,9 @@
   import { marked } from 'marked';
 
   class ChatUI {
-    constructor(outputs) {
+    constructor(outputs, widget) {
       this.outputs = outputs;
+      this.widget = widget;
       this.typingId = 'typing-indicator';
     }
 
@@ -73,7 +74,9 @@
     }
 
     addMessage(role, text, className, isMarkdown = false) {
+      if (this.widget) this.widget.classList.remove('chat-empty');
       this.outputs.forEach(outputEl => {
+        outputEl.classList.remove('hidden');
         const div = document.createElement('div');
         div.className = 'break-words ' + className + ' message-entry';
         div.innerHTML = '<span class="opacity-50 text-xs uppercase mr-1">[' + role + ']</span> ';
@@ -95,8 +98,10 @@
 
     showTyping() {
       this.hideTyping();
+      if (this.widget) this.widget.classList.remove('chat-empty');
 
       this.outputs.forEach(outputEl => {
+        outputEl.classList.remove('hidden');
         const div = document.createElement('div');
         div.id = this.typingId;
         div.className = 'flex items-center gap-1 py-2 text-gray-400';
@@ -152,7 +157,9 @@
     }
 
     clear() {
+      if (this.widget) this.widget.classList.add('chat-empty');
       this.outputs.forEach(outputEl => {
+        outputEl.classList.add('hidden');
         outputEl.innerHTML = `
           <div class="text-pblack/70 hidden sm:block">
             > Ask me anything about Tim's experience, skills, or projects.
@@ -181,9 +188,10 @@
 
     let chatHistory = [];
 
-    if (!form || !input || !output) return;
+    const chatWidget = document.getElementById('chat-widget');
+    if (!form || !input || !output || !chatWidget) return;
 
-    const chatUI = new ChatUI([output]);
+    const chatUI = new ChatUI([output], chatWidget);
 
     const handleSuggestion = (btn) => {
       btn.addEventListener('click', () => {
@@ -343,5 +351,17 @@
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(5px); }
     to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Empty State Styling */
+  #chat-widget.chat-empty #chat-input {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    font-size: 1.125rem; /* text-lg */
+  }
+  #chat-widget.chat-empty #chat-form button {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    font-size: 1.125rem;
   }
 </style>
