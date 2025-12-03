@@ -6,6 +6,8 @@ const posts = (await getCollection("blog")).sort(
 import FormattedDate from "@/components/FormattedDate.astro";
 import { Icon } from "astro-icon/components";
 
+const { disableReveal = false } = Astro.props;
+
 const bgClasses = [
   "bg-pgreen rounded-full",
   "bg-pblue rounded-2xl",
@@ -18,7 +20,7 @@ const getRandomClass = () => {
 };
 ---
 
-<section class="flex flex-col text-center gap-4 reveal-on-scroll opacity-0" style="transform: translateY(30px);">
+<section class={`flex flex-col text-center gap-4 ${disableReveal ? "" : "reveal-on-scroll opacity-0"}`} style={disableReveal ? "" : "transform: translateY(30px);"}>
   <p class="text-pblack">My Portfolio</p>
   <h2 class="text-3xl md:text-4xl font-bold">Recent Projects</h2>
   <ul class="flex flex-wrap justify-center gap-8 py-20">
@@ -27,8 +29,8 @@ const getRandomClass = () => {
         const randomClass = getRandomClass();
         return (
           <li 
-            class="w-72 text-left rounded-3xl border-1 border-black shadow-card group hover:shadow-hover transition px-4 py-6 flex flex-col gap-6 reveal-on-scroll opacity-0 hover:-translate-y-2 hover:rotate-1"
-            style={`transform: translateY(30px); animation-delay: ${index * 0.1}s;`}
+            class={`w-72 text-left rounded-3xl border-1 border-black shadow-card group hover:shadow-hover transition px-4 py-6 flex flex-col gap-6 hover:-translate-y-2 hover:rotate-1 ${disableReveal ? "" : "reveal-on-scroll opacity-0"}`}
+            style={disableReveal ? "" : `transform: translateY(30px); animation-delay: ${index * 0.1}s;`}
           >
             <a href={`/blog/${post.id}/`} class="flex flex-col gap-4">
               <div
@@ -57,4 +59,3 @@ const getRandomClass = () => {
     overflow: hidden;
   }
 </style>
-
