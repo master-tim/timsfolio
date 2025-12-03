@@ -102,6 +102,24 @@ Rules:
 2. Be conversational, professional, and helpful.
 3. Keep your response concise (2-3 sentences max) for general questions. However, if the user asks for a list (e.g., 'list all projects', 'show me publications'), provide a comprehensive list using bullet points.
 4. Be direct and to the point.
+5. **CRITICAL - Navigation Links**: After answering, you MUST include relevant navigation links using EXACT markdown format. Add a blank line, then "**Explore more:**" followed by the links:
+   
+   For skills/experience/education questions, include:
+   📄 [View Full CV/About Me](https://mastertim.xyz/about)
+   
+   For projects/work questions, include:
+   🚀 [Explore All Projects](https://mastertim.xyz/blog)
+   
+   For publications/research questions, include:
+   📚 [Read Publications](https://mastertim.xyz/blog)
+   
+   Example response format:
+   "Tim specializes in Full-stack AI Engineering and Frontend 3D Development.
+   
+   **Explore more:**
+   📄 [View Full CV/About Me](https://mastertim.xyz/about)"
+   
+   IMPORTANT: Use the EXACT markdown link syntax shown above: [Link Text](URL)
 
 Please answer the user's question following these rules.
       `.trim();
@@ -215,6 +233,24 @@ Rules:
 3. Keep your response concise (2-3 sentences max) for general questions. However, if the user asks for a list (e.g., 'list all projects', 'show me publications'), provide a comprehensive list using bullet points.
 4. Be direct and to the point.
 5. Use the Chat History to maintain context in the conversation.
+6. **CRITICAL - Navigation Links**: After answering, you MUST include relevant navigation links using EXACT markdown format. Add a blank line, then "**Explore more:**" followed by the links:
+   
+   For skills/experience/education questions, include:
+   📄 [View Full CV/About Me](https://mastertim.xyz/about)
+   
+   For projects/work questions, include:
+   🚀 [Explore All Projects](https://mastertim.xyz/blog)
+   
+   For publications/research questions, include:
+   📚 [Read Publications](https://mastertim.xyz/blog)
+   
+   Example response format:
+   "Tim specializes in Full-stack AI Engineering and Frontend 3D Development.
+   
+   **Explore more:**
+   📄 [View Full CV/About Me](https://mastertim.xyz/about)"
+   
+   IMPORTANT: Use the EXACT markdown link syntax shown above: [Link Text](URL)
 
 Please answer the user's question following these rules.
       `.trim();
