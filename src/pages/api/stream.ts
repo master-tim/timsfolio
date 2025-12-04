@@ -65,10 +65,15 @@ export const POST: APIRoute = async ({ request }) => {
           
           let fullResponse = '';
           
-          for await (const chunk of responseStream) {
-            fullResponse += chunk;
-            const data = `data: ${JSON.stringify({ chunk })}\n\n`;
-            controller.enqueue(new TextEncoder().encode(data));
+          for await (const update of responseStream) {
+            if (update.type === 'text') {
+              fullResponse += update.content;
+              const data = `data: ${JSON.stringify({ chunk: update.content })}\n\n`;
+              controller.enqueue(new TextEncoder().encode(data));
+            } else if (update.type === 'status') {
+              const data = `data: ${JSON.stringify({ status: update.content })}\n\n`;
+              controller.enqueue(new TextEncoder().encode(data));
+            }
           }
           
           // Cache the complete response

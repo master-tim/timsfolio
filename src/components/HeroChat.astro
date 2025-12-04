@@ -153,28 +153,41 @@
       return contentDiv; // Return content div for streaming updates
     }
 
-    showTyping() {
-      this.hideTyping();
+    setStatus(text) {
+      let div = this.output.querySelector('#' + this.typingId);
       
-      const div = document.createElement('div');
-      div.id = this.typingId;
-      div.className = 'flex gap-4 message-entry';
-      
-      div.innerHTML = `
-        <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-pblack flex items-center justify-center text-white shrink-0 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-          <span class="font-kablamo text-xs md:text-sm">AI</span>
-        </div>
-        <div class="space-y-2 max-w-[85%]">
-          <div class="bg-white border-2 border-black rounded-xl rounded-tl-none p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] flex items-center gap-1">
-            <div class="typing-dot bg-pblack"></div>
-            <div class="typing-dot bg-pblack"></div>
-            <div class="typing-dot bg-pblack"></div>
+      if (!div) {
+        div = document.createElement('div');
+        div.id = this.typingId;
+        div.className = 'flex gap-4 message-entry';
+        
+        div.innerHTML = `
+          <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-pblack flex items-center justify-center text-white shrink-0 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+            <span class="font-kablamo text-xs md:text-sm">AI</span>
           </div>
-        </div>
-      `;
+          <div class="space-y-2 max-w-[85%]">
+            <div class="bg-white border-2 border-black rounded-xl rounded-tl-none p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] flex items-center gap-3 status-container">
+            </div>
+          </div>
+        `;
+        
+        this.output.appendChild(div);
+        this.scrollToBottom();
+      }
       
-      this.output.appendChild(div);
-      this.scrollToBottom();
+      const container = div.querySelector('.status-container');
+      if (text) {
+        container.innerHTML = `
+          <div class="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+          <span class="text-sm font-bold text-pblack/70 animate-pulse">${text}</span>
+        `;
+      } else {
+        container.innerHTML = `
+           <div class="typing-dot bg-pblack"></div>
+           <div class="typing-dot bg-pblack"></div>
+           <div class="typing-dot bg-pblack"></div>
+        `;
+      }
     }
 
     hideTyping() {
@@ -285,7 +298,7 @@
 
       // Add User Message
       chatUI.addMessage('User', message);
-      chatUI.showTyping();
+      chatUI.setStatus('Thinking...');
 
       chatHistory.push({ role: 'user', content: message });
       saveChatHistory();
@@ -297,19 +310,16 @@
           body: JSON.stringify({ query: message, history: chatHistory }),
         });
 
-        chatUI.hideTyping();
-
         if (!res.ok) {
+          chatUI.hideTyping();
           const data = await res.json();
           throw new Error(data.error || res.statusText);
         }
 
-        // Create AI Response Container
-        const contentDiv = chatUI.addMessage('AI', '', true);
-        
         const reader = res.body.getReader();
         const decoder = new TextDecoder();
         let fullText = '';
+        let contentDiv = null;
 
         while (true) {
           const { done, value } = await reader.read();
@@ -325,7 +335,17 @@
 
               try {
                 const parsed = JSON.parse(data);
+                
+                if (parsed.status) {
+                  chatUI.setStatus(parsed.status);
+                }
+                
                 if (parsed.chunk) {
+                  if (!contentDiv) {
+                    chatUI.hideTyping();
+                    contentDiv = chatUI.addMessage('AI', '', true);
+                  }
+                  
                   fullText += parsed.chunk;
                   const parsedHTML = marked.parse(fullText);
                   contentDiv.innerHTML = parsedHTML;

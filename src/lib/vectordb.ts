@@ -195,7 +195,7 @@ export async function* streamQueryVectorDB(
     includeContext?: boolean;
     history?: Array<{ role: 'user' | 'assistant'; content: string }>;
   } = {}
-): AsyncGenerator<string, void, unknown> {
+): AsyncGenerator<{ type: 'text' | 'status'; content: string }, void, unknown> {
   const {
     topK = 3,
     temperature = 0.7,
@@ -203,31 +203,53 @@ export async function* streamQueryVectorDB(
   } = options;
   
   try {
+    yield { type: 'status', content: 'Initializing AI...' };
     initializeSettings(temperature);
     const index = await getVectorIndex();
     
-    const queryEngine = index.asQueryEngine({
+    // 1. Retrieve relevant documents
+    yield { type: 'status', content: 'Searching knowledge base...' };
+    const retriever = index.asRetriever({
       similarityTopK: topK,
     });
     
-    // Construct enhanced query with context
-    let enhancedQuery = query;
+    const nodes = await retriever.retrieve(query);
+    
+    if (nodes.length > 0) {
+      yield { type: 'status', content: `Found ${nodes.length} relevant documents` };
+    } else {
+      yield { type: 'status', content: 'No specific documents found, using general knowledge' };
+    }
+
+    // 2. Construct Prompt
+    yield { type: 'status', content: 'Thinking...' };
+    
+    let systemPrompt = `You are an AI assistant for Tim's portfolio website. Your ONLY purpose is to answer questions about Tim, his work, skills, experience, and projects.`;
+    
+    let userContent = query;
+
     if (includeContext) {
       const historyText = options.history 
         ? options.history.map(msg => `${msg.role === 'user' ? 'User' : 'AI'}: ${msg.content}`).join('\n')
         : '';
 
-      enhancedQuery = `
+      // Extract text from retrieved nodes
+      const retrievedContext = nodes.map((node, i) => {
+        const metadata = node.node.metadata || {};
+        return `[Document ${i+1} - ${metadata.title || 'Untitled'}]\n${(node.node as TextNode).text}`;
+      }).join('\n\n');
+
+      userContent = `
 Context about Tim:
 ${PORTFOLIO_CONTEXT}
+
+Retrieved Information from Knowledge Base:
+${retrievedContext}
 
 ${historyText ? `Chat History:\n${historyText}\n` : ''}
 User Question: ${query}
 
 System Instruction:
-You are an AI assistant for Tim's portfolio website. Your ONLY purpose is to answer questions about Tim, his work, skills, experience, and projects based on the provided context.
-
-Rules:
 1. If the user asks about anything unrelated to Tim (e.g., general knowledge, coding help not related to his projects, other people, politics, etc.), politely refuse and say you can only answer questions about Tim.
 2. Be conversational, professional, and helpful.
 3. Keep your response concise (2-3 sentences max) for general questions. However, if the user asks for a list (e.g., 'list all projects', 'show me publications'), provide a comprehensive list using bullet points.
@@ -256,13 +278,17 @@ Please answer the user's question following these rules.
       `.trim();
     }
     
-    const stream = await queryEngine.query({
-      query: enhancedQuery,
+    // 3. Generate Response
+    const stream = await Settings.llm.chat({
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userContent }
+      ],
       stream: true,
     });
     
     for await (const chunk of stream) {
-      yield chunk.toString();
+      yield { type: 'text', content: chunk.delta };
     }
   } catch (error) {
     console.error('Error streaming query:', error);
