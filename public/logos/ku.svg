@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 240">
+  <path d="M20 40 L100 20 L180 40 L180 120 C180 180 100 220 100 220 C100 220 20 180 20 120 Z" fill="#8A1538"/>
+  <path d="M30 48 L100 30 L170 48 L170 115 C170 165 100 205 100 205 C100 205 30 165 30 115 Z" fill="none" stroke="#FFFFFF" stroke-width="4"/>
+  <text x="100" y="145" font-family="Georgia, serif" font-weight="bold" font-size="70" fill="#FFFFFF" text-anchor="middle">KU</text>
+</svg>
