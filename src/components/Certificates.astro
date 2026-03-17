@@ -1,24 +1,34 @@
 ---
-// Certificates data extracted from LinkedIn
+import { Icon } from "astro-icon/components";
+
+// Certificates data from LinkedIn (https://linkedin.com/in/dzhoroev7)
 const certificates = [
   {
-    title: "Develop Generative AI Applications",
+    title: "Advanced RAG with Vector Databases and Retrievers",
     issuer: "IBM",
-    issueDate: "Nov 2025",
-    credentialId: "PQLF19WPG5DO",
-    credentialUrl: "https://www.coursera.org/account/accomplishments/records/PQLF19WPG5DO",
+    issueDate: "Dec 2025",
+    credentialId: "EYU7OGOWVZ07",
+    credentialUrl: "https://www.coursera.org/account/accomplishments/records/EYU7OGOWVZ07",
+    skills: ["RAG", "Vector Databases"]
+  },
+  {
+    title: "Vector Databases for RAG: An Introduction",
+    issuer: "IBM",
+    issueDate: "Dec 2025",
+    credentialId: "OT04JY8IYZIO",
+    credentialUrl: "https://www.coursera.org/account/accomplishments/records/OT04JY8IYZIO",
+    skills: ["Vector Databases", "RAG"]
+  },
+  {
+    title: "Foundation - Introduction to LangChain - Python",
+    issuer: "LangChain",
+    issueDate: "Dec 2025",
+    credentialId: "awuzylkkbx",
+    credentialUrl: "https://academy.langchain.com/certificates/awuzylkkbx",
     skills: ["LangChain", "Python"]
   },
   {
-    title: "Build RAG Applications",
-    issuer: "IBM",
-    issueDate: "Nov 2025",
-    credentialId: "XN68GFDRPNP9",
-    credentialUrl: "https://www.coursera.org/account/accomplishments/records/XN68GFDRPNP9",
-    skills: ["LangChain", "LlamaIndex"]
-  },
-  {
-    title: "Gen AI Agents",
+    title: "Gen AI Agents: Transform Your Organization",
     issuer: "Google Cloud",
     issueDate: "Nov 2025",
     credentialId: "669UKR72W9KR",
@@ -26,15 +36,31 @@ const certificates = [
     skills: ["AI Agents", "Vertex AI", "Gemini", "Prompt Engineering"]
   },
   {
-    title: "Advanced React",
-    issuer: "Meta",
-    issueDate: "Mar 2023",
-    credentialId: "W5MRPJBSJXDB",
-    credentialUrl: "https://coursera.org/verify/W5MRPJBSJXDB",
-    skills: ["React.js", "JavaScript", "CSS", "HTML"]
+    title: "Build RAG Applications: Get Started",
+    issuer: "IBM",
+    issueDate: "Nov 2025",
+    credentialId: "XN68GFDRPNP9",
+    credentialUrl: "https://www.coursera.org/account/accomplishments/records/XN68GFDRPNP9",
+    skills: ["LangChain"]
   },
   {
-    title: "UX/UI Design Principles",
+    title: "Develop Generative AI Applications: Get Started",
+    issuer: "IBM",
+    issueDate: "Nov 2025",
+    credentialId: "PQLF19WPG5DO",
+    credentialUrl: "https://www.coursera.org/account/accomplishments/records/PQLF19WPG5DO",
+    skills: ["LangChain", "Python"]
+  },
+  {
+    title: "Three.js Journey — Certificate of Completion",
+    issuer: "Three.js Journey",
+    issueDate: "Jan 2023",
+    credentialId: "1538",
+    credentialUrl: "https://threejs-journey.com/certificate/view/1538",
+    skills: ["Three.js", "WebGL", "GLSL", "3D"]
+  },
+  {
+    title: "Principles of UX/UI Design",
     issuer: "Meta",
     issueDate: "Mar 2023",
     credentialId: "79U4TMZE73CT",
@@ -50,12 +76,20 @@ const certificates = [
     skills: ["Data Structures", "Algorithms"]
   },
   {
-    title: "Korean Language Level 3",
+    title: "Advanced React",
+    issuer: "Meta",
+    issueDate: "Mar 2023",
+    credentialId: "W5MRPJBSJXDB",
+    credentialUrl: "https://coursera.org/verify/W5MRPJBSJXDB",
+    skills: ["React.js", "JavaScript"]
+  },
+  {
+    title: "Korean Language 3rd Level",
     issuer: "Korea University",
     issueDate: "Feb 2019",
     credentialId: "20183538",
-    credentialUrl: "http://klc.korea.ac.kr",
-    skills: ["Korean", "Communication", "Language"]
+    credentialUrl: "",
+    skills: ["Korean", "Communication"]
   }
 ];
 
@@ -70,21 +104,25 @@ const getRandomClass = () => {
   return bgClasses[Math.floor(Math.random() * bgClasses.length)];
 };
 
-// Logo path mapping function
-const getLogoPath = (issuer: string) => {
+// Iconify icon mapping for certificate issuers
+const getIconName = (issuer: string) => {
   switch(issuer) {
     case "IBM":
-      return "/logos/ibm.svg";
+      return "simple-icons:ibm";
     case "Google Cloud":
-      return "/logos/google.svg";
+      return "simple-icons:googlecloud";
     case "Meta":
-      return "/logos/meta.svg";
+      return "simple-icons:meta";
+    case "LangChain":
+      return "simple-icons:langchain";
+    case "Three.js Journey":
+      return "simple-icons:threedotjs";
     case "UC San Diego":
-      return "/logos/ucsd.svg";
+      return "simple-icons:coursera";
     case "Korea University":
-      return "/logos/ku.svg";
+      return "mdi:school";
     default:
-      return "";
+      return "mdi:certificate";
   }
 };
 ---
@@ -100,13 +138,8 @@ const getLogoPath = (issuer: string) => {
         <div class="flex flex-col gap-3">
           <!-- Logo and Title -->
           <div class="flex items-center gap-3">
-            <div class={`flex-shrink-0 rounded-lg border-2 border-black ${randomStyle.bg} group-hover:scale-110 transition-transform ${randomStyle.rounded} w-14 h-14 flex items-center justify-center overflow-hidden`}>
-              <img 
-                src={getLogoPath(cert.issuer)} 
-                alt={`${cert.issuer} logo`}
-                class="w-full h-full object-cover"
-                loading="lazy"
-              />
+            <div class={`flex-shrink-0 rounded-lg border-2 border-black ${randomStyle.bg} group-hover:scale-110 transition-transform ${randomStyle.rounded} w-14 h-14 flex items-center justify-center overflow-hidden p-2.5`}>
+              <Icon name={getIconName(cert.issuer)} class="w-full h-full" />
             </div>
             <div class="flex-grow min-w-0">
               <h3 class="text-base font-bold text-pblack leading-tight line-clamp-2">{cert.title}</h3>
@@ -134,24 +167,26 @@ const getLogoPath = (issuer: string) => {
           )}
           
           <!-- Show Credential Button -->
-          <a 
-            href={cert.credentialUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            class={`inline-flex items-center justify-center gap-1.5 ${randomStyle.bg} hover:${randomStyle.bg}/80 text-black px-3 py-2 rounded-lg border-2 border-black shadow-card hover:shadow-hover transition-all text-xs font-semibold mt-2`}
-          >
-            <span>View Credential</span>
-            <svg 
-              xmlns="http://www.w3.org/2000/svg" 
-              width="12" 
-              height="12" 
-              viewBox="0 0 16 16"
-              fill="currentColor"
+          {cert.credentialUrl && (
+            <a
+              href={cert.credentialUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              class={`inline-flex items-center justify-center gap-1.5 ${randomStyle.bg} hover:${randomStyle.bg}/80 text-black px-3 py-2 rounded-lg border-2 border-black shadow-card hover:shadow-hover transition-all text-xs font-semibold mt-2`}
             >
-              <path d="M6.22 8.72a.75.75 0 0 0 1.06 1.06l5.22-5.22v1.69a.75.75 0 0 0 1.5 0v-3.5a.75.75 0 0 0-.75-.75h-3.5a.75.75 0 0 0 0 1.5h1.69L6.22 8.72Z"/>
-              <path d="M3.5 6.75c0-.69.56-1.25 1.25-1.25H7A.75.75 0 0 0 7 4H4.75A2.75 2.75 0 0 0 2 6.75v4.5A2.75 2.75 0 0 0 4.75 14h4.5A2.75 2.75 0 0 0 12 11.25V9a.75.75 0 0 0-1.5 0v2.25c0 .69-.56 1.25-1.25 1.25h-4.5c-.69 0-1.25-.56-1.25-1.25v-4.5Z"/>
-            </svg>
-          </a>
+              <span>View Credential</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="12"
+                height="12"
+                viewBox="0 0 16 16"
+                fill="currentColor"
+              >
+                <path d="M6.22 8.72a.75.75 0 0 0 1.06 1.06l5.22-5.22v1.69a.75.75 0 0 0 1.5 0v-3.5a.75.75 0 0 0-.75-.75h-3.5a.75.75 0 0 0 0 1.5h1.69L6.22 8.72Z"/>
+                <path d="M3.5 6.75c0-.69.56-1.25 1.25-1.25H7A.75.75 0 0 0 7 4H4.75A2.75 2.75 0 0 0 2 6.75v4.5A2.75 2.75 0 0 0 4.75 14h4.5A2.75 2.75 0 0 0 12 11.25V9a.75.75 0 0 0-1.5 0v2.25c0 .69-.56 1.25-1.25 1.25h-4.5c-.69 0-1.25-.56-1.25-1.25v-4.5Z"/>
+              </svg>
+            </a>
+          )}
         </div>
       </div>
     )})}

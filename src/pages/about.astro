@@ -1,8 +1,8 @@
 ---
 import Layout from '@/layouts/BlogPost.astro';
 import Certificates from '@/components/Certificates.astro';
-const tags = ['react', 'threejs', 'webgl', 'ai', 'frontend'];
-const description = `Full-stack AI Engineer & Frontend 3D Developer`;
+const tags = ['ai', 'llm', 'rag', 'threejs', 'webgl', 'frontend'];
+const description = `AI Engineer — production LLM/RAG systems, 3D game engines, HCI research`;
 ---
 
 <Layout
@@ -18,10 +18,10 @@ const description = `Full-stack AI Engineer & Frontend 3D Developer`;
 		<h2 class="text-3xl font-bold mb-4 text-pblack">Background</h2>
 		<div class="bg-white p-6 rounded-lg border-2 border-black shadow-card">
 			<p class="text-lg leading-relaxed">
-				I'm a <strong class="text-pblue">Full-stack AI Engineer</strong> and <strong class="text-pgreen">Technical PM</strong> at Redbrick, where I build highly interactive, AI-powered user experiences using modern web technologies.
+				I'm an <strong class="text-pblue">AI Engineer</strong> at Redbrick in Seoul, building end-to-end AI pipelines from prototype to production at scale. My work spans <strong class="text-pgreen">production LLM/RAG systems</strong>, <strong class="text-ppink">3D game engine development</strong>, and is grounded in an <strong class="text-pyellow">HCI research foundation</strong>.
 			</p>
 			<p class="text-lg leading-relaxed mt-4">
-				My expertise lies at the intersection of <strong class="text-ppink">Frontend 3D development</strong> (React, Next.js, Three.js/WebGL) and <strong class="text-pyellow">AI integration</strong> (RAG, LangChain, vector databases), creating immersive experiences that combine strong UI/UX foundations with cutting-edge AI functionality.
+				I specialize in designing agentic workflows, building production RAG pipelines over large document corpora, and creating AI-powered interactive experiences — from natural-language-to-game generation systems to semantic caching layers that cut inference costs and latency.
 			</p>
 			<div class="mt-6 flex flex-wrap items-center gap-4">
 				<a
@@ -41,16 +41,17 @@ const description = `Full-stack AI Engineer & Frontend 3D Developer`;
 	<!-- Education Section -->
 	<section class="mb-12">
 		<h2 class="text-3xl font-bold mb-6 text-pblack">Education</h2>
-		
+
 		<div class="space-y-4">
 			<!-- Master's Degree -->
 			<div class="bg-gradient-to-br from-pblue/10 to-white p-6 rounded-lg border-2 border-black shadow-card hover:shadow-hover transition-all">
-				<h3 class="text-xl font-bold text-pblack mb-2">MS in Design (Human Computer Interaction)</h3>
+				<h3 class="text-xl font-bold text-pblack mb-2">M.S. in Design (Human-Computer Interaction)</h3>
 				<p class="text-pblack/70 font-semibold mb-3">UNIST, South Korea • Feb 2023</p>
+				<p class="text-pblack/60 text-sm italic mb-3">Thesis: Human perception of social robot face and color expression using computational emotion models</p>
 				<div class="flex flex-wrap gap-2 text-sm">
 					<span class="bg-pblue px-3 py-1 rounded-full border-2 border-black">HCI & HRI Focus</span>
 					<span class="bg-pgreen px-3 py-1 rounded-full border-2 border-black">Lotte Scholarship</span>
-					<span class="bg-ppink px-3 py-1 rounded-full border-2 border-black">GPA: 97%</span>
+					<span class="bg-ppink px-3 py-1 rounded-full border-2 border-black">GPA: 4.0/4.3</span>
 					<span class="bg-pyellow px-3 py-1 rounded-full border-2 border-black">6 Papers</span>
 					<span class="bg-pgreen px-3 py-1 rounded-full border-2 border-black">4 Journals</span>
 					<span class="bg-pblue px-3 py-1 rounded-full border-2 border-black">6 Patents</span>
@@ -59,12 +60,11 @@ const description = `Full-stack AI Engineer & Frontend 3D Developer`;
 
 			<!-- Bachelor's Degree -->
 			<div class="bg-gradient-to-br from-pgreen/10 to-white p-6 rounded-lg border-2 border-black shadow-card hover:shadow-hover transition-all">
-				<h3 class="text-xl font-bold text-pblack mb-2">BS in Computer Science and Industrial Design</h3>
-				<p class="text-pblack/70 font-semibold mb-3">UNIST, South Korea • Feb 2021</p>
+				<h3 class="text-xl font-bold text-pblack mb-2">B.S. in Computer Science & Industrial Design</h3>
+				<p class="text-pblack/70 font-semibold mb-3">UNIST, South Korea • 2021</p>
 				<div class="flex flex-wrap gap-2 text-sm">
 					<span class="bg-pgreen px-3 py-1 rounded-full border-2 border-black">Dual Degree</span>
-					<span class="bg-ppink px-3 py-1 rounded-full border-2 border-black">UNISTAR Scholarship</span>
-					<span class="bg-pyellow px-3 py-1 rounded-full border-2 border-black">GPA: 87.2%</span>
+					<span class="bg-ppink px-3 py-1 rounded-full border-2 border-black">Global UNISTAR Silver Scholarship</span>
 				</div>
 			</div>
 		</div>
@@ -81,32 +81,31 @@ const description = `Full-stack AI Engineer & Frontend 3D Developer`;
 		<div class="mb-8 bg-white p-6 rounded-lg border-2 border-black shadow-card">
 			<div class="flex items-start justify-between mb-4">
 				<div>
-					<h3 class="text-2xl font-bold text-pblack">Full-stack AI Engineer & Technical PM</h3>
-					<p class="text-lg text-pblack/70">Redbrick Inc.</p>
+					<h3 class="text-2xl font-bold text-pblack">AI Engineer</h3>
+					<p class="text-lg text-pblack/70">Redbrick, Seoul</p>
 				</div>
 				<span class="bg-pgreen px-4 py-2 rounded-full border-2 border-black text-sm font-bold whitespace-nowrap">Jul 2024 – Present</span>
 			</div>
-			<p class="text-pblack/80 mb-4 italic">Leading development of AI-powered interactive platforms</p>
 			<ul class="space-y-3">
 				<li class="flex items-start gap-3">
 					<span class="text-ppink text-xl mt-1">●</span>
-					<span>Built an <strong>AI game creation system</strong> from scratch, enabling prompt-based content generation that contributed to securing <strong class="text-pgreen">$1.2M R&D investment</strong></span>
+					<span>Designed and built an <strong>end-to-end AI game creation system</strong> (intent parsing, asset generation, scene composition, game logic synthesis) — centerpiece of a successful <strong class="text-pgreen">$1.2M government R&D grant</strong></span>
 				</li>
 				<li class="flex items-start gap-3">
 					<span class="text-pblue text-xl mt-1">●</span>
-					<span>Developed multiple <strong>AI agents</strong> with diverse creative and functional purposes</span>
+					<span>Built production <strong>RAG pipelines</strong> (LangChain, Vercel AI SDK) over 15K+ documents in ChromaDB with hybrid retrieval, query rewriting, and re-ranking — <strong class="text-ppink">improving relevance by ~35%</strong> and reducing hallucination from 18% to 4%</span>
 				</li>
 				<li class="flex items-start gap-3">
 					<span class="text-pyellow text-xl mt-1">●</span>
-					<span>Optimized code generation pipelines, <strong class="text-ppink">reducing token usage by 80%</strong></span>
+					<span>Implemented <strong>multi-step agentic workflows</strong> (chain-of-thought, ReACT) orchestrating LLM calls across asset generation, physics config, and script authoring — handling up to 8 dependent tool calls per request</span>
 				</li>
 				<li class="flex items-start gap-3">
 					<span class="text-pgreen text-xl mt-1">●</span>
-					<span>Implemented <strong>Unity WebGL support</strong>, expanding platform compatibility</span>
+					<span>Designed <strong>semantic caching layers</strong> (embedding similarity-based lookup), reducing redundant LLM calls by ~40%, cutting latency from 3.2s to 0.8s, and saving <strong class="text-ppink">~$2K/month</strong> in API costs</span>
 				</li>
 				<li class="flex items-start gap-3">
 					<span class="text-ppink text-xl mt-1">●</span>
-					<span>Integrated <strong>RAG pipelines, LangChain, and vector databases</strong> for AI-powered features</span>
+					<span>Owned <strong>model evaluation and safety</strong>: built prompt regression harnesses, implemented output guardrails (content filtering, structured validation), and enforced policy-compliant generation</span>
 				</li>
 			</ul>
 		</div>
@@ -115,28 +114,27 @@ const description = `Full-stack AI Engineer & Frontend 3D Developer`;
 		<div class="mb-8 bg-white p-6 rounded-lg border-2 border-black shadow-card">
 			<div class="flex items-start justify-between mb-4">
 				<div>
-					<h3 class="text-2xl font-bold text-pblack">3D Engine Engineer</h3>
-					<p class="text-lg text-pblack/70">Redbrick Inc.</p>
+					<h3 class="text-2xl font-bold text-pblack">3D Frontend Engineer</h3>
+					<p class="text-lg text-pblack/70">Redbrick, Seoul</p>
 				</div>
 				<span class="bg-pblue px-4 py-2 rounded-full border-2 border-black text-sm font-bold whitespace-nowrap">Jul 2023 – Jul 2024</span>
 			</div>
-			<p class="text-pblack/80 mb-4 italic">Built and maintained web-based 3D Studio Engine</p>
 			<ul class="space-y-3">
 				<li class="flex items-start gap-3">
 					<span class="text-pblue text-xl mt-1">●</span>
-					<span>Built web-based <strong>3D Studio Engine with Three.js/WebGL</strong> rendering</span>
+					<span>Developed and scaled a browser-based <strong>3D game engine</strong> (Three.js, WebGL, TypeScript) powering a platform with <strong class="text-pblue">54M+ game plays</strong> and <strong class="text-pgreen">10M+ user sign-ups</strong></span>
 				</li>
 				<li class="flex items-start gap-3">
 					<span class="text-ppink text-xl mt-1">●</span>
-					<span>Integrated <strong>Blockly</strong> for no-code/low-code content creation</span>
+					<span>Led <strong>codebase modernization</strong> of 50K+ lines from Webpack to Vite, upgraded Three.js rendering pipeline, replaced physics engine — reducing build times by ~60%, bundles by ~35%, hot-reload from 8s to under 1s</span>
 				</li>
 				<li class="flex items-start gap-3">
 					<span class="text-pyellow text-xl mt-1">●</span>
-					<span>Implemented <strong>WebXR support</strong> for AR/VR development in the browser</span>
+					<span>Refactored engine into <strong>modular, testable packages</strong> to unblock parallel development across 3 teams; wrote integration tests for scene graph and asset loading</span>
 				</li>
 				<li class="flex items-start gap-3">
 					<span class="text-pgreen text-xl mt-1">●</span>
-					<span>Shipped <strong class="text-ppink">10+ online 3D web games</strong> reaching over <strong class="text-pblue">1M+ total plays</strong></span>
+					<span>Redesigned onboarding flow using session replay analysis and user interviews, increasing <strong class="text-ppink">7-day activation by ~25%</strong> and Day-30 retention by ~15%</span>
 				</li>
 			</ul>
 		</div>
@@ -145,20 +143,19 @@ const description = `Full-stack AI Engineer & Frontend 3D Developer`;
 		<div class="mb-8 bg-white p-6 rounded-lg border-2 border-black shadow-card">
 			<div class="flex items-start justify-between mb-4">
 				<div>
-					<h3 class="text-2xl font-bold text-pblack">Research Assistant & Embedded Systems Engineer</h3>
-					<p class="text-lg text-pblack/70">UNIST</p>
+					<h3 class="text-2xl font-bold text-pblack">Embedded Systems & HCI Researcher</h3>
+					<p class="text-lg text-pblack/70">DECS Lab, UNIST, Ulsan</p>
 				</div>
-				<span class="bg-ppink px-4 py-2 rounded-full border-2 border-black text-sm font-bold whitespace-nowrap">Mar 2021 – Mar 2023</span>
+				<span class="bg-ppink px-4 py-2 rounded-full border-2 border-black text-sm font-bold whitespace-nowrap">Feb 2021 – Feb 2023</span>
 			</div>
-			<p class="text-pblack/80 mb-4 italic">Research in Human-Computer and Human-Robot Interaction</p>
 			<ul class="space-y-3">
 				<li class="flex items-start gap-3">
 					<span class="text-ppink text-xl mt-1">●</span>
-					<span>Designed and developed expressive robotic faces to enhance HRI & HCI</span>
+					<span>Wrote <strong>IoT firmware in C</strong> for ARM Cortex-M MCUs powering real-time smart sensor arrays (50+ devices, sub-ms latency)</span>
 				</li>
 				<li class="flex items-start gap-3">
 					<span class="text-pblue text-xl mt-1">●</span>
-					<span>Published research in journals and international conferences (IEEE RO-MAN, DIS, HCI Korea)</span>
+					<span>Published <strong>6 conference papers, 4 journal articles</strong>; co-filed 6 patents. First-author at IEEE RO-MAN 2023, ICROS 2022, HCI Korea 2022</span>
 				</li>
 			</ul>
 		</div>
@@ -167,52 +164,52 @@ const description = `Full-stack AI Engineer & Frontend 3D Developer`;
 	<!-- Technical Skills Section -->
 	<section class="mb-12">
 		<h2 class="text-3xl font-bold mb-6 text-pblack">Technical Skills</h2>
-		
+
 		<div class="grid md:grid-cols-2 gap-4">
 			<div class="bg-gradient-to-br from-pblue/10 to-white p-5 rounded-lg border-2 border-black shadow-card">
-				<h3 class="text-lg font-bold text-pblack mb-3">Frontend & 3D</h3>
+				<h3 class="text-lg font-bold text-pblack mb-3">Languages</h3>
 				<div class="flex flex-wrap gap-2">
-					<span class="bg-pblue/20 px-3 py-1 rounded-full text-sm border border-black">JavaScript</span>
 					<span class="bg-pblue/20 px-3 py-1 rounded-full text-sm border border-black">TypeScript</span>
-					<span class="bg-pblue/20 px-3 py-1 rounded-full text-sm border border-black">React</span>
-					<span class="bg-pblue/20 px-3 py-1 rounded-full text-sm border border-black">Next.js</span>
-					<span class="bg-pblue/20 px-3 py-1 rounded-full text-sm border border-black">Three.js</span>
-					<span class="bg-pblue/20 px-3 py-1 rounded-full text-sm border border-black">WebGL</span>
-					<span class="bg-pblue/20 px-3 py-1 rounded-full text-sm border border-black">WebXR</span>
+					<span class="bg-pblue/20 px-3 py-1 rounded-full text-sm border border-black">Python</span>
+					<span class="bg-pblue/20 px-3 py-1 rounded-full text-sm border border-black">JavaScript</span>
+					<span class="bg-pblue/20 px-3 py-1 rounded-full text-sm border border-black">C/C++</span>
 				</div>
 			</div>
 
 			<div class="bg-gradient-to-br from-ppink/10 to-white p-5 rounded-lg border-2 border-black shadow-card">
-				<h3 class="text-lg font-bold text-pblack mb-3">AI & ML</h3>
+				<h3 class="text-lg font-bold text-pblack mb-3">AI/LLM</h3>
 				<div class="flex flex-wrap gap-2">
-					<span class="bg-ppink/20 px-3 py-1 rounded-full text-sm border border-black">Python</span>
-					<span class="bg-ppink/20 px-3 py-1 rounded-full text-sm border border-black">RAG</span>
 					<span class="bg-ppink/20 px-3 py-1 rounded-full text-sm border border-black">LangChain</span>
 					<span class="bg-ppink/20 px-3 py-1 rounded-full text-sm border border-black">LlamaIndex</span>
-					<span class="bg-ppink/20 px-3 py-1 rounded-full text-sm border border-black">Vector DBs</span>
-					<span class="bg-ppink/20 px-3 py-1 rounded-full text-sm border border-black">AI Agents</span>
-					<span class="bg-ppink/20 px-3 py-1 rounded-full text-sm border border-black">LLM Fine-tuning</span>
+					<span class="bg-ppink/20 px-3 py-1 rounded-full text-sm border border-black">Vercel AI SDK</span>
+					<span class="bg-ppink/20 px-3 py-1 rounded-full text-sm border border-black">ChromaDB</span>
+					<span class="bg-ppink/20 px-3 py-1 rounded-full text-sm border border-black">OpenAI API</span>
+					<span class="bg-ppink/20 px-3 py-1 rounded-full text-sm border border-black">Claude API</span>
+					<span class="bg-ppink/20 px-3 py-1 rounded-full text-sm border border-black">LLaMA</span>
+					<span class="bg-ppink/20 px-3 py-1 rounded-full text-sm border border-black">Embeddings</span>
 				</div>
 			</div>
 
 			<div class="bg-gradient-to-br from-pgreen/10 to-white p-5 rounded-lg border-2 border-black shadow-card">
-				<h3 class="text-lg font-bold text-pblack mb-3">Backend & Tools</h3>
+				<h3 class="text-lg font-bold text-pblack mb-3">Frontend & 3D</h3>
 				<div class="flex flex-wrap gap-2">
+					<span class="bg-pgreen/20 px-3 py-1 rounded-full text-sm border border-black">React</span>
+					<span class="bg-pgreen/20 px-3 py-1 rounded-full text-sm border border-black">Next.js</span>
+					<span class="bg-pgreen/20 px-3 py-1 rounded-full text-sm border border-black">Three.js</span>
+					<span class="bg-pgreen/20 px-3 py-1 rounded-full text-sm border border-black">WebGL</span>
+					<span class="bg-pgreen/20 px-3 py-1 rounded-full text-sm border border-black">Vite</span>
 					<span class="bg-pgreen/20 px-3 py-1 rounded-full text-sm border border-black">Node.js</span>
-					<span class="bg-pgreen/20 px-3 py-1 rounded-full text-sm border border-black">REST APIs</span>
-					<span class="bg-pgreen/20 px-3 py-1 rounded-full text-sm border border-black">C++</span>
-					<span class="bg-pgreen/20 px-3 py-1 rounded-full text-sm border border-black">Git</span>
-					<span class="bg-pgreen/20 px-3 py-1 rounded-full text-sm border border-black">VS Code</span>
-					<span class="bg-pgreen/20 px-3 py-1 rounded-full text-sm border border-black">Jira</span>
 				</div>
 			</div>
 
 			<div class="bg-gradient-to-br from-pyellow/10 to-white p-5 rounded-lg border-2 border-black shadow-card">
-				<h3 class="text-lg font-bold text-pblack mb-3">Design</h3>
+				<h3 class="text-lg font-bold text-pblack mb-3">Infrastructure</h3>
 				<div class="flex flex-wrap gap-2">
-					<span class="bg-pyellow/20 px-3 py-1 rounded-full text-sm border border-black">UX/UI Design</span>
-					<span class="bg-pyellow/20 px-3 py-1 rounded-full text-sm border border-black">Product Management</span>
-					<span class="bg-pyellow/20 px-3 py-1 rounded-full text-sm border border-black">HCI Principles</span>
+					<span class="bg-pyellow/20 px-3 py-1 rounded-full text-sm border border-black">Docker</span>
+					<span class="bg-pyellow/20 px-3 py-1 rounded-full text-sm border border-black">AWS</span>
+					<span class="bg-pyellow/20 px-3 py-1 rounded-full text-sm border border-black">Redis</span>
+					<span class="bg-pyellow/20 px-3 py-1 rounded-full text-sm border border-black">CI/CD</span>
+					<span class="bg-pyellow/20 px-3 py-1 rounded-full text-sm border border-black">Git</span>
 				</div>
 			</div>
 		</div>
@@ -223,7 +220,7 @@ const description = `Full-stack AI Engineer & Frontend 3D Developer`;
 		<h2 class="text-3xl font-bold mb-4 text-pblack">What Drives Me</h2>
 		<div class="bg-gradient-to-br from-ppink/10 via-pblue/10 to-pgreen/10 p-8 rounded-lg border-2 border-black shadow-card">
 			<p class="text-lg leading-relaxed text-center">
-				I'm passionate about creating <strong class="text-ppink">human-centered, highly interactive systems</strong> that push the boundaries of what's possible on the web. Whether it's building immersive 3D environments, integrating AI to empower creators, or designing intuitive interfaces, I believe in combining <strong class="text-pblue">technical excellence</strong> with <strong class="text-pgreen">thoughtful design</strong> to deliver exceptional user experiences.
+				I'm driven by building <strong class="text-ppink">AI systems that ship to production</strong> — from prototype to scale. Whether it's designing agentic workflows that orchestrate complex multi-step tasks, building RAG pipelines that serve real users, or engineering 3D platforms that reach millions, I believe in combining <strong class="text-pblue">deep technical craft</strong> with <strong class="text-pgreen">human-centered design</strong> to create products that genuinely work.
 			</p>
 		</div>
 	</section>
