@@ -23,7 +23,7 @@ Go to your Vercel Project Settings > Environment Variables and add:
 
 | Key | Value |
 |-----|-------|
-| `OPENAI_API_KEY` | `sk-proj-...` (Your actual API key) |
+| `AI_GATEWAY_API_KEY` | Your Vercel AI Gateway API key |
 
 ### 3. Deploy
 Vercel will automatically deploy when you push.

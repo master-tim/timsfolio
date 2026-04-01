@@ -1,5 +1,7 @@
 import { VectorStoreIndex, storageContextFromDefaults, Settings, TextNode } from 'llamaindex';
-import { OpenAI, OpenAIEmbedding } from '@llamaindex/openai';
+import { OpenAIEmbedding } from '@llamaindex/openai';
+import { streamText, generateText } from 'ai';
+import { createOpenAI } from '@ai-sdk/openai';
 import { PORTFOLIO_CONTEXT } from './context';
 
 import path from 'path';
@@ -10,24 +12,36 @@ let indexInstance: VectorStoreIndex | null = null;
 let initPromise: Promise<VectorStoreIndex> | null = null;
 
 /**
- * Initialize Settings with OpenAI models
+ * Create Vercel AI Gateway provider for text generation
  */
-function initializeSettings(temperature: number = 0.7) {
-  const apiKey = process.env.OPENAI_API_KEY;
-
-  if (!apiKey) {
-    throw new Error('Missing OPENAI_API_KEY environment variable');
-  }
-
-  // Initialize OpenAI models
-  Settings.llm = new OpenAI({
-    model: 'gpt-4o-mini',
-    apiKey,
+function getAIGateway() {
+  return createOpenAI({
+    baseURL: AI_GATEWAY_URL,
+    apiKey: getApiKey(),
   });
+}
 
+const AI_GATEWAY_URL = 'https://ai-gateway.vercel.sh/v1';
+
+/**
+ * Get AI Gateway API key from available env sources
+ */
+function getApiKey(): string {
+  const apiKey = import.meta.env.AI_GATEWAY_API_KEY ?? process.env.AI_GATEWAY_API_KEY;
+  if (!apiKey) {
+    throw new Error('Missing AI_GATEWAY_API_KEY environment variable');
+  }
+  return apiKey;
+}
+
+/**
+ * Initialize Settings with embedding model routed through AI Gateway
+ */
+function initializeSettings() {
   Settings.embedModel = new OpenAIEmbedding({
     model: 'text-embedding-3-large',
-    apiKey,
+    apiKey: getApiKey(),
+    baseURL: AI_GATEWAY_URL,
   });
 }
 
@@ -71,7 +85,7 @@ export async function getVectorIndex(): Promise<VectorStoreIndex> {
 }
 
 /**
- * Query the vector database with context
+ * Query the vector database with context (non-streaming)
  */
 export async function queryVectorDB(
   query: string,
@@ -86,78 +100,54 @@ export async function queryVectorDB(
     temperature = 0.7,
     includeContext = true,
   } = options;
-  
+
   try {
-    initializeSettings(temperature);
+    initializeSettings();
     const index = await getVectorIndex();
-    
-    const queryEngine = index.asQueryEngine({
-      similarityTopK: topK,
-    });
-    
-    // Construct enhanced query with context
-    let enhancedQuery = query;
-    if (includeContext) {
-      enhancedQuery = `
-Context about Tim:
-${PORTFOLIO_CONTEXT}
 
-User Question: ${query}
+    // Retrieve relevant documents
+    const retriever = index.asRetriever({ similarityTopK: topK });
+    const nodes = await retriever.retrieve(query);
 
-System Instruction:
-You are an AI assistant for Tim's portfolio website. Your ONLY purpose is to answer questions about Tim, his work, skills, experience, and projects based on the provided context.
-
-Rules:
-1. If the user asks about anything unrelated to Tim (e.g., general knowledge, coding help not related to his projects, other people, politics, etc.), politely refuse and say you can only answer questions about Tim.
-2. Be conversational, professional, and helpful.
-3. Keep your response concise (2-3 sentences max) for general questions. However, if the user asks for a list (e.g., 'list all projects', 'show me publications'), provide a comprehensive list using bullet points.
-4. Be direct and to the point.
-5. **CRITICAL - Navigation Links**: After answering, you MUST include relevant navigation links using EXACT markdown format. Add a blank line, then "**Explore more:**" followed by the links:
-   
-   For skills/experience/education questions, include:
-   📄 [View Full CV/About Me](https://mastertim.xyz/about)
-   
-   For projects/work questions, include:
-   🚀 [Explore All Projects](https://mastertim.xyz/blog)
-   
-   For publications/research questions, include:
-   📚 [Read Publications](https://mastertim.xyz/blog)
-   
-   Example response format:
-   "Tim specializes in Full-stack AI Engineering and Frontend 3D Development.
-   
-   **Explore more:**
-   📄 [View Full CV/About Me](https://mastertim.xyz/about)"
-   
-   IMPORTANT: Use the EXACT markdown link syntax shown above: [Link Text](URL)
-
-Please answer the user's question following these rules.
-      `.trim();
-    }
-    
-    const response = await queryEngine.query({
-      query: enhancedQuery,
-    });
-    
     // Log RAG details
     console.log('\n🔍 --- RAG Query Log ---');
     console.log('❓ Query:', query);
-    
-    if (response.sourceNodes) {
+    if (nodes.length > 0) {
       console.log('\n📄 Retrieved Nodes:');
-      response.sourceNodes.forEach((node, i) => {
+      nodes.forEach((node, i) => {
         const metadata = node.node.metadata || {};
         console.log(`\n[${i+1}] Score: ${node.score?.toFixed(4)}`);
         console.log(`    Source: ${metadata.source || 'Unknown'}`);
         console.log(`    Title: ${metadata.title || 'No Title'}`);
-        // console.log(`    Preview: ${(node.node as any).text?.substring(0, 150)}...`);
       });
     }
-    
-    console.log('\n🤖 Response:', response.toString().substring(0, 100) + '...');
+
+    // Build prompt with context
+    const retrievedContext = nodes.map((node, i) => {
+      const metadata = node.node.metadata || {};
+      return `[Document ${i+1} - ${metadata.title || 'Untitled'}]\n${(node.node as TextNode).text}`;
+    }).join('\n\n');
+
+    const systemPrompt = `You are an AI assistant for Tim's portfolio website. Your ONLY purpose is to answer questions about Tim, his work, skills, experience, and projects.`;
+
+    let userContent = query;
+    if (includeContext) {
+      userContent = buildUserPrompt(query, retrievedContext, '');
+    }
+
+    // Generate response via Vercel AI Gateway
+    const gateway = getAIGateway();
+    const { text } = await generateText({
+      model: gateway('xai/grok-4.1-fast-reasoning'),
+      system: systemPrompt,
+      prompt: userContent,
+      temperature,
+    });
+
+    console.log('\n🤖 Response:', text.substring(0, 100) + '...');
     console.log('---------------------\n');
-    
-    return response.toString();
+
+    return text;
   } catch (error) {
     console.error('Error querying vector database:', error);
     throw error;
@@ -195,61 +185,10 @@ export async function retrieveRelevantDocs(
 }
 
 /**
- * Stream response from vector database query
+ * Build the user prompt with context, retrieved docs, and history
  */
-export async function* streamQueryVectorDB(
-  query: string,
-  options: {
-    topK?: number;
-    temperature?: number;
-    includeContext?: boolean;
-    history?: Array<{ role: 'user' | 'assistant'; content: string }>;
-  } = {}
-): AsyncGenerator<{ type: 'text' | 'status'; content: string }, void, unknown> {
-  const {
-    topK = 3,
-    temperature = 0.7,
-    includeContext = true,
-  } = options;
-  
-  try {
-    yield { type: 'status', content: 'Initializing AI...' };
-    initializeSettings(temperature);
-    const index = await getVectorIndex();
-    
-    // 1. Retrieve relevant documents
-    yield { type: 'status', content: 'Searching knowledge base...' };
-    const retriever = index.asRetriever({
-      similarityTopK: topK,
-    });
-    
-    const nodes = await retriever.retrieve(query);
-    
-    if (nodes.length > 0) {
-      yield { type: 'status', content: `Found ${nodes.length} relevant documents` };
-    } else {
-      yield { type: 'status', content: 'No specific documents found, using general knowledge' };
-    }
-
-    // 2. Construct Prompt
-    yield { type: 'status', content: 'Thinking...' };
-    
-    let systemPrompt = `You are an AI assistant for Tim's portfolio website. Your ONLY purpose is to answer questions about Tim, his work, skills, experience, and projects.`;
-    
-    let userContent = query;
-
-    if (includeContext) {
-      const historyText = options.history 
-        ? options.history.map(msg => `${msg.role === 'user' ? 'User' : 'AI'}: ${msg.content}`).join('\n')
-        : '';
-
-      // Extract text from retrieved nodes
-      const retrievedContext = nodes.map((node, i) => {
-        const metadata = node.node.metadata || {};
-        return `[Document ${i+1} - ${metadata.title || 'Untitled'}]\n${(node.node as TextNode).text}`;
-      }).join('\n\n');
-
-      userContent = `
+function buildUserPrompt(query: string, retrievedContext: string, historyText: string): string {
+  return `
 Context about Tim:
 ${PORTFOLIO_CONTEXT}
 
@@ -266,40 +205,98 @@ System Instruction:
 4. Be direct and to the point.
 5. Use the Chat History to maintain context in the conversation.
 6. **CRITICAL - Navigation Links**: After answering, you MUST include relevant navigation links using EXACT markdown format. Add a blank line, then "**Explore more:**" followed by the links:
-   
+
    For skills/experience/education questions, include:
    📄 [View Full CV/About Me](https://mastertim.xyz/about)
-   
+
    For projects/work questions, include:
    🚀 [Explore All Projects](https://mastertim.xyz/blog)
-   
+
    For publications/research questions, include:
    📚 [Read Publications](https://mastertim.xyz/blog)
-   
+
    Example response format:
    "Tim specializes in Full-stack AI Engineering and Frontend 3D Development.
-   
+
    **Explore more:**
    📄 [View Full CV/About Me](https://mastertim.xyz/about)"
-   
+
    IMPORTANT: Use the EXACT markdown link syntax shown above: [Link Text](URL)
 
 Please answer the user's question following these rules.
-      `.trim();
+  `.trim();
+}
+
+/**
+ * Stream response from vector database query using Vercel AI SDK
+ */
+export async function* streamQueryVectorDB(
+  query: string,
+  options: {
+    topK?: number;
+    temperature?: number;
+    includeContext?: boolean;
+    history?: Array<{ role: 'user' | 'assistant'; content: string }>;
+  } = {}
+): AsyncGenerator<{ type: 'text' | 'status'; content: string }, void, unknown> {
+  const {
+    topK = 3,
+    temperature = 0.7,
+    includeContext = true,
+  } = options;
+
+  try {
+    yield { type: 'status', content: 'Initializing AI...' };
+    initializeSettings();
+    const index = await getVectorIndex();
+
+    // 1. Retrieve relevant documents
+    yield { type: 'status', content: 'Searching knowledge base...' };
+    const retriever = index.asRetriever({ similarityTopK: topK });
+    const nodes = await retriever.retrieve(query);
+
+    if (nodes.length > 0) {
+      yield { type: 'status', content: `Found ${nodes.length} relevant documents` };
+    } else {
+      yield { type: 'status', content: 'No specific documents found, using general knowledge' };
     }
-    
-    // 3. Generate Response
-    const stream = await Settings.llm.chat({
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: userContent }
-      ],
-      stream: true,
+
+    // 2. Construct Prompt
+    yield { type: 'status', content: 'Thinking...' };
+
+    const systemPrompt = `You are an AI assistant for Tim's portfolio website. Your ONLY purpose is to answer questions about Tim, his work, skills, experience, and projects.`;
+
+    let userContent = query;
+
+    if (includeContext) {
+      const historyText = options.history
+        ? options.history.map(msg => `${msg.role === 'user' ? 'User' : 'AI'}: ${msg.content}`).join('\n')
+        : '';
+
+      const retrievedContext = nodes.map((node, i) => {
+        const metadata = node.node.metadata || {};
+        return `[Document ${i+1} - ${metadata.title || 'Untitled'}]\n${(node.node as TextNode).text}`;
+      }).join('\n\n');
+
+      userContent = buildUserPrompt(query, retrievedContext, historyText);
+    }
+
+    // 3. Stream response via Vercel AI Gateway
+    const gateway = getAIGateway();
+    const result = streamText({
+      model: gateway('xai/grok-4.1-fast-reasoning'),
+      system: systemPrompt,
+      prompt: userContent,
+      temperature,
     });
-    
-    for await (const chunk of stream) {
-      yield { type: 'text', content: chunk.delta };
+
+    for await (const chunk of result.textStream) {
+      yield { type: 'text', content: chunk };
     }
+
+    // Log token usage
+    const usage = await result.usage;
+    console.log(`\n📊 Token usage — prompt: ${usage.promptTokens}, completion: ${usage.completionTokens}, total: ${usage.totalTokens}`);
   } catch (error) {
     console.error('Error streaming query:', error);
     throw error;

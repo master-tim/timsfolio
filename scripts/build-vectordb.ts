@@ -1,5 +1,5 @@
 import { Document, VectorStoreIndex, storageContextFromDefaults, Settings } from 'llamaindex';
-import { OpenAI, OpenAIEmbedding } from '@llamaindex/openai';
+import { OpenAIEmbedding } from '@llamaindex/openai';
 import * as fs from 'fs';
 import path from 'path';
 import { config } from 'dotenv';
@@ -201,21 +201,17 @@ async function loadTextDocs(): Promise<Document[]> {
 async function buildVectorDB() {
   console.log('🚀 Building Vector Database...\n');
   
-  // Check for OpenAI API key
-  if (!process.env.OPENAI_API_KEY) {
-    console.error('❌ OPENAI_API_KEY not found in environment variables');
+  // Check for AI Gateway API key
+  if (!process.env.AI_GATEWAY_API_KEY) {
+    console.error('❌ AI_GATEWAY_API_KEY not found in environment variables');
     process.exit(1);
   }
-  
-  // Initialize OpenAI models
-  Settings.llm = new OpenAI({
-    model: 'gpt-4o-mini',
-    apiKey: process.env.OPENAI_API_KEY,
-  });
-  
+
+  // Initialize embedding model via AI Gateway
   Settings.embedModel = new OpenAIEmbedding({
     model: 'text-embedding-3-large',
-    apiKey: process.env.OPENAI_API_KEY,
+    apiKey: process.env.AI_GATEWAY_API_KEY,
+    baseURL: 'https://ai-gateway.vercel.sh/v1',
   });
   
   // Load all documents

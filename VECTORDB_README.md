@@ -35,10 +35,10 @@ cp ~/Desktop/TIM/Canonical_written_Temirlan.pdf ./data/pdfs/
 
 ### 2. Set Up Environment Variables
 
-Make sure your `.env` file contains your OpenAI API key:
+Make sure your `.env` file contains your Vercel AI Gateway API key:
 
 ```env
-OPENAI_API_KEY=your_openai_api_key_here
+AI_GATEWAY_API_KEY=your_ai_gateway_api_key_here
 ```
 
 ### 3. Build the Vector Database
@@ -222,8 +222,8 @@ async function sendMessage(message: string) {
 ### "Vector database not initialized"
 Run `npm run build:vectordb` to create the database.
 
-### "OPENAI_API_KEY not found"
-Add your OpenAI API key to the `.env` file.
+### "AI_GATEWAY_API_KEY not found"
+Add your Vercel AI Gateway API key to the `.env` file.
 
 ### Empty responses
 Check that PDFs and blog posts are being loaded correctly. Review the build script output.
