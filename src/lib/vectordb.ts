@@ -238,7 +238,7 @@ export async function* streamQueryVectorDB(
     includeContext?: boolean;
     history?: Array<{ role: 'user' | 'assistant'; content: string }>;
   } = {}
-): AsyncGenerator<{ type: 'text' | 'status'; content: string }, void, unknown> {
+): AsyncGenerator<{ type: 'text' | 'status' | 'reasoning'; content: string }, void, unknown> {
   const {
     topK = 3,
     temperature = 0.7,
@@ -290,8 +290,17 @@ export async function* streamQueryVectorDB(
       temperature,
     });
 
-    for await (const chunk of result.textStream) {
-      yield { type: 'text', content: chunk };
+    // Stream reasoning status and text output
+    let isReasoning = false;
+    for await (const part of result.fullStream) {
+      if (part.type === 'reasoning-start') {
+        isReasoning = true;
+        yield { type: 'status', content: 'Reasoning...' };
+      } else if (part.type === 'reasoning-end') {
+        isReasoning = false;
+      } else if (part.type === 'text-delta') {
+        yield { type: 'text', content: part.text };
+      }
     }
 
     // Log token usage
