@@ -13,26 +13,22 @@
   },
   "dependencies": {
     "@astrojs/mdx": "^4.0.7",
-    "@astrojs/netlify": "^6.1.0",
     "@astrojs/rss": "^4.0.11",
     "@astrojs/sitemap": "^3.2.1",
     "@astrojs/tailwind": "^5.1.5",
     "@astrojs/vercel": "^9.0.0",
     "@iconify-json/mdi": "^1.2.3",
     "@iconify-json/simple-icons": "^1.2.74",
-    "@langchain/community": "^1.0.4",
-    "@langchain/openai": "^1.1.2",
     "@llamaindex/openai": "^0.4.21",
     "@tailwindcss/vite": "^4.0.0",
     "@vercel/analytics": "^1.5.0",
     "@vercel/speed-insights": "^1.2.0",
     "astro": "^5.1.9",
     "astro-icon": "^1.1.5",
-    "chromadb": "^3.1.5",
+    "dompurify": "^3.3.3",
     "dotenv": "^17.2.3",
     "hamburgers": "^1.2.1",
     "ioredis": "^5.8.2",
-    "langchain": "^1.0.6",
     "llamaindex": "^0.12.0",
     "marked": "^17.0.1",
     "pdf2json": "^4.0.0",
@@ -40,7 +36,6 @@
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.16",
-    "sass-embedded": "^1.83.4",
     "tsx": "^4.20.6"
   }
 }

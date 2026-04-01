@@ -94,14 +94,14 @@ const certificates = [
 ];
 
 const bgClasses = [
-  { bg: "bg-pgreen", rounded: "rounded-full", text: "text-black" },
-  { bg: "bg-pblue", rounded: "rounded-2xl", text: "text-white" },
-  { bg: "bg-ppink", rounded: "", text: "text-white" },
-  { bg: "bg-pyellow", rounded: "rounded-md", text: "text-black" },
+  { bg: "bg-pgreen", bgFaded: "bg-pgreen/20", rounded: "rounded-full", text: "text-black" },
+  { bg: "bg-pblue", bgFaded: "bg-pblue/20", rounded: "rounded-2xl", text: "text-white" },
+  { bg: "bg-ppink", bgFaded: "bg-ppink/20", rounded: "", text: "text-white" },
+  { bg: "bg-pyellow", bgFaded: "bg-pyellow/20", rounded: "rounded-md", text: "text-black" },
 ];
 
-const getRandomClass = () => {
-  return bgClasses[Math.floor(Math.random() * bgClasses.length)];
+const getStyleForIndex = (index: number) => {
+  return bgClasses[index % bgClasses.length];
 };
 
 // Iconify icon mapping for certificate issuers
@@ -132,7 +132,7 @@ const getIconName = (issuer: string) => {
   
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
     {certificates.map((cert, index) => {
-      const randomStyle = getRandomClass();
+      const randomStyle = getStyleForIndex(index);
       return (
       <div class="bg-white p-4 rounded-2xl border-2 border-black shadow-card hover:shadow-hover transition-all group hover:-translate-y-1">
         <div class="flex flex-col gap-3">
@@ -159,7 +159,7 @@ const getIconName = (issuer: string) => {
           {cert.skills && cert.skills.length > 0 && (
             <div class="flex flex-wrap gap-1.5">
               {cert.skills.map((skill) => (
-                <span class={`${randomStyle.bg}/20 px-2 py-0.5 rounded-full text-xs border border-black`}>
+                <span class={`${randomStyle.bgFaded} px-2 py-0.5 rounded-full text-xs border border-black`}>
                   {skill}
                 </span>
               ))}
@@ -172,7 +172,7 @@ const getIconName = (issuer: string) => {
               href={cert.credentialUrl}
               target="_blank"
               rel="noopener noreferrer"
-              class={`inline-flex items-center justify-center gap-1.5 ${randomStyle.bg} hover:${randomStyle.bg}/80 text-black px-3 py-2 rounded-lg border-2 border-black shadow-card hover:shadow-hover transition-all text-xs font-semibold mt-2`}
+              class={`inline-flex items-center justify-center gap-1.5 ${randomStyle.bg} hover:opacity-80 text-black px-3 py-2 rounded-lg border-2 border-black shadow-card hover:shadow-hover transition-all text-xs font-semibold mt-2`}
             >
               <span>View Credential</span>
               <svg

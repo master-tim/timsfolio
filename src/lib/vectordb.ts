@@ -7,14 +7,14 @@ import path from 'path';
 const PERSIST_DIR = path.resolve(process.cwd(), 'data/vectordb');
 
 let indexInstance: VectorStoreIndex | null = null;
+let initPromise: Promise<VectorStoreIndex> | null = null;
 
 /**
  * Initialize Settings with OpenAI models
  */
 function initializeSettings(temperature: number = 0.7) {
-  // Get API key from Astro env or Node process.env
-  const apiKey = import.meta.env?.OPENAI_API_KEY || process.env.OPENAI_API_KEY;
-  
+  const apiKey = process.env.OPENAI_API_KEY;
+
   if (!apiKey) {
     throw new Error('Missing OPENAI_API_KEY environment variable');
   }
@@ -24,7 +24,7 @@ function initializeSettings(temperature: number = 0.7) {
     model: 'gpt-4o-mini',
     apiKey,
   });
-  
+
   Settings.embedModel = new OpenAIEmbedding({
     model: 'text-embedding-3-large',
     apiKey,
@@ -32,32 +32,42 @@ function initializeSettings(temperature: number = 0.7) {
 }
 
 /**
- * Initialize or retrieve the vector store index
+ * Initialize or retrieve the vector store index (with promise lock to prevent race conditions)
  */
 export async function getVectorIndex(): Promise<VectorStoreIndex> {
   if (indexInstance) {
     return indexInstance;
   }
-  
-  try {
-    initializeSettings();
-    
-    const storageContext = await storageContextFromDefaults({
-      persistDir: PERSIST_DIR,
-    });
-    
-    indexInstance = await VectorStoreIndex.init({
-      storageContext,
-    });
-    
-    return indexInstance;
-  } catch (error) {
-    console.error('Error loading vector index:', error);
-    if (error instanceof Error) {
-      console.error('Stack:', error.stack);
-    }
-    throw new Error('Vector database not initialized. Please run: npm run build:vectordb');
+
+  if (initPromise) {
+    return initPromise;
   }
+
+  initPromise = (async () => {
+    try {
+      initializeSettings();
+
+      const storageContext = await storageContextFromDefaults({
+        persistDir: PERSIST_DIR,
+      });
+
+      indexInstance = await VectorStoreIndex.init({
+        storageContext,
+      });
+
+      return indexInstance;
+    } catch (error) {
+      console.error('Error loading vector index:', error);
+      if (error instanceof Error) {
+        console.error('Stack:', error.stack);
+      }
+      throw new Error('Vector database not initialized. Please run: npm run build:vectordb');
+    } finally {
+      initPromise = null;
+    }
+  })();
+
+  return initPromise;
 }
 
 /**

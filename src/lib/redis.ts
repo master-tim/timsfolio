@@ -49,7 +49,13 @@ export function getRedisClient(): Redis | null {
  */
 export function generateCacheKey(query: string, params?: Record<string, any>): string {
   const normalizedQuery = query.trim().toLowerCase();
-  const paramsString = params ? JSON.stringify(params) : '';
+  const sortedParams = params
+    ? JSON.stringify(Object.keys(params).sort().reduce((acc: Record<string, any>, key) => {
+        acc[key] = params[key];
+        return acc;
+      }, {}))
+    : '';
+  const paramsString = sortedParams;
   const hash = crypto
     .createHash('sha256')
     .update(`${normalizedQuery}${paramsString}`)
@@ -118,10 +124,20 @@ export async function clearCache(): Promise<void> {
   if (!redis) return;
 
   try {
-    const keys = await redis.keys('chat:*');
-    if (keys.length > 0) {
-      await redis.del(...keys);
-      console.log(`Cleared ${keys.length} cached responses`);
+    let cursor = '0';
+    let cleared = 0;
+    do {
+      const [newCursor, keys] = await redis.scan(
+        cursor, 'MATCH', 'chat:*', 'COUNT', '100'
+      );
+      cursor = newCursor;
+      if (keys.length > 0) {
+        await redis.del(...keys);
+        cleared += keys.length;
+      }
+    } while (cursor !== '0');
+    if (cleared > 0) {
+      console.log(`Cleared ${cleared} cached responses`);
     }
   } catch (error) {
     console.error('Error clearing cache:', error);

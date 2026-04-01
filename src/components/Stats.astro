@@ -1,4 +1,11 @@
 ---
+const colorClasses: Record<string, string> = {
+  pblue: "bg-pblue",
+  pgreen: "bg-pgreen",
+  ppink: "bg-ppink",
+  pyellow: "bg-pyellow",
+};
+
 const stats = [
   { number: 5, suffix: "+", label: "Years Experience", color: "pblue" },
   { number: 20, suffix: "+", label: "Projects Delivered", color: "pgreen" },
@@ -11,7 +18,7 @@ const stats = [
   <div class="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-5xl mx-auto">
     {stats.map((stat, index) => (
       <div 
-        class={`stat-card bg-${stat.color} border-3 border-black rounded-2xl p-8 shadow-card hover:shadow-hover transition-all text-center group`}
+        class={`stat-card ${colorClasses[stat.color]} border-3 border-black rounded-2xl p-8 shadow-card hover:shadow-hover transition-all text-center group`}
         data-number={stat.number}
         data-suffix={stat.suffix}
         style={`animation-delay: ${index * 0.15}s`}
@@ -44,12 +51,15 @@ const stats = [
 </style>
 
 <script>
+  let activeObserver: IntersectionObserver | null = null;
+  let activeTimers: number[] = [];
+
   function animateCounter(element: HTMLElement, target: number) {
     const duration = 2000;
     const steps = 60;
     const increment = target / steps;
     let current = 0;
-    const timer = setInterval(() => {
+    const timer = window.setInterval(() => {
       current += increment;
       if (current >= target) {
         current = target;
@@ -57,10 +67,22 @@ const stats = [
       }
       element.textContent = Math.floor(current).toString();
     }, duration / steps);
+    activeTimers.push(timer);
+  }
+
+  function cleanupCounters() {
+    if (activeObserver) {
+      activeObserver.disconnect();
+      activeObserver = null;
+    }
+    activeTimers.forEach(t => clearInterval(t));
+    activeTimers = [];
   }
 
   function initCounters() {
-    const observer = new IntersectionObserver((entries) => {
+    cleanupCounters();
+
+    activeObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           const counters = entry.target.querySelectorAll('.counter');
@@ -69,20 +91,21 @@ const stats = [
             const suffix = counter.querySelector('.suffix');
             const suffixText = suffix?.textContent || '';
             suffix?.remove();
-            
+
             animateCounter(counter as HTMLElement, target);
-            
-            setTimeout(() => {
+
+            const t = window.setTimeout(() => {
               counter.innerHTML += suffixText;
             }, 2000);
+            activeTimers.push(t);
           });
-          observer.unobserve(entry.target);
+          activeObserver?.unobserve(entry.target);
         }
       });
     }, { threshold: 0.5 });
 
     document.querySelectorAll('.stat-card').forEach(card => {
-      observer.observe(card);
+      activeObserver!.observe(card);
     });
   }
 
@@ -92,5 +115,6 @@ const stats = [
     initCounters();
   }
 
+  document.addEventListener('astro:before-swap', cleanupCounters);
   document.addEventListener('astro:after-swap', initCounters);
 </script>

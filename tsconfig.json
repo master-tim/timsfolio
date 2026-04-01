@@ -16,12 +16,6 @@
       ],
       "@/icons/*": [
         "src/icons/*"
-      ],
-      "@/i18n/*": [
-        "src/i18n/*"
-      ],
-      "@/data/*": [
-        "src/data/*"
       ]
     },
     "strictNullChecks": true

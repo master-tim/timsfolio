@@ -1,4 +1,11 @@
 ---
+const colorClasses: Record<string, string> = {
+  pblue: "bg-pblue",
+  pgreen: "bg-pgreen",
+  ppink: "bg-ppink",
+  pyellow: "bg-pyellow",
+};
+
 const skills = [
   { name: "React", category: "frontend", color: "pblue" },
   { name: "Next.js", category: "frontend", color: "pblue" },
@@ -24,7 +31,7 @@ const skills = [
   <div class="flex flex-wrap justify-center gap-4 max-w-4xl mx-auto">
     {skills.map((skill, index) => (
       <div 
-        class={`skill-tag bg-${skill.color} px-6 py-3 border-2 border-black rounded-full shadow-card hover:shadow-hover transition-all cursor-pointer hover:scale-110 hover:rotate-2`}
+        class={`skill-tag ${colorClasses[skill.color]} px-6 py-3 border-2 border-black rounded-full shadow-card hover:shadow-hover transition-all cursor-pointer hover:scale-110 hover:rotate-2`}
         style={`animation-delay: ${index * 0.1}s`}
       >
         <span class="font-semibold text-lg">{skill.name}</span>

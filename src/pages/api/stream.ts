@@ -5,7 +5,10 @@ import { getCachedResponse, cacheResponse } from '../../lib/redis';
 export const POST: APIRoute = async ({ request }) => {
   try {
     const body = await request.json();
-    const { query, topK = 3, temperature = 0.7, history = [] } = body;
+    const { query } = body;
+    const topK = Math.min(Math.max(parseInt(body.topK) || 3, 1), 10);
+    const temperature = Math.min(Math.max(parseFloat(body.temperature) || 0.7, 0), 2);
+    const history = Array.isArray(body.history) ? body.history.slice(-10) : [];
     
     if (!query || typeof query !== 'string') {
       return new Response(
@@ -39,15 +42,12 @@ export const POST: APIRoute = async ({ request }) => {
               )
             );
             
-            // Stream cached response character by character for smooth UX
-            const chunkSize = 10; // Characters per chunk
+            // Stream cached response in chunks for smooth UX
+            const chunkSize = 10;
             for (let i = 0; i < cachedResponse.length; i += chunkSize) {
               const chunk = cachedResponse.slice(i, i + chunkSize);
               const data = `data: ${JSON.stringify({ chunk })}\n\n`;
               controller.enqueue(new TextEncoder().encode(data));
-              
-              // Small delay to simulate streaming (optional, for UX)
-              await new Promise(resolve => setTimeout(resolve, 20));
             }
             
             controller.enqueue(new TextEncoder().encode('data: [DONE]\n\n'));
@@ -85,10 +85,9 @@ export const POST: APIRoute = async ({ request }) => {
           controller.close();
         } catch (error) {
           console.error('Streaming error:', error);
-          const errorMessage = error instanceof Error ? error.message : 'Unknown error';
           controller.enqueue(
             new TextEncoder().encode(
-              `data: ${JSON.stringify({ error: errorMessage })}\n\n`
+              `data: ${JSON.stringify({ error: 'An error occurred while processing your request' })}\n\n`
             )
           );
           controller.close();
@@ -105,14 +104,9 @@ export const POST: APIRoute = async ({ request }) => {
     });
   } catch (error) {
     console.error('Vector DB Stream API Error:', error);
-    
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    
+
     return new Response(
-      JSON.stringify({ 
-        error: 'Failed to stream from vector database',
-        details: errorMessage 
-      }),
+      JSON.stringify({ error: 'Internal server error' }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
   }

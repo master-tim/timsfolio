@@ -31,8 +31,8 @@ async function extractPDFText(pdfPath: string): Promise<string> {
     const pdfParser = new PDFParser(null, 1); // 1 = text content only
     
     pdfParser.on("pdfParser_dataError", (errData: any) => {
-      console.error(`Error parsing PDF ${pdfPath}:`, errData.parserError);
-      resolve(''); // Resolve with empty string to continue processing other files
+      console.warn(`⚠️ Failed to parse PDF ${pdfPath}: ${errData.parserError} — skipping`);
+      resolve('');
     });
 
     pdfParser.on("pdfParser_dataReady", (pdfData: any) => {

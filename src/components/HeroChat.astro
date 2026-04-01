@@ -79,6 +79,7 @@
 
 <script>
   import { marked } from 'marked';
+  import DOMPurify from 'dompurify';
 
   // Configure marked to render links properly
   marked.setOptions({
@@ -136,7 +137,7 @@
       contentDiv.className = 'markdown-content break-words';
 
       if (isMarkdown) {
-        contentDiv.innerHTML = marked.parse(text);
+        contentDiv.innerHTML = DOMPurify.sanitize(marked.parse(text));
       } else {
         contentDiv.textContent = text;
       }
@@ -347,8 +348,7 @@
                   }
                   
                   fullText += parsed.chunk;
-                  const parsedHTML = marked.parse(fullText);
-                  contentDiv.innerHTML = parsedHTML;
+                  contentDiv.innerHTML = DOMPurify.sanitize(marked.parse(fullText));
                   chatUI.scrollToBottom();
                 }
               } catch (e) {
