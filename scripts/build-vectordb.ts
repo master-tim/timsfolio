@@ -200,18 +200,18 @@ async function loadTextDocs(): Promise<Document[]> {
  */
 async function buildVectorDB() {
   console.log('🚀 Building Vector Database...\n');
-  
-  // Check for AI Gateway API key
-  if (!process.env.AI_GATEWAY_API_KEY) {
-    console.error('❌ AI_GATEWAY_API_KEY not found in environment variables');
-    process.exit(1);
+
+  // Check for OpenAI API key (used for embeddings; OpenRouter doesn't offer embeddings)
+  if (!process.env.OPENAI_API_KEY) {
+    console.warn('⚠️  OPENAI_API_KEY not set — skipping vector DB build.');
+    console.warn('    Chat retrieval will not be available until you set OPENAI_API_KEY and rebuild.');
+    return;
   }
 
-  // Initialize embedding model via AI Gateway
+  // Initialize embedding model via OpenAI direct
   Settings.embedModel = new OpenAIEmbedding({
     model: 'text-embedding-3-large',
-    apiKey: process.env.AI_GATEWAY_API_KEY,
-    baseURL: 'https://ai-gateway.vercel.sh/v1',
+    apiKey: process.env.OPENAI_API_KEY,
   });
   
   // Load all documents
