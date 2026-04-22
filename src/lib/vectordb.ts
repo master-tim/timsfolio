@@ -11,37 +11,46 @@ const PERSIST_DIR = path.resolve(process.cwd(), 'data/vectordb');
 let indexInstance: VectorStoreIndex | null = null;
 let initPromise: Promise<VectorStoreIndex> | null = null;
 
+const OPENROUTER_URL = 'https://openrouter.ai/api/v1';
+const OPENROUTER_MODEL = 'anthropic/claude-haiku-4.5';
+
 /**
- * Create Vercel AI Gateway provider for text generation
+ * OpenRouter provider for text generation (OpenAI-compatible).
  */
-function getAIGateway() {
+function getOpenRouter() {
   return createOpenAI({
-    baseURL: AI_GATEWAY_URL,
-    apiKey: getApiKey(),
+    baseURL: OPENROUTER_URL,
+    apiKey: getOpenRouterKey(),
+    headers: {
+      'HTTP-Referer': 'https://mastertim.xyz',
+      'X-Title': 'td-portfolio',
+    },
   });
 }
 
-const AI_GATEWAY_URL = 'https://ai-gateway.vercel.sh/v1';
-
-/**
- * Get AI Gateway API key from available env sources
- */
-function getApiKey(): string {
-  const apiKey = import.meta.env.AI_GATEWAY_API_KEY ?? process.env.AI_GATEWAY_API_KEY;
+function getOpenRouterKey(): string {
+  const apiKey = import.meta.env.OPENROUTER_API_KEY ?? process.env.OPENROUTER_API_KEY;
   if (!apiKey) {
-    throw new Error('Missing AI_GATEWAY_API_KEY environment variable');
+    throw new Error('Missing OPENROUTER_API_KEY environment variable');
+  }
+  return apiKey;
+}
+
+function getOpenAIKey(): string {
+  const apiKey = import.meta.env.OPENAI_API_KEY ?? process.env.OPENAI_API_KEY;
+  if (!apiKey) {
+    throw new Error('Missing OPENAI_API_KEY environment variable (required for embeddings)');
   }
   return apiKey;
 }
 
 /**
- * Initialize Settings with embedding model routed through AI Gateway
+ * Initialize Settings with direct-OpenAI embeddings (OpenRouter does not offer embeddings).
  */
 function initializeSettings() {
   Settings.embedModel = new OpenAIEmbedding({
     model: 'text-embedding-3-large',
-    apiKey: getApiKey(),
-    baseURL: AI_GATEWAY_URL,
+    apiKey: getOpenAIKey(),
   });
 }
 
@@ -135,10 +144,10 @@ export async function queryVectorDB(
       userContent = buildUserPrompt(query, retrievedContext, '');
     }
 
-    // Generate response via Vercel AI Gateway
-    const gateway = getAIGateway();
+    // Generate response via OpenRouter
+    const openrouter = getOpenRouter();
     const { text } = await generateText({
-      model: gateway('xai/grok-4.1-fast-reasoning'),
+      model: openrouter(OPENROUTER_MODEL),
       system: systemPrompt,
       prompt: userContent,
       temperature,
@@ -281,10 +290,10 @@ export async function* streamQueryVectorDB(
       userContent = buildUserPrompt(query, retrievedContext, historyText);
     }
 
-    // 3. Stream response via Vercel AI Gateway
-    const gateway = getAIGateway();
+    // 3. Stream response via OpenRouter
+    const openrouter = getOpenRouter();
     const result = streamText({
-      model: gateway('xai/grok-4.1-fast-reasoning'),
+      model: openrouter(OPENROUTER_MODEL),
       system: systemPrompt,
       prompt: userContent,
       temperature,

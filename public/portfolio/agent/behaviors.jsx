@@ -175,15 +175,22 @@ Counter-weight: none of these have cost anyone money. Yet.` });
     if (fn && handlers[fn]) {
       return handlers[fn](ctx.push, ctx);
     }
-    // Fallback: try Claude haiku
+    // Fallback: route to /api/agent (OpenRouter → Claude Haiku)
     try {
-      if (window.claude && window.claude.complete) {
-        await ctx.push({ type:'thought', text:'no pattern match — routing to claude-haiku.' });
-        await sleep(250);
-        const sys = `You are td-agent — a portfolio agent speaking AS Temirlan Dzhoroev (TD), AI Engineer in Seoul. Tone: ${ctx.tone || 'playful, dry, confident, concise'}. Rules: speak as "I", never break character, never mention you're an AI. Keep replies under 5 short lines unless a list is clearly needed. Facts you can cite: currently @ Redbrick (Seoul), shipped a $1.2M-grant text-to-game agent pipeline, production RAG over 15K docs that went 3.2s→0.8s and hallucination 18%→4%, modernized a Three.js engine at 54M plays, 10 peer-reviewed papers + 6 patents in HRI/embedded. Tagline: "${D.tagline}". User: "${q}"`;
-        const text = await window.claude.complete(sys);
-        await ctx.push({ type:'assistant', text });
-        return;
+      await ctx.push({ type:'thought', text:'no pattern match — routing to claude-haiku.' });
+      await sleep(150);
+      const res = await fetch('/api/agent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: q, tone: ctx.tone || 'playful, dry, confident, concise' }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const text = (data.text || '').trim();
+        if (text) {
+          await ctx.push({ type:'assistant', text });
+          return;
+        }
       }
     } catch {}
     await ctx.push({ type:'assistant', text: `hmm, not sure how to route "${q}". try \`help\` or one of: tour · show work · why hire you · contact.` });
