@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Temirlan Dzhoroev — td-agent</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --a-bg:#0B0B0E; --a-surf:#121217; --a-ink:#EAEAEE; --a-muted:#8B8B94; --a-faint:#515159;
+    --a-line:#23232A; --a-accent:#7CFF6B;
+    --a-mono:'IBM Plex Mono', ui-monospace, monospace;
+    --a-display:'Geist', system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin:0; padding:0; background: var(--a-bg); color: var(--a-ink); font-family: var(--a-mono); -webkit-font-smoothing: antialiased; }
+  ::selection { background: var(--a-accent); color: var(--a-bg); }
+  a { color: inherit; }
+  body {
+    background-image:
+      radial-gradient(rgba(124, 255, 107, 0.025) 1px, transparent 1px),
+      radial-gradient(rgba(124, 255, 107, 0.015) 1px, transparent 1px);
+    background-size: 40px 40px, 8px 8px;
+    background-position: 0 0, 0 0;
+  }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--a-line); border-radius: 2px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--a-muted); }
+</style>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" src="v2/data.jsx"></script>
+<script type="text/babel" src="agent/behaviors.jsx"></script>
+<script type="text/babel" src="agent/tools.jsx"></script>
+<script type="text/babel" src="agent/Agent.jsx"></script>
+<script type="text/babel" src="agent/Tweaks.jsx"></script>
+
+<script type="text/babel" data-presets="react">
+  function App() {
+    const [tokens, setTokens] = React.useState(window.A_TWEAK_DEFAULTS);
+    const [tweaksOpen, setTweaksOpen] = React.useState(false);
+
+    React.useEffect(() => { window.APPLY_A_TOKENS(tokens); }, []);
+
+    React.useEffect(() => {
+      const onMsg = (e) => {
+        const d = e.data || {};
+        if (d.type === '__activate_edit_mode')   setTweaksOpen(true);
+        if (d.type === '__deactivate_edit_mode') setTweaksOpen(false);
+      };
+      window.addEventListener('message', onMsg);
+      try { window.parent.postMessage({type:'__edit_mode_available'}, '*'); } catch {}
+      return () => window.removeEventListener('message', onMsg);
+    }, []);
+
+    return (
+      <>
+        <Agent />
+        <Tweaks open={tweaksOpen} tokens={tokens} setTokens={setTokens} />
+        <TweaksToggle open={tweaksOpen} onClick={() => setTweaksOpen(o => !o)} />
+      </>
+    );
+  }
+
+  function TweaksToggle({ open, onClick }) {
+    return (
+      <button onClick={onClick} aria-label="Toggle tweaks" style={{
+        position:'fixed', right:20, bottom: open ? 'auto' : 20,
+        top: open ? 20 : 'auto',
+        width:40, height:40, borderRadius:999,
+        background:'var(--a-surf)', color:'var(--a-accent)',
+        border:'1px solid var(--a-line)',
+        fontFamily:'var(--a-mono)', fontSize:18, cursor:'pointer',
+        zIndex: 9998, boxShadow:'0 6px 20px rgba(0,0,0,0.4)',
+      }}>✦</button>
+    );
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
