@@ -1608,47 +1608,66 @@ const TD_DATA = {
     // ───── Intents & handlers ─────
     const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
+    // All intents use \b word boundaries so "open" won't match inside
+    // "opensource", "ship" won't match "shipping", etc.
     const INTENTS = [
       { re: /^(tour|overview|start|begin|hi|hello|hey)\b/i, fn: "tour" },
       {
-        re: /work|project|shipped|built|portfolio|ship/i,
+        re: /\b(work|projects?|shipped|built|portfolio)\b/i,
         fn: "listWork",
-        guard: (q) => !/rag|engine|cache|game|robot|fitt/i.test(q),
+        guard: (q) => !/\b(rag|engine|cache|game|robot|fitts?)\b/i.test(q),
       },
-      { re: /rag|retriev|halluc|15k|chroma/i, fn: "rag" },
-      { re: /game|text.?to.?game|agent|pipeline/i, fn: "aiGames" },
-      { re: /cache|cost|budget|save/i, fn: "cache" },
-      { re: /engine|three|webgl|3d|redbrick/i, fn: "engine" },
-      { re: /robot|ro.?man|hri|thesis/i, fn: "robot" },
-      { re: /fitt|eye.?track|face.?track/i, fn: "fitts" },
-      { re: /hire|why|pitch|strength|should i/i, fn: "pitch" },
+      { re: /\b(rag|retriev\w*|halluc\w*|15k|chroma)\b/i, fn: "rag" },
+      { re: /\b(game|text.?to.?game|pipeline)\b/i, fn: "aiGames" },
+      { re: /\b(cache|caching|budget)\b/i, fn: "cache" },
+      { re: /\b(engine|three\.?js|webgl|3d|redbrick)\b/i, fn: "engine" },
+      { re: /\b(robot|ro.?man|hri|thesis)\b/i, fn: "robot" },
+      { re: /\b(fitts?|eye.?track\w*|face.?track\w*)\b/i, fn: "fitts" },
+      { re: /\b(hire|pitch|strength|should i hire|why (should )?i hire)\b/i, fn: "pitch" },
       {
-        re: /experience|resume|cv|career|where.*work/i,
+        re: /\b(experience|resume|cv|career)\b|where.*\bwork/i,
         fn: "career",
         // "experience with/in/using X" is a skill-check, not a timeline request — let it fall through.
         guard: (q) => !/\bexperience\s+(with|in|using|of|on)\b/i.test(q),
       },
-      { re: /paper|publication|research|academ|phd|patent/i, fn: "pubs" },
-      { re: /cert|certific|award|olympiad|course|badge/i, fn: "certs" },
-      { re: /educat|school|degree|university|unist|thesis|gpa|scholarship/i, fn: "education" },
+      { re: /\b(papers?|publications?|research|academ\w*|phd|patents?)\b/i, fn: "pubs" },
+      { re: /\b(certs?|certific\w*|awards?|olympiad|badges?)\b/i, fn: "certs" },
+      { re: /\b(education|school|degree|university|unist|thesis|gpa|scholarship)\b/i, fn: "education" },
       {
-        re: /stack|tool|tech|language/i,
+        re: /\b(stack|tools?|tech|languages?)\b/i,
         fn: "stack",
-        // "languages you speak" → spoken, not programming — let Claude handle it.
+        // "languages you speak" → spoken, not programming — let LLM handle it.
         guard: (q) => !/\b(speak|spoken|fluent|native)\b/i.test(q),
       },
-      { re: /contact|email|reach|available|open/i, fn: "contact" },
-      { re: /skills|what.*(can|do) you (do|build)/i, fn: "skills" },
-      { re: /where.*live|location|seoul|timezone|gmt/i, fn: "location" },
-      { re: /weak|fail|worst|fuck.?up|mistake/i, fn: "weakness" },
-      { re: /joke|fun|haha|lol/i, fn: "joke" },
-      { re: /ping|status|alive/i, fn: "ping" },
+      // "available" is intentionally kept but "open" removed (false-matched "opensource").
+      { re: /\b(contact|email|reach out|available|hire me|book a call)\b/i, fn: "contact" },
+      { re: /\bskills?\b|what.*(can|do) you (do|build)/i, fn: "skills" },
+      { re: /where.*\blive\b|\b(location|seoul|timezone|gmt)\b/i, fn: "location" },
+      { re: /\b(weak\w*|fail\w*|worst|mistake)\b|fuck.?up/i, fn: "weakness" },
+      { re: /\b(joke|haha|lol)\b/i, fn: "joke" },
+      { re: /\b(ping|alive)\b|^status$/i, fn: "ping" },
       { re: /^(clear|reset)\b/i, fn: "clear" },
       // Only bare "?", "help", or "commands" — not any query ending in "?".
       { re: /^\s*(help|commands|\?)\s*$/i, fn: "help" },
     ];
 
+    // If the query is a follow-up / quotes prior content / is long, route
+    // straight to the LLM instead of triggering a local tool card.
+    function isFollowUp(q) {
+      const t = q.trim();
+      return /^(tell me more|more about|tell me about more|elaborate|expand|continue|go on|what about|how about|give me|can you|could you|and\b|also\b)/i.test(t);
+    }
+    function isLongOrQuoted(q) {
+      const t = q.trim();
+      if (t.split(/\s+/).length > 14) return true; // long → likely has quoted context
+      // Quoted or contains a colon-delimited lead-in ("Open-Source Contrib: …")
+      if (/["'""']/.test(t)) return true;
+      if (/:\s/.test(t) && t.length > 60) return true;
+      return false;
+    }
+
     function match(q) {
+      if (isFollowUp(q) || isLongOrQuoted(q)) return null;
       for (const i of INTENTS) {
         if (i.re.test(q) && (!i.guard || i.guard(q))) return i.fn;
       }
