@@ -1,0 +1,2011 @@
+---
+// Agent-as-portfolio console.
+// Sidebar + main chat log. Local intent matching renders tool-call cards
+// (work table, project details, timeline, publications, stack).
+// Free-form queries fall through to /api/agent (Claude via OpenRouter).
+
+const TD_DATA = {
+  name: "Temirlan Dzhoroev",
+  handle: "td",
+  role: "AI Engineer",
+  location: "Seoul, KR",
+  tz: "GMT+9",
+  email: "dzhoroev1@gmail.com",
+  github: "master-tim",
+  linkedin: "dzhoroev7",
+
+  tagline: "I build production LLM/RAG systems and browser 3D engines.",
+
+  metrics: {
+    plays: "54,000,000",
+    grant: "$1.2M",
+    latency: "3.2s → 0.8s",
+    hallucination: "18% → 4%",
+    llmSaved: "~$2K/mo",
+    papers: 10,
+    patents: 6,
+  },
+
+  work: [
+    {
+      id: "ai-games",
+      year: "2024–25",
+      title: "AI Game Creation System",
+      kind: "agent pipeline",
+      oneliner:
+        "Text → playable game. Intent parsing, asset gen, scene composition, logic synthesis.",
+      ctx: "Centerpiece of a $1.2M Korean government R&D grant. Solo architect; team of 3 on integration.",
+      stack: ["LangChain", "Vercel AI SDK", "Claude", "Next.js"],
+      metric: "$1.2M grant · up to 8 dependent tool calls / request",
+      decisions: [
+        "Chose ReACT over plain chain-of-thought — needed mid-stream tool retries",
+        "Asset pipeline runs async; UI streams placeholders first, swaps on completion",
+        "Guardrail layer rejects unsafe asset prompts before image gen (saved ~15% spend)",
+      ],
+    },
+    {
+      id: "rag-15k",
+      year: "2024",
+      title: "Production RAG · 15K docs",
+      kind: "retrieval system",
+      oneliner:
+        "Hybrid retrieval + query rewriting + cross-encoder re-rank over 15K docs in Chroma.",
+      ctx: "Internal knowledge assistant. First version hallucinated 18% of answers.",
+      stack: ["ChromaDB", "OpenAI embeddings", "bge-reranker", "Python"],
+      metric:
+        "hallucination 18 → 4% · latency 3.2s → 0.8s · +35% relevance",
+      decisions: [
+        "Query rewrite step added ~120ms but +28pp recall — worth it",
+        "Re-rank top-50 → top-8; bge-reranker-base beat cohere at 1/10 the cost",
+        "Eval harness: 200 golden Q/A pairs, runs on every retrieval-code change",
+      ],
+    },
+    {
+      id: "semantic-cache",
+      year: "2024",
+      title: "Semantic Cache Layer",
+      kind: "infra",
+      oneliner:
+        "Embedding-similarity cache over LLM calls. Sub-inference cost routing.",
+      ctx: "LLM bill was scaling linearly with traffic. Needed a dial, not a rewrite.",
+      stack: ["Redis", "OpenAI", "Vercel AI"],
+      metric: "−40% LLM calls · ~$2K/month saved · p50 −180ms",
+      decisions: [
+        "Cosine threshold tuned per-endpoint; chat = 0.93, completion = 0.88",
+        "Cache key includes model + temp + system-prompt hash (invalidates on prompt edits)",
+        "Fall-through logs every miss — used to find misclassified routes",
+      ],
+    },
+    {
+      id: "engine",
+      year: "2023–24",
+      title: "Browser 3D Game Engine",
+      kind: "engine work",
+      oneliner:
+        "Modernized a 50k-line Three.js engine. Webpack → Vite, new physics, modular packages.",
+      ctx: "Engine powers Redbrick — 54M plays, 10M users. I inherited it mid-growth.",
+      stack: ["Three.js", "WebGL", "Vite", "Rapier", "TypeScript"],
+      metric: "54M plays · build time −60% · bundle −35%",
+      decisions: [
+        "Split monorepo into 6 packages; let 3 teams ship without stepping on each other",
+        "Rapier over cannon-es — deterministic multiplayer was non-negotiable",
+        "Kept the old asset format; wrote an adapter rather than force 1000+ games to migrate",
+      ],
+    },
+    {
+      id: "robot-face",
+      year: "2023",
+      title: "Social-Robot Face Model",
+      kind: "research",
+      oneliner:
+        "Computational emotion model for robot face + color expression.",
+      ctx: "M.S. thesis. IEEE RO-MAN 2023 first author. Lotte Foundation Scholarship.",
+      stack: ["Python", "PyTorch", "Unity", "HRI study (n=42)"],
+      metric: "RO-MAN 2023 · Lotte Scholarship · IRB-approved user study",
+    },
+    {
+      id: "fitts",
+      year: "2022",
+      title: "Fitts' Law × Face Tracking",
+      kind: "research",
+      oneliner:
+        "Face- vs eye-tracking as mobile-scroll inputs — which throughput wins?",
+      ctx: "HCI Korea 2022, first author. Answer: eye > face, but face generalizes to more devices.",
+      stack: ["OpenCV", "MediaPipe", "iOS", "user study (n=24)"],
+      metric: "HCI Korea 2022",
+    },
+  ],
+
+  exp: [
+    {
+      date: "2024 — now",
+      role: "AI Engineer",
+      co: "Redbrick",
+      loc: "Seoul",
+      bullets: [
+        "End-to-end AI game creation system; centerpiece of $1.2M grant",
+        "Production RAG over 15K docs, hybrid retrieval + re-rank",
+        "Agentic workflows (ReACT, CoT); up to 8 dependent tool calls",
+        "Semantic cache layer; −40% LLM calls, ~$2K/mo saved",
+      ],
+    },
+    {
+      date: "2023 — 2024",
+      role: "3D Frontend Engineer",
+      co: "Redbrick",
+      loc: "Seoul",
+      bullets: [
+        "Three.js/WebGL engine powering 54M plays, 10M users",
+        "Webpack → Vite migration, −60% build time, −35% bundle",
+        "Refactored engine into modular packages across 3 teams",
+        "Onboarding redesign: +25% D7 activation, +15% D30 retention",
+      ],
+    },
+    {
+      date: "2021 — 2023",
+      role: "Embedded & HCI Researcher",
+      co: "DECS Lab, UNIST",
+      loc: "Ulsan",
+      bullets: [
+        "IoT firmware in C for ARM Cortex-M — 50+ devices, sub-ms latency",
+        "10 peer-reviewed papers, 6 patents",
+        "IEEE RO-MAN, ICROS, HCI Korea first-author",
+      ],
+    },
+  ],
+
+  pubs: [
+    {
+      year: "2024",
+      venue: "J. ICROS",
+      title:
+        "Dynamic Expression Model for Robot Facial and Movement Expressions",
+      role: "co-author",
+    },
+    {
+      year: "2023",
+      venue: "IEEE RO-MAN",
+      title:
+        "Human Perception on Social Robot's Face and Color Expression via Computational Emotion Model",
+      role: "first author",
+    },
+    {
+      year: "2023",
+      venue: "J. Korea Robotics Soc.",
+      title:
+        "Implementation & Analysis of Facial Expression Customization for a Social Robot",
+      role: "co-author",
+    },
+    {
+      year: "2023",
+      venue: "Intell. Service Robotics",
+      title:
+        "Expanded Linear Dynamic Affect-Expression Model for Lingering Emotional Expression",
+      role: "co-author",
+    },
+    {
+      year: "2022",
+      venue: "ICROS",
+      title:
+        "An Expressive Eye Interface for Pedestrian Interaction with Indoor Mobility",
+      role: "first author",
+    },
+    {
+      year: "2022",
+      venue: "HCI Korea",
+      title:
+        "Comparison of Face & Eye Tracking for Scrolling a Web Browser on Mobile",
+      role: "first author",
+    },
+  ],
+
+  stack: [
+    [
+      "AI / LLM",
+      [
+        "LangChain",
+        "LlamaIndex",
+        "Vercel AI SDK",
+        "ChromaDB",
+        "OpenAI",
+        "Claude",
+        "Embeddings",
+        "RAG",
+        "Agents",
+        "Evals",
+      ],
+    ],
+    [
+      "Frontend",
+      ["React", "Next.js", "Astro", "TypeScript", "Tailwind", "Vite"],
+    ],
+    ["3D / WebGL", ["Three.js", "WebGL", "GLSL", "WebXR", "Rapier", "Blender"]],
+    ["Backend", ["Node.js", "Python", "Redis", "Docker", "AWS", "CI/CD"]],
+    [
+      "Research",
+      ["HCI", "HRI", "Computer Vision", "Embedded C", "ARM Cortex-M"],
+    ],
+  ],
+};
+---
+
+<!-- Font load (IBM Plex Mono + Geist) — specific to the console -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Geist:wght@400;500;600;700&display=swap"
+  rel="stylesheet"
+/>
+
+<section class="td-agent" aria-label="td-agent console">
+  <!-- ─── Sidebar ─── -->
+  <aside class="td-sidebar">
+    <div class="td-ident">
+      <div class="td-ident-row">
+        <span class="td-dot"></span>
+        <strong class="td-brand">td-agent</strong>
+        <span class="td-ver">v0.4.2</span>
+      </div>
+      <div class="td-name">
+        Temirlan<br />Dzhoroev<span class="td-accent-dot">.</span>
+      </div>
+      <div class="td-subline">
+        AI Engineer.<br />Shipping LLM systems<br />that reach users.
+      </div>
+    </div>
+
+    <div>
+      <div class="td-side-label">commands</div>
+      <div class="td-cmds" id="td-cmds"></div>
+    </div>
+
+    <div>
+      <div class="td-side-label">status</div>
+      <div class="td-status">
+        <div>
+          <span class="td-kv-k">role</span><span class="td-kv-v"
+            >{TD_DATA.role}</span
+          >
+        </div>
+        <div>
+          <span class="td-kv-k">loc</span><span class="td-kv-v"
+            >{TD_DATA.location}</span
+          >
+        </div>
+        <div>
+          <span class="td-kv-k">tz</span><span class="td-kv-v"
+            >{TD_DATA.tz}</span
+          >
+        </div>
+        <div>
+          <span class="td-kv-k">open</span><span class="td-kv-v td-kv-accent"
+            >● senior IC</span
+          >
+        </div>
+        <div>
+          <span class="td-kv-k">up</span><span class="td-kv-v" id="td-uptime"
+            >00:00</span
+          >
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="td-side-label">links</div>
+      <div class="td-links">
+        <a href={`mailto:${TD_DATA.email}`}>→ {TD_DATA.email}</a>
+        <a href={`https://github.com/${TD_DATA.github}`} target="_blank" rel="noopener noreferrer">→ github/{TD_DATA.github}</a>
+        <a href={`https://linkedin.com/in/${TD_DATA.linkedin}`} target="_blank" rel="noopener noreferrer">→ linkedin/{TD_DATA.linkedin}</a>
+      </div>
+    </div>
+
+    <div>
+      <div class="td-side-label">elsewhere</div>
+      <div class="td-links">
+        <a href="/about">→ /about</a>
+        <a href="/blog">→ /writing</a>
+        <a href="/cv">→ /cv.pdf</a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ─── Main console ─── -->
+  <main class="td-main">
+    <div id="td-log" class="td-log" aria-live="polite"></div>
+
+    <form id="td-form" class="td-input-bar" autocomplete="off">
+      <div class="td-input-wrap" id="td-input-wrap">
+        <span class="td-prompt">td &gt;</span>
+        <input
+          id="td-input"
+          type="text"
+          placeholder="ask anything · 'why hire you' · 'tell me about RAG' · 'weakness'…"
+          autocomplete="off"
+          autofocus
+        />
+        <button id="td-send" type="submit" disabled>↵ send</button>
+      </div>
+      <div class="td-input-foot">
+        <span
+          >type a command or ask anything — free-form → claude-haiku fallback</span
+        >
+        <span>© 2026 td</span>
+      </div>
+    </form>
+  </main>
+
+  <!-- ─── Tweaks ─── -->
+  <button
+    id="td-tweaks-btn"
+    type="button"
+    aria-label="Open tweaks panel"
+    title="Tweaks">✦</button
+  >
+
+  <div id="td-tweaks-panel" hidden>
+    <div class="td-tw-head">
+      <strong>Tweaks</strong>
+      <span>TD-AGENT</span>
+    </div>
+    <div class="td-tw-field">
+      <div class="td-tw-lbl">ACCENT</div>
+      <div class="td-tw-accents" id="td-tw-accents"></div>
+    </div>
+    <div class="td-tw-field">
+      <div class="td-tw-lbl">SCHEME</div>
+      <div class="td-tw-seg" id="td-tw-scheme" data-key="scheme"></div>
+    </div>
+    <div class="td-tw-field">
+      <div class="td-tw-lbl">DENSITY</div>
+      <div class="td-tw-seg" id="td-tw-density" data-key="density"></div>
+    </div>
+    <div class="td-tw-field">
+      <div class="td-tw-lbl">AGENT TONE (CLAUDE FALLBACK)</div>
+      <input type="text" id="td-tw-tone" />
+    </div>
+    <div class="td-tw-field">
+      <div class="td-tw-lbl">SHOW INTERNAL THOUGHTS</div>
+      <button type="button" id="td-tw-thoughts"></button>
+    </div>
+  </div>
+</section>
+
+<style is:global>
+  :root {
+    --a-bg: #0b0b0e;
+    --a-surf: #121217;
+    --a-ink: #eaeaee;
+    --a-muted: #8b8b94;
+    --a-faint: #515159;
+    --a-line: #23232a;
+    --a-accent: #7cff6b;
+    --a-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    --a-display: "Geist", system-ui, -apple-system, sans-serif;
+  }
+
+  body.td-home {
+    margin: 0;
+    padding: 0;
+    background: var(--a-bg);
+    color: var(--a-ink);
+    font-family: var(--a-mono);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    background-image:
+      radial-gradient(rgba(124, 255, 107, 0.025) 1px, transparent 1px),
+      radial-gradient(rgba(124, 255, 107, 0.015) 1px, transparent 1px);
+    background-size:
+      40px 40px,
+      8px 8px;
+    background-position:
+      0 0,
+      0 0;
+  }
+
+  body.td-home ::selection {
+    background: var(--a-accent);
+    color: var(--a-bg);
+  }
+  body.td-home ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  body.td-home ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  body.td-home ::-webkit-scrollbar-thumb {
+    background: var(--a-line);
+    border-radius: 2px;
+  }
+  body.td-home ::-webkit-scrollbar-thumb:hover {
+    background: var(--a-muted);
+  }
+
+  /* ─── Layout ─── */
+  .td-agent {
+    height: 100vh;
+    height: 100dvh;
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 0;
+    font-family: var(--a-mono);
+    color: var(--a-ink);
+    background: var(--a-bg);
+    overflow: hidden;
+  }
+
+  /* Sidebar */
+  .td-sidebar {
+    border-right: 1px solid var(--a-line);
+    padding: 28px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    height: 100%;
+    overflow-y: auto;
+  }
+
+  .td-ident-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .td-dot {
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    border-radius: 999px;
+    background: var(--a-accent);
+    box-shadow: 0 0 10px var(--a-accent);
+    animation: td-pulse 2.2s ease-in-out infinite;
+  }
+  @keyframes td-pulse {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.4;
+    }
+  }
+  .td-brand {
+    font-size: 13px;
+    letter-spacing: 0.02em;
+    color: var(--a-ink);
+  }
+  .td-ver {
+    color: var(--a-faint);
+    font-size: 11px;
+    margin-left: auto;
+  }
+  .td-name {
+    font-family: var(--a-display);
+    font-size: 26px;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    font-weight: 500;
+    color: var(--a-ink);
+  }
+  .td-accent-dot {
+    color: var(--a-accent);
+  }
+  .td-subline {
+    color: var(--a-muted);
+    font-size: 12px;
+    margin-top: 10px;
+    line-height: 1.6;
+  }
+
+  .td-side-label {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--a-faint);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .td-cmds {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .td-cmd {
+    background: transparent;
+    border: none;
+    text-align: left;
+    font-family: var(--a-mono);
+    font-size: 12.5px;
+    color: var(--a-muted);
+    padding: 6px 0;
+    cursor: pointer;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    transition: color 0.15s;
+  }
+  .td-cmd[data-hot="1"] {
+    color: var(--a-ink);
+  }
+  .td-cmd .td-arrow {
+    color: var(--a-accent);
+    font-size: 10px;
+  }
+  .td-cmd:hover:not([disabled]) {
+    color: var(--a-accent);
+  }
+  .td-cmd[disabled] {
+    opacity: 0.5;
+    cursor: default;
+  }
+
+  .td-status {
+    font-size: 11.5px;
+    line-height: 1.9;
+    color: var(--a-muted);
+  }
+  .td-status > div {
+    display: flex;
+    justify-content: space-between;
+  }
+  .td-kv-k {
+    color: var(--a-faint);
+  }
+  .td-kv-v {
+    color: var(--a-ink);
+  }
+  .td-kv-accent {
+    color: var(--a-accent);
+  }
+
+  .td-links {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 12px;
+  }
+  .td-links a {
+    color: var(--a-muted);
+    text-decoration: none;
+    padding: 2px 0;
+    transition: color 0.15s;
+  }
+  .td-links a:hover {
+    color: var(--a-accent);
+  }
+
+  /* Main */
+  .td-main {
+    display: grid;
+    grid-template-rows: 1fr auto;
+    height: 100%;
+    padding: 0 36px;
+    min-width: 0;
+    overflow: hidden;
+  }
+  .td-log {
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 20px 0;
+    font-family: var(--a-mono);
+    font-size: calc(13.5px * var(--a-scale, 1));
+    line-height: 1.65;
+    min-height: 0;
+    overscroll-behavior: contain;
+  }
+
+  /* Log rows */
+  .td-row-system {
+    color: var(--a-faint);
+    padding: 3px 0;
+    font-size: 12px;
+  }
+  .td-row-user {
+    padding: 10px 0 6px;
+    font-size: 14px;
+  }
+  .td-row-user .td-prompt {
+    color: var(--a-accent);
+    margin-right: 6px;
+  }
+  .td-row-thought {
+    color: var(--a-muted);
+    padding: 3px 0;
+    font-style: italic;
+    font-size: 12.5px;
+  }
+  .td-row-assistant {
+    padding: 6px 0 10px;
+    white-space: pre-wrap;
+    font-size: 13.5px;
+    color: var(--a-ink);
+  }
+  .td-row-assistant .td-caret {
+    color: var(--a-accent);
+  }
+  .td-row-thinking {
+    color: var(--a-muted);
+    padding: 6px 0;
+  }
+  .td-tool-head {
+    color: var(--a-accent);
+    margin-bottom: 8px;
+    font-size: 12.5px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    padding: 6px 0 0;
+  }
+  .td-tool-status {
+    color: var(--a-accent);
+    font-size: 10.5px;
+    letter-spacing: 0.04em;
+    padding: 1px 6px;
+    border: 1px solid currentColor;
+    border-radius: 2px;
+  }
+  .td-tool-status.err {
+    color: #e0564b;
+  }
+
+  .td-tool-box {
+    border: 1px solid var(--a-line);
+    border-radius: 2px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.015);
+    margin-bottom: 12px;
+  }
+
+  /* Work table */
+  .td-work-head,
+  .td-work-row {
+    display: grid;
+    grid-template-columns: 70px 1.15fr 2fr 120px;
+    gap: 14px;
+  }
+  .td-work-head {
+    padding: 8px 14px;
+    font-size: 10.5px;
+    color: var(--a-faint);
+    letter-spacing: 0.08em;
+    border-bottom: 1px solid var(--a-line);
+    text-transform: uppercase;
+  }
+  .td-work-head span:last-child {
+    text-align: right;
+  }
+  .td-work-row {
+    padding: 10px 14px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.15s;
+    align-items: baseline;
+  }
+  .td-work-row + .td-work-row {
+    border-top: 1px solid var(--a-line);
+  }
+  .td-work-row:hover {
+    background: rgba(255, 255, 255, 0.03);
+  }
+  .td-work-row .y {
+    color: var(--a-muted);
+  }
+  .td-work-row .t {
+    color: var(--a-ink);
+  }
+  .td-work-row .o {
+    color: var(--a-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .td-work-row .k {
+    color: var(--a-accent);
+    text-align: right;
+    font-size: 11px;
+  }
+
+  /* Project card */
+  .td-proj-head {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--a-line);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .td-proj-title {
+    color: var(--a-ink);
+    font-size: 15px;
+    letter-spacing: -0.01em;
+    font-weight: 600;
+  }
+  .td-proj-meta {
+    color: var(--a-muted);
+    font-size: 11px;
+  }
+  .td-proj-body {
+    padding: 16px 20px;
+  }
+  .td-proj-one {
+    color: var(--a-ink);
+    margin-bottom: 10px;
+    font-size: 14px;
+    line-height: 1.55;
+  }
+  .td-proj-ctx {
+    color: var(--a-muted);
+    margin-bottom: 14px;
+    font-size: 12.5px;
+    line-height: 1.55;
+  }
+  .td-tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .td-tag {
+    font-size: 11px;
+    border: 1px solid var(--a-line);
+    padding: 3px 9px;
+    color: var(--a-muted);
+    border-radius: 2px;
+  }
+  .td-metric {
+    display: inline-block;
+    padding: 6px 10px;
+    background: color-mix(in srgb, var(--a-accent) 8%, transparent);
+    color: var(--a-accent);
+    font-size: 11.5px;
+    border-radius: 2px;
+    margin-bottom: 0;
+  }
+  .td-decisions {
+    border-top: 1px solid var(--a-line);
+    padding-top: 14px;
+    margin-top: 16px;
+  }
+  .td-dec-label {
+    color: var(--a-faint);
+    font-size: 10.5px;
+    letter-spacing: 0.1em;
+    margin-bottom: 8px;
+  }
+  .td-dec-row {
+    font-size: 12.5px;
+    color: var(--a-ink);
+    padding: 3px 0;
+    display: flex;
+    gap: 8px;
+  }
+  .td-dec-row > span:first-child {
+    color: var(--a-muted);
+    flex-shrink: 0;
+  }
+
+  /* Experience */
+  .td-exp-row {
+    padding: 14px 18px;
+  }
+  .td-exp-row + .td-exp-row {
+    border-top: 1px solid var(--a-line);
+  }
+  .td-exp-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 8px;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .td-exp-role {
+    color: var(--a-ink);
+    font-size: 13.5px;
+  }
+  .td-exp-role strong {
+    font-weight: 600;
+  }
+  .td-exp-co {
+    color: var(--a-muted);
+  }
+  .td-exp-date {
+    color: var(--a-muted);
+    font-size: 11.5px;
+  }
+  .td-exp-bullet {
+    font-size: 12.5px;
+    color: var(--a-muted);
+    padding: 3px 0;
+    display: flex;
+    gap: 10px;
+  }
+  .td-exp-bullet > span:first-child {
+    color: var(--a-faint);
+  }
+
+  /* Publications */
+  .td-pub-row {
+    display: grid;
+    grid-template-columns: 56px 160px 1fr 90px;
+    gap: 12px;
+    padding: 9px 14px;
+    font-size: 12.5px;
+    align-items: baseline;
+  }
+  .td-pub-row + .td-pub-row {
+    border-top: 1px solid var(--a-line);
+  }
+  .td-pub-row .y {
+    color: var(--a-muted);
+  }
+  .td-pub-row .v {
+    color: var(--a-accent);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .td-pub-row .t {
+    color: var(--a-ink);
+    line-height: 1.45;
+  }
+  .td-pub-row .r {
+    color: var(--a-faint);
+    text-align: right;
+    font-size: 11px;
+  }
+
+  /* Stack */
+  .td-stack-row {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 16px;
+    padding: 12px 16px;
+    align-items: start;
+  }
+  .td-stack-row + .td-stack-row {
+    border-top: 1px solid var(--a-line);
+  }
+  .td-stack-row .k {
+    color: var(--a-muted);
+    font-size: 11.5px;
+    padding-top: 4px;
+  }
+  .td-stack-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .td-stack-tag {
+    font-size: 11px;
+    color: var(--a-ink);
+    border: 1px solid var(--a-line);
+    padding: 3px 9px;
+    border-radius: 2px;
+  }
+
+  /* JSON */
+  .td-json-row {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: 14px;
+    padding: 6px 16px;
+  }
+  .td-json-row + .td-json-row {
+    border-top: 1px solid var(--a-line);
+  }
+  .td-json-k {
+    color: var(--a-faint);
+    font-size: 11.5px;
+  }
+  .td-json-v {
+    color: var(--a-ink);
+    font-size: 12.5px;
+    word-break: break-word;
+  }
+
+  /* Input bar */
+  .td-input-bar {
+    padding: 16px 0 24px;
+    border-top: 1px solid var(--a-line);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: var(--a-bg);
+  }
+  .td-input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border: 1px solid var(--a-line);
+    background: var(--a-surf);
+    padding: 12px 16px;
+    border-radius: 2px;
+    transition: border-color 0.2s;
+  }
+  .td-input-wrap.active {
+    border-color: var(--a-accent);
+  }
+  .td-input-wrap .td-prompt {
+    color: var(--a-accent);
+  }
+  .td-input-wrap input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    outline: none;
+    font-family: var(--a-mono);
+    font-size: 14px;
+    color: var(--a-ink);
+    min-width: 0;
+  }
+  .td-input-wrap input::placeholder {
+    color: var(--a-faint);
+  }
+  .td-input-wrap button {
+    font-family: var(--a-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    color: var(--a-muted);
+    background: transparent;
+    border: 1px solid var(--a-line);
+    padding: 6px 14px;
+    border-radius: 2px;
+    cursor: default;
+    text-transform: uppercase;
+    white-space: nowrap;
+    transition:
+      background 0.15s,
+      color 0.15s,
+      border-color 0.15s;
+  }
+  .td-input-wrap button:not([disabled]) {
+    color: var(--a-bg);
+    background: var(--a-accent);
+    border-color: var(--a-accent);
+    cursor: pointer;
+  }
+  .td-input-foot {
+    font-size: 10.5px;
+    color: var(--a-faint);
+    display: flex;
+    justify-content: space-between;
+    letter-spacing: 0.04em;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  /* Tweaks */
+  #td-tweaks-btn {
+    position: fixed;
+    right: 20px;
+    top: 20px;
+    width: 36px;
+    height: 36px;
+    border-radius: 2px;
+    background: var(--a-surf);
+    border: 1px solid var(--a-line);
+    color: var(--a-accent);
+    font-size: 16px;
+    cursor: pointer;
+    z-index: 9998;
+    display: grid;
+    place-items: center;
+    transition:
+      transform 0.2s,
+      border-color 0.15s;
+    font-family: var(--a-mono);
+  }
+  #td-tweaks-btn:hover {
+    transform: rotate(90deg);
+    border-color: var(--a-accent);
+  }
+  #td-tweaks-panel {
+    position: fixed;
+    right: 20px;
+    top: 64px;
+    width: 320px;
+    max-width: calc(100vw - 40px);
+    background: var(--a-surf);
+    border: 1px solid var(--a-line);
+    border-radius: 3px;
+    padding: 18px 20px;
+    font-family: var(--a-mono);
+    font-size: 12px;
+    color: var(--a-ink);
+    z-index: 9999;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  }
+  #td-tweaks-panel[hidden] {
+    display: none;
+  }
+  .td-tw-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--a-line);
+  }
+  .td-tw-head strong {
+    letter-spacing: 0.04em;
+  }
+  .td-tw-head span {
+    color: var(--a-faint);
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+  }
+  .td-tw-field {
+    margin-bottom: 14px;
+  }
+  .td-tw-field:last-child {
+    margin-bottom: 0;
+  }
+  .td-tw-lbl {
+    font-size: 10px;
+    color: var(--a-faint);
+    letter-spacing: 0.1em;
+    margin-bottom: 6px;
+  }
+  .td-tw-accents {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .td-tw-sw {
+    width: 28px;
+    height: 28px;
+    border-radius: 2px;
+    border: 1px solid var(--a-line);
+    cursor: pointer;
+    padding: 0;
+    box-shadow: none;
+    transition: box-shadow 0.15s, transform 0.15s;
+  }
+  .td-tw-sw:hover {
+    transform: translateY(-1px);
+  }
+  .td-tw-sw.active {
+    border-color: var(--a-surf);
+    box-shadow:
+      0 0 0 1px var(--a-surf),
+      0 0 0 3px var(--a-accent);
+  }
+  .td-tw-seg {
+    display: grid;
+    border: 1px solid var(--a-line);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .td-tw-seg button {
+    padding: 7px 8px;
+    background: transparent;
+    color: var(--a-muted);
+    border: none;
+    font-family: var(--a-mono);
+    font-size: 11px;
+    cursor: pointer;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    transition: color 0.15s, background 0.15s;
+  }
+  .td-tw-seg button:hover:not(.active) {
+    color: var(--a-ink);
+  }
+  .td-tw-seg button + button {
+    border-left: 1px solid var(--a-line);
+  }
+  .td-tw-seg button.active {
+    background: color-mix(in srgb, var(--a-accent) 14%, transparent);
+    color: var(--a-accent);
+  }
+  #td-tw-tone {
+    width: 100%;
+    background: transparent;
+    border: 1px solid var(--a-line);
+    color: var(--a-ink);
+    font-family: var(--a-mono);
+    font-size: 12px;
+    padding: 6px 10px;
+    border-radius: 2px;
+    outline: none;
+  }
+  #td-tw-tone:focus {
+    border-color: var(--a-accent);
+  }
+  #td-tw-thoughts {
+    width: 100%;
+    padding: 6px 10px;
+    background: transparent;
+    border: 1px solid var(--a-line);
+    color: var(--a-muted);
+    font-family: var(--a-mono);
+    font-size: 11px;
+    cursor: pointer;
+    border-radius: 2px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  #td-tw-thoughts[data-on="1"] {
+    color: var(--a-accent);
+  }
+
+  /* Caret blink */
+  @keyframes td-blink {
+    0%,
+    49% {
+      opacity: 1;
+    }
+    50%,
+    100% {
+      opacity: 0;
+    }
+  }
+  .td-caret {
+    animation: td-blink 1s steps(1) infinite;
+  }
+
+  /* Responsive */
+  @media (max-width: 800px) {
+    .td-agent {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto 1fr;
+      height: auto;
+      min-height: 100vh;
+      min-height: 100dvh;
+      overflow: visible;
+    }
+    .td-sidebar {
+      height: auto;
+      max-height: none;
+      overflow-y: visible;
+      border-right: none;
+      border-bottom: 1px solid var(--a-line);
+      padding: 20px 20px 24px;
+    }
+    .td-main {
+      height: auto;
+      min-height: calc(100vh - 60px);
+      min-height: calc(100dvh - 60px);
+      padding: 0 20px;
+      overflow: visible;
+    }
+    .td-log {
+      overflow: visible;
+      max-height: none;
+    }
+    .td-input-bar {
+      position: sticky;
+      bottom: 0;
+      z-index: 50;
+      margin: 0 -20px;
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+    .td-work-head,
+    .td-work-row {
+      grid-template-columns: 58px 1fr 90px;
+    }
+    .td-work-head span:nth-child(3),
+    .td-work-row .o {
+      display: none;
+    }
+    .td-pub-row {
+      grid-template-columns: 48px 1fr;
+      row-gap: 4px;
+    }
+    .td-pub-row .v {
+      grid-column: 2;
+    }
+    .td-pub-row .t {
+      grid-column: 1 / span 2;
+    }
+    .td-pub-row .r {
+      grid-column: 1 / span 2;
+      text-align: left;
+    }
+    .td-stack-row {
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+  }
+</style>
+
+<script is:inline define:vars={{ TD_DATA }}>
+  (function () {
+    "use strict";
+
+    // Idempotent init — safe to run again on view transitions
+    if (window.__tdAgentInit && window.__tdAgentInit.cleanup) {
+      window.__tdAgentInit.cleanup();
+    }
+
+    const root = document.querySelector(".td-agent");
+    if (!root) return;
+
+    const D = TD_DATA;
+
+    const $ = (sel) => root.querySelector(sel);
+    const $$ = (sel) => Array.from(root.querySelectorAll(sel));
+
+    const logEl = $("#td-log");
+    const formEl = $("#td-form");
+    const inputEl = $("#td-input");
+    const sendEl = $("#td-send");
+    const inputWrap = $("#td-input-wrap");
+    const cmdsEl = $("#td-cmds");
+    const uptimeEl = $("#td-uptime");
+    const tweaksBtn = document.getElementById("td-tweaks-btn");
+    const tweaksPanel = document.getElementById("td-tweaks-panel");
+
+    // ───── Tweaks ─────
+    const TWEAK_KEY = "td-agent-tweaks-v1";
+    const DEFAULTS = {
+      accent: "#7CFF6B",
+      scheme: "default",
+      density: "default",
+      tone: "playful, dry, confident",
+      showThoughts: true,
+    };
+    let tweaks = loadTweaks();
+
+    function loadTweaks() {
+      try {
+        const raw = localStorage.getItem(TWEAK_KEY);
+        if (!raw) return { ...DEFAULTS };
+        return { ...DEFAULTS, ...JSON.parse(raw) };
+      } catch {
+        return { ...DEFAULTS };
+      }
+    }
+    function saveTweaks() {
+      try {
+        localStorage.setItem(TWEAK_KEY, JSON.stringify(tweaks));
+      } catch {}
+    }
+    function applyTweaks() {
+      const r = document.documentElement;
+      r.style.setProperty("--a-accent", tweaks.accent);
+      r.style.setProperty(
+        "--a-bg",
+        tweaks.scheme === "ink"
+          ? "#080810"
+          : tweaks.scheme === "graphite"
+            ? "#0F1012"
+            : "#0B0B0E",
+      );
+      r.style.setProperty(
+        "--a-surf",
+        tweaks.scheme === "ink"
+          ? "#0E0E18"
+          : tweaks.scheme === "graphite"
+            ? "#17181C"
+            : "#121217",
+      );
+      const s =
+        tweaks.density === "compact"
+          ? 0.92
+          : tweaks.density === "loose"
+            ? 1.1
+            : 1;
+      r.style.setProperty("--a-scale", s);
+      renderTweaksPanel();
+    }
+
+    const ACCENTS = [
+      ["#7CFF6B", "acid"],
+      ["#FF7B3D", "ember"],
+      ["#6BB7FF", "ice"],
+      ["#C478FF", "amethyst"],
+      ["#FFDA47", "sulfur"],
+      ["#FF5677", "coral"],
+      ["#EAEAEE", "mono"],
+    ];
+    const SCHEMES = [
+      ["default", "onyx"],
+      ["graphite", "graphite"],
+      ["ink", "ink"],
+    ];
+    const DENSITIES = [
+      ["compact", "cozy"],
+      ["default", "default"],
+      ["loose", "airy"],
+    ];
+
+    function renderTweaksPanel() {
+      const accentsEl = document.getElementById("td-tw-accents");
+      if (accentsEl) {
+        accentsEl.innerHTML = "";
+        ACCENTS.forEach(([c, name]) => {
+          const b = document.createElement("button");
+          b.type = "button";
+          b.className = "td-tw-sw" + (tweaks.accent === c ? " active" : "");
+          b.style.background = c;
+          b.title = name;
+          b.addEventListener("click", () => {
+            tweaks.accent = c;
+            saveTweaks();
+            applyTweaks();
+          });
+          accentsEl.appendChild(b);
+        });
+      }
+
+      [
+        ["td-tw-scheme", SCHEMES, "scheme"],
+        ["td-tw-density", DENSITIES, "density"],
+      ].forEach(([id, opts, key]) => {
+        const segEl = document.getElementById(id);
+        if (!segEl) return;
+        segEl.innerHTML = "";
+        segEl.style.gridTemplateColumns = `repeat(${opts.length}, 1fr)`;
+        opts.forEach(([k, lbl]) => {
+          const b = document.createElement("button");
+          b.type = "button";
+          b.textContent = lbl;
+          if (tweaks[key] === k) b.classList.add("active");
+          b.addEventListener("click", () => {
+            tweaks[key] = k;
+            saveTweaks();
+            applyTweaks();
+          });
+          segEl.appendChild(b);
+        });
+      });
+
+      const toneEl = document.getElementById("td-tw-tone");
+      if (toneEl && toneEl.value !== tweaks.tone) toneEl.value = tweaks.tone;
+
+      const thoughtsEl = document.getElementById("td-tw-thoughts");
+      if (thoughtsEl) {
+        thoughtsEl.textContent = tweaks.showThoughts
+          ? "● visible"
+          : "○ hidden";
+        thoughtsEl.dataset.on = tweaks.showThoughts ? "1" : "0";
+      }
+    }
+
+    // Wire tone input (persists on input)
+    document.getElementById("td-tw-tone")?.addEventListener("input", (e) => {
+      tweaks.tone = e.target.value;
+      saveTweaks();
+    });
+    document
+      .getElementById("td-tw-thoughts")
+      ?.addEventListener("click", () => {
+        tweaks.showThoughts = !tweaks.showThoughts;
+        saveTweaks();
+        applyTweaks();
+      });
+
+    tweaksBtn?.addEventListener("click", () => {
+      tweaksPanel.hidden = !tweaksPanel.hidden;
+    });
+    document.addEventListener("click", (e) => {
+      if (!tweaksPanel || tweaksPanel.hidden) return;
+      if (
+        !tweaksPanel.contains(e.target) &&
+        !tweaksBtn.contains(e.target)
+      ) {
+        tweaksPanel.hidden = true;
+      }
+    });
+
+    applyTweaks();
+
+    // ───── Commands ─────
+    const suggestions = [
+      { t: "tour", hot: true },
+      { t: "show work", hot: true },
+      { t: "tell me about RAG", hot: true },
+      { t: "why hire you", hot: true },
+      { t: "weakness" },
+      { t: "experience" },
+      { t: "publications" },
+      { t: "stack" },
+      { t: "contact" },
+    ];
+    suggestions.forEach((s) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "td-cmd";
+      if (s.hot) b.dataset.hot = "1";
+      b.innerHTML = `<span class="td-arrow">→</span><span>${escHtml(s.t)}</span>`;
+      b.addEventListener("click", () => {
+        if (busy) return;
+        send(s.t);
+      });
+      cmdsEl.appendChild(b);
+    });
+
+    // ───── Uptime ─────
+    let startedAt = Date.now();
+    const uptimeTimer = setInterval(() => {
+      const sec = Math.floor((Date.now() - startedAt) / 1000);
+      const m = Math.floor(sec / 60);
+      const ss = sec % 60;
+      uptimeEl.textContent = `${String(m).padStart(2, "0")}:${String(ss).padStart(2, "0")}`;
+    }, 1000);
+
+    // ───── Log rendering ─────
+    let busy = false;
+
+    function escHtml(s) {
+      return String(s)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function scrollLog() {
+      // Desktop: the log element has overflow-y: auto, scroll it to bottom.
+      logEl.scrollTop = logEl.scrollHeight;
+      // Mobile: the page itself scrolls (log has overflow: visible).
+      // Also scroll the window to the bottom so the latest row is visible.
+      const doc = document.scrollingElement || document.documentElement;
+      if (doc.scrollHeight - doc.scrollTop - doc.clientHeight > 4) {
+        window.scrollTo({ top: doc.scrollHeight, behavior: "auto" });
+      }
+    }
+
+    function pushRow(node) {
+      logEl.appendChild(node);
+      // Two rAFs: first for layout, second for the scroll to land after paint.
+      requestAnimationFrame(() => {
+        scrollLog();
+        requestAnimationFrame(scrollLog);
+      });
+    }
+
+    function rowSystem(text) {
+      const d = document.createElement("div");
+      d.className = "td-row-system";
+      d.textContent = `※ ${text}`;
+      return d;
+    }
+    function rowUser(text) {
+      const d = document.createElement("div");
+      d.className = "td-row-user";
+      d.innerHTML = `<span class="td-prompt">td &gt;</span><span>${escHtml(text)}</span>`;
+      return d;
+    }
+    function rowThought(text) {
+      if (!tweaks.showThoughts) return null;
+      const d = document.createElement("div");
+      d.className = "td-row-thought";
+      d.textContent = `· ${text}`;
+      return d;
+    }
+    function rowAssistant(text) {
+      const d = document.createElement("div");
+      d.className = "td-row-assistant";
+      d.innerHTML = `<span class="td-text"></span><span class="td-caret">▍</span>`;
+      const textSpan = d.querySelector(".td-text");
+      const caret = d.querySelector(".td-caret");
+      // Type-out
+      let i = 0;
+      const step = text.length > 200 ? 4 : 1;
+      const speed = text.length > 200 ? 8 : 12;
+      const timer = setInterval(() => {
+        i += step;
+        if (i >= text.length) {
+          textSpan.textContent = text;
+          caret.remove();
+          clearInterval(timer);
+        } else {
+          textSpan.textContent = text.slice(0, i);
+        }
+        scrollLog();
+      }, speed);
+      return d;
+    }
+    function rowThinking() {
+      const d = document.createElement("div");
+      d.className = "td-row-thinking";
+      d.innerHTML = `▍ thinking<span class="td-th-dots"></span>`;
+      const dotsEl = d.querySelector(".td-th-dots");
+      let n = 0;
+      const t = setInterval(() => {
+        n = (n + 1) % 4;
+        dotsEl.textContent = ".".repeat(n);
+      }, 220);
+      d.__stop = () => clearInterval(t);
+      return d;
+    }
+
+    // Tool rows
+    function rowTool(name, status, renderer) {
+      const wrap = document.createElement("div");
+      const head = document.createElement("div");
+      head.className = "td-tool-head";
+      head.innerHTML = `<span>⚙</span><span>${escHtml(name)}</span>`;
+      if (status) {
+        const st = document.createElement("span");
+        st.className = "td-tool-status" + (status === "ok" ? "" : " err");
+        st.textContent = status.toUpperCase();
+        head.appendChild(st);
+      }
+      wrap.appendChild(head);
+      const box = document.createElement("div");
+      box.className = "td-tool-box";
+      renderer(box);
+      wrap.appendChild(box);
+      return wrap;
+    }
+
+    function renderWork(box) {
+      const head = document.createElement("div");
+      head.className = "td-work-head";
+      head.innerHTML = `<span>year</span><span>project</span><span>what</span><span>kind</span>`;
+      box.appendChild(head);
+      D.work.forEach((w) => {
+        const r = document.createElement("div");
+        r.className = "td-work-row";
+        r.innerHTML = `
+          <span class="y">${escHtml(w.year)}</span>
+          <span class="t">${escHtml(w.title)}</span>
+          <span class="o">${escHtml(w.oneliner)}</span>
+          <span class="k">▸ ${escHtml(w.kind)}</span>
+        `;
+        r.addEventListener("click", () => {
+          if (busy) return;
+          send(`tell me about ${w.id}`);
+        });
+        box.appendChild(r);
+      });
+    }
+
+    function renderProject(box, id) {
+      const w = D.work.find((x) => x.id === id);
+      if (!w) return;
+      const head = document.createElement("div");
+      head.className = "td-proj-head";
+      head.innerHTML = `<strong class="td-proj-title">${escHtml(w.title)}</strong><span class="td-proj-meta">${escHtml(w.year)} · ${escHtml(w.kind)}</span>`;
+      box.appendChild(head);
+
+      const body = document.createElement("div");
+      body.className = "td-proj-body";
+
+      const one = document.createElement("div");
+      one.className = "td-proj-one";
+      one.textContent = w.oneliner;
+      body.appendChild(one);
+
+      const ctx = document.createElement("div");
+      ctx.className = "td-proj-ctx";
+      ctx.textContent = w.ctx;
+      body.appendChild(ctx);
+
+      const tags = document.createElement("div");
+      tags.className = "td-tags";
+      w.stack.forEach((s) => {
+        const tag = document.createElement("span");
+        tag.className = "td-tag";
+        tag.textContent = s;
+        tags.appendChild(tag);
+      });
+      body.appendChild(tags);
+
+      const metric = document.createElement("div");
+      metric.className = "td-metric";
+      metric.textContent = `▸ ${w.metric}`;
+      body.appendChild(metric);
+
+      if (w.decisions && w.decisions.length) {
+        const dec = document.createElement("div");
+        dec.className = "td-decisions";
+        const lbl = document.createElement("div");
+        lbl.className = "td-dec-label";
+        lbl.textContent = "KEY DECISIONS";
+        dec.appendChild(lbl);
+        w.decisions.forEach((d, i) => {
+          const row = document.createElement("div");
+          row.className = "td-dec-row";
+          row.innerHTML = `<span>${String(i + 1).padStart(2, "0")} →</span><span>${escHtml(d)}</span>`;
+          dec.appendChild(row);
+        });
+        body.appendChild(dec);
+      }
+
+      box.appendChild(body);
+    }
+
+    function renderExp(box) {
+      D.exp.forEach((e) => {
+        const row = document.createElement("div");
+        row.className = "td-exp-row";
+        const head = document.createElement("div");
+        head.className = "td-exp-head";
+        head.innerHTML = `
+          <span class="td-exp-role"><strong>${escHtml(e.role)}</strong> <span class="td-exp-co">· ${escHtml(e.co)}</span></span>
+          <span class="td-exp-date">${escHtml(e.date)} · ${escHtml(e.loc)}</span>
+        `;
+        row.appendChild(head);
+        e.bullets.forEach((b) => {
+          const bb = document.createElement("div");
+          bb.className = "td-exp-bullet";
+          bb.innerHTML = `<span>—</span><span>${escHtml(b)}</span>`;
+          row.appendChild(bb);
+        });
+        box.appendChild(row);
+      });
+    }
+
+    function renderPubs(box) {
+      D.pubs.forEach((p) => {
+        const r = document.createElement("div");
+        r.className = "td-pub-row";
+        r.innerHTML = `
+          <span class="y">${escHtml(p.year)}</span>
+          <span class="v">${escHtml(p.venue)}</span>
+          <span class="t">${escHtml(p.title)}</span>
+          <span class="r">${escHtml(p.role)}</span>
+        `;
+        box.appendChild(r);
+      });
+    }
+
+    function renderStack(box) {
+      D.stack.forEach(([k, items]) => {
+        const r = document.createElement("div");
+        r.className = "td-stack-row";
+        const lbl = document.createElement("span");
+        lbl.className = "k";
+        lbl.textContent = k;
+        r.appendChild(lbl);
+        const tags = document.createElement("span");
+        tags.className = "td-stack-tags";
+        items.forEach((it) => {
+          const t = document.createElement("span");
+          t.className = "td-stack-tag";
+          t.textContent = it;
+          tags.appendChild(t);
+        });
+        r.appendChild(tags);
+        box.appendChild(r);
+      });
+    }
+
+    function renderJSON(box, payload) {
+      Object.entries(payload).forEach(([k, v]) => {
+        const r = document.createElement("div");
+        r.className = "td-json-row";
+        r.innerHTML = `<span class="td-json-k">${escHtml(k)}</span><span class="td-json-v">${escHtml(String(v))}</span>`;
+        box.appendChild(r);
+      });
+    }
+
+    // ───── Intents & handlers ─────
+    const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+    const INTENTS = [
+      { re: /^(tour|overview|start|begin|hi|hello|hey)\b/i, fn: "tour" },
+      {
+        re: /work|project|shipped|built|portfolio|ship/i,
+        fn: "listWork",
+        guard: (q) => !/rag|engine|cache|game|robot|fitt/i.test(q),
+      },
+      { re: /rag|retriev|halluc|15k|chroma/i, fn: "rag" },
+      { re: /game|text.?to.?game|agent|pipeline/i, fn: "aiGames" },
+      { re: /cache|cost|budget|save/i, fn: "cache" },
+      { re: /engine|three|webgl|3d|redbrick/i, fn: "engine" },
+      { re: /robot|ro.?man|hri|thesis/i, fn: "robot" },
+      { re: /fitt|eye.?track|face.?track/i, fn: "fitts" },
+      { re: /hire|why|pitch|strength|should i/i, fn: "pitch" },
+      { re: /experience|resume|cv|career|where.*work/i, fn: "career" },
+      { re: /paper|publication|research|academ|phd/i, fn: "pubs" },
+      { re: /stack|tool|tech|language/i, fn: "stack" },
+      { re: /contact|email|reach|available|open/i, fn: "contact" },
+      { re: /skills|what.*(can|do) you (do|build)/i, fn: "skills" },
+      { re: /where.*live|location|seoul|timezone|gmt/i, fn: "location" },
+      { re: /weak|fail|worst|fuck.?up|mistake/i, fn: "weakness" },
+      { re: /joke|fun|haha|lol/i, fn: "joke" },
+      { re: /ping|status|alive/i, fn: "ping" },
+      { re: /clear|reset/i, fn: "clear" },
+      { re: /help|\?|commands/i, fn: "help" },
+    ];
+
+    function match(q) {
+      for (const i of INTENTS) {
+        if (i.re.test(q) && (!i.guard || i.guard(q))) return i.fn;
+      }
+      return null;
+    }
+
+    const handlers = {
+      async tour() {
+        const t = rowThought("rolling the 30-second version.");
+        if (t) pushRow(t);
+        await sleep(350);
+        pushRow(
+          rowTool("tour()", "ok", (box) =>
+            renderJSON(box, {
+              now: "AI Engineer @ Redbrick · Seoul · open to senior IC",
+              shipped:
+                "$1.2M RAG/agent pipeline · 3.2s→0.8s · 18%→4% hallucination",
+              before: "Modernized Redbrick 3D engine — 54M plays",
+              earlier: "10 peer-reviewed papers, 6 patents (HRI + embedded)",
+              next: "try: show work · why hire you · tell me about RAG",
+            }),
+          ),
+        );
+      },
+
+      async listWork() {
+        const t = rowThought("listing 6 of 18 projects, newest first.");
+        if (t) pushRow(t);
+        await sleep(300);
+        pushRow(rowTool("list_work(limit=6)", "ok", renderWork));
+      },
+
+      async rag() {
+        await projectCard("rag-15k");
+      },
+      async aiGames() {
+        await projectCard("ai-games");
+      },
+      async cache() {
+        await projectCard("semantic-cache");
+      },
+      async engine() {
+        await projectCard("engine");
+      },
+      async robot() {
+        await projectCard("robot-face");
+      },
+      async fitts() {
+        await projectCard("fitts");
+      },
+
+      async career() {
+        pushRow(rowTool("timeline()", "ok", renderExp));
+      },
+
+      async pubs() {
+        pushRow(rowTool("publications(limit=6)", "ok", renderPubs));
+      },
+
+      async stack() {
+        pushRow(rowTool("stack()", "ok", renderStack));
+      },
+
+      async skills() {
+        await typeAssistant(
+          `Roughly, in order of depth:
+
+ · RAG systems — ingestion, hybrid retrieval, rerank, eval, guardrails
+ · Agents — ReACT, tool-use orchestration, dependency graphs
+ · 3D / WebGL — Three.js engines at production scale
+ · Frontend — React, Next.js, Astro, Tailwind
+ · Research — HRI, computer vision, embedded C (if you need it)
+
+If you want depth on any of these, ask me.`,
+        );
+      },
+
+      async pitch() {
+        const t = rowThought("being honest, not a salesperson.");
+        if (t) pushRow(t);
+        await sleep(450);
+        await typeAssistant(
+          `Three honest answers:
+
+1. I've shipped LLM systems end-to-end, not just prompts. RAG, agents, caching, evals.
+2. Research background means I read the paper before I open the IDE.
+3. I care about the boring parts — eval harnesses, cost dials, guardrails.
+
+Not the person who'll build your fourteenth demo. The person who makes demo #1 a product.`,
+        );
+      },
+
+      async weakness() {
+        const t = rowThought("these are real answers, not interview answers.");
+        if (t) pushRow(t);
+        await sleep(350);
+        await typeAssistant(
+          `Three things I'm working on:
+
+ · I over-index on measurement. Sometimes you just have to ship the thing and see.
+ · I underestimate how long writing takes. I'm usually a day late on docs.
+ · I'm not a distributed-systems native — I can reason about it, not architect it from scratch.
+
+Counter-weight: none of these have cost anyone money. Yet.`,
+        );
+      },
+
+      async contact() {
+        pushRow(
+          rowTool("contact()", "ok", (box) =>
+            renderJSON(box, {
+              email: D.email,
+              github: "github.com/" + D.github,
+              linkedin: "linkedin.com/in/" + D.linkedin,
+              timezone: D.tz,
+              reply_sla: "usually <24h",
+            }),
+          ),
+        );
+      },
+
+      async location() {
+        pushRow(
+          rowTool("whereami()", "ok", (box) =>
+            renderJSON(box, {
+              city: D.location,
+              timezone: D.tz,
+              remote: "yes · friendly to NA/EU teams",
+              relocate: "open to discussion",
+            }),
+          ),
+        );
+      },
+
+      async ping() {
+        const latency = (Math.random() * 40 + 12).toFixed(1);
+        pushRow(
+          rowTool("ping()", "ok", (box) =>
+            renderJSON(box, {
+              status: "alive",
+              latency_ms: latency,
+              model: "td-agent@0.4.2",
+            }),
+          ),
+        );
+      },
+
+      async joke() {
+        const jokes = [
+          'Two RAG engineers walk into a bar. Bartender asks "embedding?" They say "yes please, with re-rank."',
+          "My favorite framework? Whichever one my on-call rotation is least familiar with.",
+          "I told my LLM to be concise. It wrote me a haiku about why conciseness is subjective.",
+        ];
+        await typeAssistant(jokes[Math.floor(Math.random() * jokes.length)]);
+      },
+
+      async help() {
+        pushRow(
+          rowTool("help()", "ok", (box) =>
+            renderJSON(box, {
+              work: "show work · tell me about RAG · cache · engine · games",
+              me: "tour · why hire you · weakness · skills · experience",
+              meta: "contact · pubs · stack · ping · location",
+              easter_egg: "ask me a joke",
+            }),
+          ),
+        );
+      },
+
+      async clear() {
+        logEl.innerHTML = "";
+      },
+    };
+
+    async function projectCard(id) {
+      const w = D.work.find((x) => x.id === id);
+      if (!w) return;
+      const t = rowThought(`opening ${w.id}…`);
+      if (t) pushRow(t);
+      await sleep(200);
+      pushRow(rowTool(`open(project="${w.id}")`, "ok", (box) => renderProject(box, id)));
+    }
+
+    function typeAssistant(text) {
+      return new Promise((resolve) => {
+        const node = rowAssistant(text);
+        pushRow(node);
+        const total = text.length;
+        const dur = total > 200 ? (total / 4) * 8 + 80 : total * 12 + 80;
+        setTimeout(resolve, Math.min(dur, 4000));
+      });
+    }
+
+    // ───── Fallback to Claude via /api/agent ─────
+    async function claudeFallback(query) {
+      const t = rowThought("no pattern match — routing to claude-haiku.");
+      if (t) pushRow(t);
+      await sleep(200);
+      try {
+        const res = await fetch("/api/agent", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ query, tone: tweaks.tone }),
+        });
+        if (!res.ok) throw new Error("agent http " + res.status);
+        const data = await res.json();
+        const text =
+          (data && typeof data.text === "string" && data.text.trim()) ||
+          `hmm, not sure how to route "${query}". try \`help\` or one of: tour · show work · why hire you · contact.`;
+        await typeAssistant(text);
+      } catch (err) {
+        await typeAssistant(
+          `hmm, not sure how to route "${query}". try \`help\` or one of: tour · show work · why hire you · contact.`,
+        );
+      }
+    }
+
+    // ───── Send / respond ─────
+    async function send(q) {
+      const query = (q == null ? inputEl.value : q).trim();
+      if (!query || busy) return;
+      inputEl.value = "";
+      updateSendState();
+      setBusy(true);
+
+      pushRow(rowUser(query));
+      await sleep(200);
+
+      const fn = match(query);
+      if (fn && handlers[fn]) {
+        try {
+          await handlers[fn]();
+        } catch (err) {
+          await typeAssistant(`error: ${err.message || "something broke"}`);
+        }
+      } else {
+        await claudeFallback(query);
+      }
+
+      setBusy(false);
+      setTimeout(() => inputEl.focus(), 20);
+    }
+
+    function setBusy(b) {
+      busy = b;
+      $$(".td-cmd").forEach((c) => (c.disabled = b));
+      inputEl.disabled = b;
+      updateSendState();
+    }
+    function updateSendState() {
+      const has = inputEl.value.trim().length > 0;
+      sendEl.disabled = !has || busy;
+      inputWrap.classList.toggle("active", has);
+    }
+    inputEl.addEventListener("input", updateSendState);
+
+    // ───── Submit ─────
+    formEl.addEventListener("submit", (e) => {
+      e.preventDefault();
+      send();
+    });
+
+    // ───── Intro seed ─────
+    async function seed() {
+      pushRow(
+        rowSystem(
+          `td-agent v0.4.2 — session started · ${new Date().toISOString().slice(0, 10)}`,
+        ),
+      );
+      pushRow(
+        rowSystem(
+          "type a question or click a suggestion. `help` for commands.",
+        ),
+      );
+      await sleep(500);
+      pushRow(rowUser("whoami"));
+      await sleep(200);
+      pushRow(
+        rowTool("identity()", "ok", (box) =>
+          renderJSON(box, {
+            name: D.name,
+            role: D.role + " · Redbrick, Seoul",
+            status: "● open to senior IC — AI / applied LLM",
+            summary: D.tagline,
+            metrics: `${D.metrics.plays} plays · ${D.metrics.grant} grant · ${D.metrics.papers} papers, ${D.metrics.patents} patents`,
+          }),
+        ),
+      );
+      setTimeout(() => inputEl.focus(), 50);
+    }
+    seed();
+
+    // ───── Cleanup handle for astro:before-swap ─────
+    window.__tdAgentInit = {
+      cleanup() {
+        clearInterval(uptimeTimer);
+      },
+    };
+  })();
+</script>
