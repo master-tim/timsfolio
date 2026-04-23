@@ -1,0 +1,464 @@
+---
+// Shared dark-theme shell for non-console pages (/about, /blog, blog posts).
+// Top bar with brand + nav, single-column content area.
+// Keeps the same type + color language as the home console.
+
+import BaseHead from "@/components/BaseHead.astro";
+import Analytics from "@vercel/analytics/astro";
+import SpeedInsights from "@vercel/speed-insights/astro";
+
+interface Props {
+  title: string;
+  description: string;
+  active?: "home" | "about" | "writing" | "cv";
+  /** Optional in-content max-width override */
+  maxWidth?: string;
+  image?: string;
+}
+
+const {
+  title,
+  description,
+  active = "home",
+  maxWidth = "880px",
+  image,
+} = Astro.props;
+
+const NAV: { key: Props["active"]; label: string; href: string }[] = [
+  { key: "home", label: "home", href: "/" },
+  { key: "about", label: "about", href: "/about" },
+  { key: "writing", label: "writing", href: "/blog" },
+  { key: "cv", label: "cv", href: "/cv" },
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <BaseHead title={title} description={description} image={image} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Geist:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="td-page">
+    <header class="td-topbar">
+      <div class="td-topbar-inner">
+        <a class="td-topbar-brand" href="/" aria-label="Home">
+          <span class="td-topbar-dot" aria-hidden="true"></span>
+          <strong>td-agent</strong>
+          <span class="td-topbar-slash" aria-hidden="true">/</span>
+          <span class="td-topbar-name">temirlan dzhoroev</span>
+        </a>
+        <nav class="td-topbar-nav" aria-label="Primary">
+          {
+            NAV.map((n) => (
+              <a
+                href={n.href}
+                class:list={[
+                  "td-topbar-link",
+                  { active: n.key === active },
+                ]}
+              >
+                {n.label}
+              </a>
+            ))
+          }
+        </nav>
+      </div>
+    </header>
+
+    <main class="td-shell-main" style={`--td-shell-max:${maxWidth}`}>
+      <slot />
+    </main>
+
+    <footer class="td-shell-footer">
+      <div class="td-shell-footer-inner">
+        <span>© 2026 Temirlan Dzhoroev · Seoul, KR</span>
+        <span class="td-shell-footer-links">
+          <a href="mailto:dzhoroev1@gmail.com">email</a>
+          <a href="https://github.com/master-tim" target="_blank" rel="noopener">github</a>
+          <a href="https://linkedin.com/in/dzhoroev7" target="_blank" rel="noopener">linkedin</a>
+        </span>
+      </div>
+    </footer>
+
+    <Analytics />
+    <SpeedInsights />
+  </body>
+</html>
+
+<style is:global>
+  :root {
+    --a-bg: #0f1012;
+    --a-surf: #17181c;
+    --a-ink: #eaeaee;
+    --a-muted: #8b8b94;
+    --a-faint: #515159;
+    --a-line: #23232a;
+    --a-accent: #ff7b3d;
+    --a-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    --a-display: "Geist", system-ui, -apple-system, sans-serif;
+  }
+
+  body.td-page {
+    margin: 0;
+    padding: 0;
+    background: var(--a-bg);
+    color: var(--a-ink);
+    font-family: var(--a-mono);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    min-height: 100vh;
+    background-image:
+      radial-gradient(rgba(255, 123, 61, 0.022) 1px, transparent 1px),
+      radial-gradient(rgba(255, 123, 61, 0.012) 1px, transparent 1px);
+    background-size:
+      40px 40px,
+      8px 8px;
+  }
+
+  body.td-page ::selection {
+    background: var(--a-accent);
+    color: var(--a-bg);
+  }
+
+  body.td-page ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  body.td-page ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  body.td-page ::-webkit-scrollbar-thumb {
+    background: var(--a-line);
+    border-radius: 2px;
+  }
+  body.td-page ::-webkit-scrollbar-thumb:hover {
+    background: var(--a-muted);
+  }
+
+  /* ───── Top bar ───── */
+  .td-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: color-mix(in srgb, var(--a-bg) 86%, transparent);
+    backdrop-filter: saturate(180%) blur(10px);
+    -webkit-backdrop-filter: saturate(180%) blur(10px);
+    border-bottom: 1px solid var(--a-line);
+  }
+  .td-topbar-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 14px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+  }
+  .td-topbar-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--a-ink);
+    text-decoration: none;
+    font-size: 13px;
+    letter-spacing: 0.01em;
+  }
+  .td-topbar-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: var(--a-accent);
+    box-shadow: 0 0 10px var(--a-accent);
+    flex-shrink: 0;
+  }
+  .td-topbar-brand strong {
+    font-weight: 500;
+  }
+  .td-topbar-slash {
+    color: var(--a-faint);
+    padding: 0 2px;
+  }
+  .td-topbar-name {
+    color: var(--a-muted);
+  }
+  .td-topbar-nav {
+    display: inline-flex;
+    gap: 22px;
+    font-size: 12.5px;
+    letter-spacing: 0.02em;
+  }
+  .td-topbar-link {
+    color: var(--a-muted);
+    text-decoration: none;
+    padding: 4px 0;
+    border-bottom: 1px solid transparent;
+    transition:
+      color 0.15s,
+      border-color 0.15s;
+  }
+  .td-topbar-link:hover {
+    color: var(--a-ink);
+  }
+  .td-topbar-link.active {
+    color: var(--a-accent);
+    border-bottom-color: var(--a-accent);
+  }
+
+  /* ───── Main content wrapper ───── */
+  .td-shell-main {
+    max-width: var(--td-shell-max, 880px);
+    margin: 0 auto;
+    padding: 56px 28px 80px;
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  /* Helpers usable inside slotted content */
+  .td-display {
+    font-family: var(--a-display);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    color: var(--a-ink);
+    line-height: 1.1;
+  }
+  .td-eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: var(--a-faint);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .td-section {
+    margin-bottom: 64px;
+  }
+  .td-section h2 {
+    font-family: var(--a-display);
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin: 0 0 6px;
+    color: var(--a-ink);
+  }
+  .td-section h2 + .td-section-sub {
+    color: var(--a-muted);
+    font-size: 12.5px;
+    margin-bottom: 20px;
+    letter-spacing: 0.02em;
+  }
+  .td-rule {
+    height: 1px;
+    background: var(--a-line);
+    margin: 0 0 24px;
+  }
+  .td-card {
+    border: 1px solid var(--a-line);
+    border-radius: 2px;
+    padding: 18px 20px;
+    background: rgba(255, 255, 255, 0.012);
+  }
+  .td-card + .td-card {
+    margin-top: 12px;
+  }
+  .td-pill {
+    display: inline-block;
+    font-size: 11px;
+    border: 1px solid var(--a-line);
+    padding: 3px 9px;
+    color: var(--a-muted);
+    border-radius: 2px;
+    letter-spacing: 0.02em;
+  }
+  .td-accent {
+    color: var(--a-accent);
+  }
+
+  /* ───── Footer ───── */
+  .td-shell-footer {
+    border-top: 1px solid var(--a-line);
+    padding: 20px 0 28px;
+  }
+  .td-shell-footer-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    font-size: 11.5px;
+    color: var(--a-faint);
+    letter-spacing: 0.02em;
+    flex-wrap: wrap;
+  }
+  .td-shell-footer-links {
+    display: inline-flex;
+    gap: 18px;
+  }
+  .td-shell-footer-links a {
+    color: var(--a-muted);
+    text-decoration: none;
+  }
+  .td-shell-footer-links a:hover {
+    color: var(--a-accent);
+  }
+
+  /* ───── Dark prose (used inside blog posts / about) ───── */
+  .td-prose {
+    color: var(--a-ink);
+    font-size: 14.5px;
+    line-height: 1.75;
+  }
+  .td-prose > * + * {
+    margin-top: 14px;
+  }
+  .td-prose p {
+    color: var(--a-ink);
+  }
+  .td-prose strong {
+    color: var(--a-ink);
+    font-weight: 600;
+  }
+  .td-prose em {
+    color: var(--a-muted);
+    font-style: italic;
+  }
+  .td-prose a {
+    color: var(--a-accent);
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, var(--a-accent) 40%, transparent);
+    text-underline-offset: 3px;
+  }
+  .td-prose a:hover {
+    text-decoration-color: var(--a-accent);
+  }
+  .td-prose h1,
+  .td-prose h2,
+  .td-prose h3,
+  .td-prose h4 {
+    font-family: var(--a-display);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--a-ink);
+    line-height: 1.25;
+    margin-top: 40px;
+    margin-bottom: 12px;
+  }
+  .td-prose h1 {
+    font-size: 28px;
+  }
+  .td-prose h2 {
+    font-size: 22px;
+  }
+  .td-prose h3 {
+    font-size: 17px;
+  }
+  .td-prose h4 {
+    font-size: 14px;
+  }
+  .td-prose ul,
+  .td-prose ol {
+    padding-left: 20px;
+  }
+  .td-prose ul {
+    list-style: disc;
+  }
+  .td-prose ol {
+    list-style: decimal;
+  }
+  .td-prose li {
+    margin: 4px 0;
+    color: var(--a-ink);
+  }
+  .td-prose li::marker {
+    color: var(--a-faint);
+  }
+  .td-prose blockquote {
+    border-left: 2px solid var(--a-accent);
+    padding: 2px 0 2px 16px;
+    color: var(--a-muted);
+    margin-left: 0;
+    font-style: italic;
+  }
+  .td-prose code {
+    font-family: var(--a-mono);
+    font-size: 0.88em;
+    padding: 2px 6px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--a-line);
+    border-radius: 2px;
+    color: var(--a-accent);
+  }
+  .td-prose pre {
+    background: var(--a-surf);
+    border: 1px solid var(--a-line);
+    border-radius: 3px;
+    padding: 14px 16px;
+    overflow-x: auto;
+    line-height: 1.55;
+    font-size: 12.5px;
+  }
+  .td-prose pre code {
+    background: transparent;
+    border: 0;
+    padding: 0;
+    color: var(--a-ink);
+    font-size: 12.5px;
+  }
+  .td-prose hr {
+    border: 0;
+    border-top: 1px solid var(--a-line);
+    margin: 32px 0;
+  }
+  .td-prose img {
+    max-width: 100%;
+    height: auto;
+    border: 1px solid var(--a-line);
+    border-radius: 3px;
+    display: block;
+    margin: 20px 0;
+  }
+  .td-prose table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin: 12px 0;
+  }
+  .td-prose th,
+  .td-prose td {
+    border: 1px solid var(--a-line);
+    padding: 8px 12px;
+    text-align: left;
+  }
+  .td-prose th {
+    background: rgba(255, 255, 255, 0.02);
+    color: var(--a-muted);
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+
+  /* ───── Responsive ───── */
+  @media (max-width: 640px) {
+    .td-topbar-inner {
+      padding: 12px 18px;
+      gap: 12px;
+    }
+    .td-topbar-name {
+      display: none;
+    }
+    .td-topbar-nav {
+      gap: 14px;
+      font-size: 12px;
+    }
+    .td-shell-main {
+      padding: 40px 20px 60px;
+    }
+    .td-shell-footer-inner {
+      padding: 0 20px;
+    }
+  }
+</style>

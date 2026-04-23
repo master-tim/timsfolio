@@ -1,227 +1,489 @@
 ---
-import Layout from '@/layouts/BlogPost.astro';
-import Certificates from '@/components/Certificates.astro';
-const tags = ['ai', 'llm', 'rag', 'threejs', 'webgl', 'frontend'];
-const description = `AI Engineer — production LLM/RAG systems, 3D game engines, HCI research`;
+import TdShell from "@/layouts/TdShell.astro";
+
+const description =
+  "AI Engineer — production LLM/RAG systems, 3D game engines, HCI research";
+
+const experience = [
+  {
+    role: "AI Engineer",
+    co: "Redbrick",
+    loc: "Seoul",
+    date: "Jul 2024 — now",
+    bullets: [
+      {
+        strong: "End-to-end AI game creation system",
+        rest:
+          " (intent parsing, asset generation, scene composition, logic synthesis) — centerpiece of a $1.2M Korean government R&D grant.",
+      },
+      {
+        strong: "Production RAG pipelines",
+        rest:
+          " over 15K+ documents in ChromaDB with hybrid retrieval, query rewriting and bge-reranker — relevance +35%, hallucination 18% → 4%, latency 3.2s → 0.8s.",
+      },
+      {
+        strong: "Multi-step agentic workflows",
+        rest:
+          " (ReACT, CoT) orchestrating LLM calls across asset generation, physics config, and script authoring — up to 8 dependent tool calls per request.",
+      },
+      {
+        strong: "Semantic caching layer",
+        rest:
+          " (embedding similarity) — ~40% fewer LLM calls, ~$2K/month saved.",
+      },
+      {
+        strong: "Eval & safety",
+        rest:
+          ": prompt regression harnesses, output guardrails, structured validation, policy-compliant generation.",
+      },
+    ],
+  },
+  {
+    role: "3D Frontend Engineer",
+    co: "Redbrick",
+    loc: "Seoul",
+    date: "Jul 2023 — Jul 2024",
+    bullets: [
+      {
+        strong: "Browser 3D game engine",
+        rest:
+          " (Three.js, WebGL, TypeScript) powering 54M+ game plays and 10M+ user sign-ups.",
+      },
+      {
+        strong: "Codebase modernization",
+        rest:
+          " of 50K+ lines from Webpack → Vite, upgraded rendering pipeline, swapped physics engine — build time −60%, bundle −35%, hot-reload 8s → 1s.",
+      },
+      {
+        strong: "Modular packages",
+        rest:
+          " across 3 teams; integration tests for scene graph and asset loading.",
+      },
+      {
+        strong: "Onboarding redesign",
+        rest:
+          " via session replay + interviews — D7 activation +25%, D30 retention +15%.",
+      },
+    ],
+  },
+  {
+    role: "Embedded Systems & HCI Researcher",
+    co: "DECS Lab, UNIST",
+    loc: "Ulsan",
+    date: "Feb 2021 — Feb 2023",
+    bullets: [
+      {
+        strong: "IoT firmware in C",
+        rest:
+          " for ARM Cortex-M MCUs, real-time smart sensor arrays (50+ devices, sub-ms latency).",
+      },
+      {
+        strong: "10 peer-reviewed papers + 6 patents",
+        rest:
+          ". First author at IEEE RO-MAN 2023, ICROS 2022, HCI Korea 2022.",
+      },
+    ],
+  },
+];
+
+const education = [
+  {
+    degree: "M.S. in Design (Human-Computer Interaction)",
+    school: "UNIST, South Korea",
+    date: "Feb 2023",
+    thesis:
+      "Human perception of social-robot face and color expression using computational emotion models.",
+    tags: [
+      "HCI & HRI",
+      "Lotte Scholarship",
+      "GPA 4.0 / 4.3",
+      "6 papers",
+      "4 journals",
+      "6 patents",
+    ],
+  },
+  {
+    degree: "B.S. in Computer Science & Industrial Design",
+    school: "UNIST, South Korea",
+    date: "2021",
+    thesis: null,
+    tags: ["Dual degree", "Global UNISTAR Silver Scholarship"],
+  },
+];
+
+const skills = [
+  {
+    label: "Languages",
+    items: ["TypeScript", "Python", "JavaScript", "C / C++"],
+  },
+  {
+    label: "AI / LLM",
+    items: [
+      "LangChain",
+      "LlamaIndex",
+      "Vercel AI SDK",
+      "ChromaDB",
+      "OpenAI",
+      "Claude",
+      "Embeddings",
+      "RAG",
+      "Agents",
+      "Evals",
+    ],
+  },
+  {
+    label: "Frontend & 3D",
+    items: ["React", "Next.js", "Astro", "Three.js", "WebGL", "Vite", "Node.js"],
+  },
+  {
+    label: "Infrastructure",
+    items: ["Docker", "AWS", "Redis", "CI/CD", "Git"],
+  },
+  {
+    label: "Research",
+    items: ["HCI", "HRI", "Computer Vision", "Embedded C", "ARM Cortex-M"],
+  },
+];
+
+const certs = [
+  "Advanced RAG with Vector Databases · IBM · 2025",
+  "Foundation — LangChain (Python) · LangChain · 2025",
+  "Gen AI Agents · Google Cloud · 2025",
+  "Build RAG Applications · IBM · 2025",
+  "Three.js Journey — Completion · 2023",
+  "Advanced React · Meta · 2023",
+];
 ---
 
-<Layout
-	tags={tags}
-	icon="1"
-	title="About Me"
-	description= {description}
-	pubDate={new Date('November 17 2025')}
-	heroImage="/images/about-me.png"
->
-	<!-- Introduction Section -->
-	<section class="mb-12">
-		<h2 class="text-3xl font-bold mb-4 text-pblack">Background</h2>
-		<div class="bg-white p-6 rounded-lg border-2 border-black shadow-card">
-			<p class="text-lg leading-relaxed">
-				I'm an <strong class="text-pblue">AI Engineer</strong> at Redbrick in Seoul, building end-to-end AI pipelines from prototype to production at scale. My work spans <strong class="text-pgreen">production LLM/RAG systems</strong>, <strong class="text-ppink">3D game engine development</strong>, and is grounded in an <strong class="text-pyellow">HCI research foundation</strong>.
-			</p>
-			<p class="text-lg leading-relaxed mt-4">
-				I specialize in designing agentic workflows, building production RAG pipelines over large document corpora, and creating AI-powered interactive experiences — from natural-language-to-game generation systems to semantic caching layers that cut inference costs and latency.
-			</p>
-			<div class="mt-6 flex flex-wrap items-center gap-4">
-				<a
-					href="/cv.pdf"
-					target="_blank"
-					rel="noopener noreferrer"
-					class="inline-flex items-center gap-2 bg-pblue/90 text-pblack px-4 py-2 rounded-lg border-2 border-black shadow-card hover:shadow-hover hover:-translate-y-0.5 transition-all font-bold"
-				>
-					Check CV
-					<span aria-hidden="true">→</span>
-				</a>
-				<span class="text-sm text-pblack/70 font-semibold">Opens PDF in a new tab</span>
-			</div>
-		</div>
-	</section>
+<TdShell title="About — Temirlan Dzhoroev" description={description} active="about">
+  <section class="about-hero">
+    <p class="td-eyebrow">about</p>
+    <h1 class="td-display about-h1">
+      I build production LLM/RAG systems and browser 3D engines<span class="td-accent">.</span>
+    </h1>
+    <p class="about-lede">
+      AI Engineer at <span class="td-accent">Redbrick</span> in Seoul. I ship
+      end-to-end AI pipelines from prototype to production — agentic workflows,
+      RAG over large document corpora, semantic caches, 3D game engines. Grounded
+      in an HCI research foundation: 10 peer-reviewed papers, 6 patents.
+    </p>
+    <div class="about-cta">
+      <a class="about-btn primary" href="/cv" target="_blank" rel="noopener noreferrer"
+        >▸ read cv.pdf</a
+      >
+      <a class="about-btn" href="mailto:dzhoroev1@gmail.com">→ email</a>
+      <a class="about-btn" href="/">→ talk to td-agent</a>
+    </div>
+  </section>
 
-	<!-- Education Section -->
-	<section class="mb-12">
-		<h2 class="text-3xl font-bold mb-6 text-pblack">Education</h2>
+  <section class="td-section">
+    <h2>Experience</h2>
+    <p class="td-section-sub">
+      2021 — now · AI / 3D / research, always in production.
+    </p>
+    <div class="td-rule"></div>
+    {
+      experience.map((e) => (
+        <div class="exp">
+          <div class="exp-head">
+            <div>
+              <strong class="exp-role">{e.role}</strong>
+              <span class="exp-co">· {e.co}</span>
+            </div>
+            <div class="exp-meta">
+              {e.date} · {e.loc}
+            </div>
+          </div>
+          <ul class="exp-bullets">
+            {e.bullets.map((b) => (
+              <li>
+                <strong>{b.strong}</strong>
+                {b.rest}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))
+    }
+  </section>
 
-		<div class="space-y-4">
-			<!-- Master's Degree -->
-			<div class="bg-gradient-to-br from-pblue/10 to-white p-6 rounded-lg border-2 border-black shadow-card hover:shadow-hover transition-all">
-				<h3 class="text-xl font-bold text-pblack mb-2">M.S. in Design (Human-Computer Interaction)</h3>
-				<p class="text-pblack/70 font-semibold mb-3">UNIST, South Korea • Feb 2023</p>
-				<p class="text-pblack/60 text-sm italic mb-3">Thesis: Human perception of social robot face and color expression using computational emotion models</p>
-				<div class="flex flex-wrap gap-2 text-sm">
-					<span class="bg-pblue px-3 py-1 rounded-full border-2 border-black">HCI & HRI Focus</span>
-					<span class="bg-pgreen px-3 py-1 rounded-full border-2 border-black">Lotte Scholarship</span>
-					<span class="bg-ppink px-3 py-1 rounded-full border-2 border-black">GPA: 4.0/4.3</span>
-					<span class="bg-pyellow px-3 py-1 rounded-full border-2 border-black">6 Papers</span>
-					<span class="bg-pgreen px-3 py-1 rounded-full border-2 border-black">4 Journals</span>
-					<span class="bg-pblue px-3 py-1 rounded-full border-2 border-black">6 Patents</span>
-				</div>
-			</div>
+  <section class="td-section">
+    <h2>Education</h2>
+    <p class="td-section-sub">Design × CS, HCI/HRI focus.</p>
+    <div class="td-rule"></div>
+    {
+      education.map((e) => (
+        <div class="edu td-card">
+          <div class="edu-head">
+            <strong>{e.degree}</strong>
+            <span class="edu-date">{e.date}</span>
+          </div>
+          <div class="edu-school">{e.school}</div>
+          {e.thesis && <div class="edu-thesis">Thesis: {e.thesis}</div>}
+          <div class="edu-tags">
+            {e.tags.map((t) => (
+              <span class="td-pill">{t}</span>
+            ))}
+          </div>
+        </div>
+      ))
+    }
+  </section>
 
-			<!-- Bachelor's Degree -->
-			<div class="bg-gradient-to-br from-pgreen/10 to-white p-6 rounded-lg border-2 border-black shadow-card hover:shadow-hover transition-all">
-				<h3 class="text-xl font-bold text-pblack mb-2">B.S. in Computer Science & Industrial Design</h3>
-				<p class="text-pblack/70 font-semibold mb-3">UNIST, South Korea • 2021</p>
-				<div class="flex flex-wrap gap-2 text-sm">
-					<span class="bg-pgreen px-3 py-1 rounded-full border-2 border-black">Dual Degree</span>
-					<span class="bg-ppink px-3 py-1 rounded-full border-2 border-black">Global UNISTAR Silver Scholarship</span>
-				</div>
-			</div>
-		</div>
-	</section>
+  <section class="td-section">
+    <h2>Stack</h2>
+    <p class="td-section-sub">What I reach for, in order of depth.</p>
+    <div class="td-rule"></div>
+    <div class="skills">
+      {
+        skills.map((s) => (
+          <div class="skills-row">
+            <span class="skills-label">{s.label}</span>
+            <span class="skills-items">
+              {s.items.map((it) => (
+                <span class="td-pill">{it}</span>
+              ))}
+            </span>
+          </div>
+        ))
+      }
+    </div>
+  </section>
 
-	<!-- Certifications Section -->
-	<Certificates />
+  <section class="td-section">
+    <h2>Certifications</h2>
+    <p class="td-section-sub">Recent focus: RAG, agents, vector DBs.</p>
+    <div class="td-rule"></div>
+    <ul class="certs">
+      {certs.map((c) => <li>→ {c}</li>)}
+    </ul>
+  </section>
 
-	<!-- Experience Section -->
-	<section class="mb-12">
-		<h2 class="text-3xl font-bold mb-6 text-pblack">Experience</h2>
+  <section class="td-section">
+    <h2>Why</h2>
+    <div class="td-rule"></div>
+    <p class="why-line">
+      I'm not the person who'll build your fourteenth demo. I'm the person who
+      makes demo #1 a product — eval harnesses, cost dials, guardrails, the boring
+      parts that decide whether an AI system ships or stalls.
+    </p>
+    <p class="why-line muted">
+      Want the fast version? Talk to <a href="/" class="td-accent">td-agent</a>.
+    </p>
+  </section>
+</TdShell>
 
-		<!-- Current Role -->
-		<div class="mb-8 bg-white p-6 rounded-lg border-2 border-black shadow-card">
-			<div class="flex items-start justify-between mb-4">
-				<div>
-					<h3 class="text-2xl font-bold text-pblack">AI Engineer</h3>
-					<p class="text-lg text-pblack/70">Redbrick, Seoul</p>
-				</div>
-				<span class="bg-pgreen px-4 py-2 rounded-full border-2 border-black text-sm font-bold whitespace-nowrap">Jul 2024 – Present</span>
-			</div>
-			<ul class="space-y-3">
-				<li class="flex items-start gap-3">
-					<span class="text-ppink text-xl mt-1">●</span>
-					<span>Designed and built an <strong>end-to-end AI game creation system</strong> (intent parsing, asset generation, scene composition, game logic synthesis) — centerpiece of a successful <strong class="text-pgreen">$1.2M government R&D grant</strong></span>
-				</li>
-				<li class="flex items-start gap-3">
-					<span class="text-pblue text-xl mt-1">●</span>
-					<span>Built production <strong>RAG pipelines</strong> (LangChain, Vercel AI SDK) over 15K+ documents in ChromaDB with hybrid retrieval, query rewriting, and re-ranking — <strong class="text-ppink">improving relevance by ~35%</strong> and reducing hallucination from 18% to 4%</span>
-				</li>
-				<li class="flex items-start gap-3">
-					<span class="text-pyellow text-xl mt-1">●</span>
-					<span>Implemented <strong>multi-step agentic workflows</strong> (chain-of-thought, ReACT) orchestrating LLM calls across asset generation, physics config, and script authoring — handling up to 8 dependent tool calls per request</span>
-				</li>
-				<li class="flex items-start gap-3">
-					<span class="text-pgreen text-xl mt-1">●</span>
-					<span>Designed <strong>semantic caching layers</strong> (embedding similarity-based lookup), reducing redundant LLM calls by ~40%, cutting latency from 3.2s to 0.8s, and saving <strong class="text-ppink">~$2K/month</strong> in API costs</span>
-				</li>
-				<li class="flex items-start gap-3">
-					<span class="text-ppink text-xl mt-1">●</span>
-					<span>Owned <strong>model evaluation and safety</strong>: built prompt regression harnesses, implemented output guardrails (content filtering, structured validation), and enforced policy-compliant generation</span>
-				</li>
-			</ul>
-		</div>
+<style>
+  .about-hero {
+    margin-bottom: 72px;
+  }
+  .about-h1 {
+    font-size: clamp(32px, 5vw, 54px);
+    margin: 0 0 20px;
+    max-width: 22ch;
+  }
+  .about-lede {
+    color: var(--a-muted);
+    font-size: 15px;
+    line-height: 1.7;
+    max-width: 60ch;
+    margin: 0 0 24px;
+  }
+  .about-cta {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .about-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--a-mono);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    color: var(--a-muted);
+    border: 1px solid var(--a-line);
+    padding: 9px 14px;
+    border-radius: 2px;
+    transition:
+      color 0.15s,
+      border-color 0.15s,
+      background 0.15s;
+  }
+  .about-btn:hover {
+    color: var(--a-accent);
+    border-color: var(--a-accent);
+  }
+  .about-btn.primary {
+    color: var(--a-accent);
+    border-color: color-mix(in srgb, var(--a-accent) 55%, transparent);
+    background: color-mix(in srgb, var(--a-accent) 10%, transparent);
+  }
+  .about-btn.primary:hover {
+    border-color: var(--a-accent);
+    background: color-mix(in srgb, var(--a-accent) 18%, transparent);
+  }
 
-		<!-- Previous Role 1 -->
-		<div class="mb-8 bg-white p-6 rounded-lg border-2 border-black shadow-card">
-			<div class="flex items-start justify-between mb-4">
-				<div>
-					<h3 class="text-2xl font-bold text-pblack">3D Frontend Engineer</h3>
-					<p class="text-lg text-pblack/70">Redbrick, Seoul</p>
-				</div>
-				<span class="bg-pblue px-4 py-2 rounded-full border-2 border-black text-sm font-bold whitespace-nowrap">Jul 2023 – Jul 2024</span>
-			</div>
-			<ul class="space-y-3">
-				<li class="flex items-start gap-3">
-					<span class="text-pblue text-xl mt-1">●</span>
-					<span>Developed and scaled a browser-based <strong>3D game engine</strong> (Three.js, WebGL, TypeScript) powering a platform with <strong class="text-pblue">54M+ game plays</strong> and <strong class="text-pgreen">10M+ user sign-ups</strong></span>
-				</li>
-				<li class="flex items-start gap-3">
-					<span class="text-ppink text-xl mt-1">●</span>
-					<span>Led <strong>codebase modernization</strong> of 50K+ lines from Webpack to Vite, upgraded Three.js rendering pipeline, replaced physics engine — reducing build times by ~60%, bundles by ~35%, hot-reload from 8s to under 1s</span>
-				</li>
-				<li class="flex items-start gap-3">
-					<span class="text-pyellow text-xl mt-1">●</span>
-					<span>Refactored engine into <strong>modular, testable packages</strong> to unblock parallel development across 3 teams; wrote integration tests for scene graph and asset loading</span>
-				</li>
-				<li class="flex items-start gap-3">
-					<span class="text-pgreen text-xl mt-1">●</span>
-					<span>Redesigned onboarding flow using session replay analysis and user interviews, increasing <strong class="text-ppink">7-day activation by ~25%</strong> and Day-30 retention by ~15%</span>
-				</li>
-			</ul>
-		</div>
+  /* Experience */
+  .exp {
+    border-top: 1px solid var(--a-line);
+    padding: 22px 0;
+  }
+  .exp:first-of-type {
+    border-top: none;
+    padding-top: 0;
+  }
+  .exp-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+  .exp-role {
+    font-size: 15px;
+    color: var(--a-ink);
+    letter-spacing: -0.005em;
+  }
+  .exp-co {
+    color: var(--a-muted);
+    font-weight: 400;
+    margin-left: 4px;
+  }
+  .exp-meta {
+    font-size: 12px;
+    color: var(--a-muted);
+    letter-spacing: 0.02em;
+  }
+  .exp-bullets {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .exp-bullets li {
+    padding: 5px 0 5px 18px;
+    position: relative;
+    color: var(--a-muted);
+    font-size: 13.5px;
+    line-height: 1.65;
+  }
+  .exp-bullets li::before {
+    content: "—";
+    position: absolute;
+    left: 0;
+    color: var(--a-faint);
+  }
+  .exp-bullets strong {
+    color: var(--a-ink);
+    font-weight: 600;
+  }
 
-		<!-- Previous Role 2 -->
-		<div class="mb-8 bg-white p-6 rounded-lg border-2 border-black shadow-card">
-			<div class="flex items-start justify-between mb-4">
-				<div>
-					<h3 class="text-2xl font-bold text-pblack">Embedded Systems & HCI Researcher</h3>
-					<p class="text-lg text-pblack/70">DECS Lab, UNIST, Ulsan</p>
-				</div>
-				<span class="bg-ppink px-4 py-2 rounded-full border-2 border-black text-sm font-bold whitespace-nowrap">Feb 2021 – Feb 2023</span>
-			</div>
-			<ul class="space-y-3">
-				<li class="flex items-start gap-3">
-					<span class="text-ppink text-xl mt-1">●</span>
-					<span>Wrote <strong>IoT firmware in C</strong> for ARM Cortex-M MCUs powering real-time smart sensor arrays (50+ devices, sub-ms latency)</span>
-				</li>
-				<li class="flex items-start gap-3">
-					<span class="text-pblue text-xl mt-1">●</span>
-					<span>Published <strong>6 conference papers, 4 journal articles</strong>; co-filed 6 patents. First-author at IEEE RO-MAN 2023, ICROS 2022, HCI Korea 2022</span>
-				</li>
-			</ul>
-		</div>
-	</section>
+  /* Education */
+  .edu {
+    margin-top: 12px;
+  }
+  .edu:first-of-type {
+    margin-top: 0;
+  }
+  .edu-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .edu-head strong {
+    font-size: 14.5px;
+    color: var(--a-ink);
+    letter-spacing: -0.005em;
+  }
+  .edu-date {
+    font-size: 11.5px;
+    color: var(--a-muted);
+  }
+  .edu-school {
+    color: var(--a-muted);
+    font-size: 12.5px;
+    margin-top: 4px;
+  }
+  .edu-thesis {
+    color: var(--a-muted);
+    font-size: 12.5px;
+    margin-top: 10px;
+    font-style: italic;
+  }
+  .edu-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 12px;
+  }
 
-	<!-- Technical Skills Section -->
-	<section class="mb-12">
-		<h2 class="text-3xl font-bold mb-6 text-pblack">Technical Skills</h2>
+  /* Skills */
+  .skills {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .skills-row {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 16px;
+    align-items: start;
+  }
+  .skills-label {
+    color: var(--a-muted);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    padding-top: 4px;
+  }
+  .skills-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
 
-		<div class="grid md:grid-cols-2 gap-4">
-			<div class="bg-gradient-to-br from-pblue/10 to-white p-5 rounded-lg border-2 border-black shadow-card">
-				<h3 class="text-lg font-bold text-pblack mb-3">Languages</h3>
-				<div class="flex flex-wrap gap-2">
-					<span class="bg-pblue/20 px-3 py-1 rounded-full text-sm border border-black">TypeScript</span>
-					<span class="bg-pblue/20 px-3 py-1 rounded-full text-sm border border-black">Python</span>
-					<span class="bg-pblue/20 px-3 py-1 rounded-full text-sm border border-black">JavaScript</span>
-					<span class="bg-pblue/20 px-3 py-1 rounded-full text-sm border border-black">C/C++</span>
-				</div>
-			</div>
+  /* Certs */
+  .certs {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .certs li {
+    color: var(--a-muted);
+    font-size: 13px;
+    padding: 4px 0;
+  }
 
-			<div class="bg-gradient-to-br from-ppink/10 to-white p-5 rounded-lg border-2 border-black shadow-card">
-				<h3 class="text-lg font-bold text-pblack mb-3">AI/LLM</h3>
-				<div class="flex flex-wrap gap-2">
-					<span class="bg-ppink/20 px-3 py-1 rounded-full text-sm border border-black">LangChain</span>
-					<span class="bg-ppink/20 px-3 py-1 rounded-full text-sm border border-black">LlamaIndex</span>
-					<span class="bg-ppink/20 px-3 py-1 rounded-full text-sm border border-black">Vercel AI SDK</span>
-					<span class="bg-ppink/20 px-3 py-1 rounded-full text-sm border border-black">ChromaDB</span>
-					<span class="bg-ppink/20 px-3 py-1 rounded-full text-sm border border-black">OpenAI API</span>
-					<span class="bg-ppink/20 px-3 py-1 rounded-full text-sm border border-black">Claude API</span>
-					<span class="bg-ppink/20 px-3 py-1 rounded-full text-sm border border-black">LLaMA</span>
-					<span class="bg-ppink/20 px-3 py-1 rounded-full text-sm border border-black">Embeddings</span>
-				</div>
-			</div>
+  /* Why */
+  .why-line {
+    color: var(--a-ink);
+    font-size: 15px;
+    line-height: 1.7;
+    max-width: 60ch;
+  }
+  .why-line.muted {
+    color: var(--a-muted);
+    font-size: 13px;
+    margin-top: 14px;
+  }
+  .why-line a {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
 
-			<div class="bg-gradient-to-br from-pgreen/10 to-white p-5 rounded-lg border-2 border-black shadow-card">
-				<h3 class="text-lg font-bold text-pblack mb-3">Frontend & 3D</h3>
-				<div class="flex flex-wrap gap-2">
-					<span class="bg-pgreen/20 px-3 py-1 rounded-full text-sm border border-black">React</span>
-					<span class="bg-pgreen/20 px-3 py-1 rounded-full text-sm border border-black">Next.js</span>
-					<span class="bg-pgreen/20 px-3 py-1 rounded-full text-sm border border-black">Three.js</span>
-					<span class="bg-pgreen/20 px-3 py-1 rounded-full text-sm border border-black">WebGL</span>
-					<span class="bg-pgreen/20 px-3 py-1 rounded-full text-sm border border-black">Vite</span>
-					<span class="bg-pgreen/20 px-3 py-1 rounded-full text-sm border border-black">Node.js</span>
-				</div>
-			</div>
-
-			<div class="bg-gradient-to-br from-pyellow/10 to-white p-5 rounded-lg border-2 border-black shadow-card">
-				<h3 class="text-lg font-bold text-pblack mb-3">Infrastructure</h3>
-				<div class="flex flex-wrap gap-2">
-					<span class="bg-pyellow/20 px-3 py-1 rounded-full text-sm border border-black">Docker</span>
-					<span class="bg-pyellow/20 px-3 py-1 rounded-full text-sm border border-black">AWS</span>
-					<span class="bg-pyellow/20 px-3 py-1 rounded-full text-sm border border-black">Redis</span>
-					<span class="bg-pyellow/20 px-3 py-1 rounded-full text-sm border border-black">CI/CD</span>
-					<span class="bg-pyellow/20 px-3 py-1 rounded-full text-sm border border-black">Git</span>
-				</div>
-			</div>
-		</div>
-	</section>
-
-	<!-- What Drives Me Section -->
-	<section class="mb-8">
-		<h2 class="text-3xl font-bold mb-4 text-pblack">What Drives Me</h2>
-		<div class="bg-gradient-to-br from-ppink/10 via-pblue/10 to-pgreen/10 p-8 rounded-lg border-2 border-black shadow-card">
-			<p class="text-lg leading-relaxed text-center">
-				I'm driven by building <strong class="text-ppink">AI systems that ship to production</strong> — from prototype to scale. Whether it's designing agentic workflows that orchestrate complex multi-step tasks, building RAG pipelines that serve real users, or engineering 3D platforms that reach millions, I believe in combining <strong class="text-pblue">deep technical craft</strong> with <strong class="text-pgreen">human-centered design</strong> to create products that genuinely work.
-			</p>
-		</div>
-	</section>
-</Layout>
+  @media (max-width: 640px) {
+    .skills-row {
+      grid-template-columns: 1fr;
+      gap: 6px;
+    }
+    .skills-label {
+      padding-top: 0;
+    }
+  }
+</style>

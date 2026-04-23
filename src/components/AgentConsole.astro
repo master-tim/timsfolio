@@ -334,51 +334,19 @@ const TD_DATA = {
     </form>
   </main>
 
-  <!-- ─── Tweaks ─── -->
-  <button
-    id="td-tweaks-btn"
-    type="button"
-    aria-label="Open tweaks panel"
-    title="Tweaks">✦</button
-  >
-
-  <div id="td-tweaks-panel" hidden>
-    <div class="td-tw-head">
-      <strong>Tweaks</strong>
-      <span>TD-AGENT</span>
-    </div>
-    <div class="td-tw-field">
-      <div class="td-tw-lbl">ACCENT</div>
-      <div class="td-tw-accents" id="td-tw-accents"></div>
-    </div>
-    <div class="td-tw-field">
-      <div class="td-tw-lbl">SCHEME</div>
-      <div class="td-tw-seg" id="td-tw-scheme" data-key="scheme"></div>
-    </div>
-    <div class="td-tw-field">
-      <div class="td-tw-lbl">DENSITY</div>
-      <div class="td-tw-seg" id="td-tw-density" data-key="density"></div>
-    </div>
-    <div class="td-tw-field">
-      <div class="td-tw-lbl">AGENT TONE (CLAUDE FALLBACK)</div>
-      <input type="text" id="td-tw-tone" />
-    </div>
-    <div class="td-tw-field">
-      <div class="td-tw-lbl">SHOW INTERNAL THOUGHTS</div>
-      <button type="button" id="td-tw-thoughts"></button>
-    </div>
-  </div>
 </section>
 
 <style is:global>
   :root {
-    --a-bg: #0b0b0e;
-    --a-surf: #121217;
+    /* Locked palette — graphite scheme + ember accent, default density */
+    --a-bg: #0f1012;
+    --a-surf: #17181c;
     --a-ink: #eaeaee;
     --a-muted: #8b8b94;
     --a-faint: #515159;
     --a-line: #23232a;
-    --a-accent: #7cff6b;
+    --a-accent: #ff7b3d;
+    --a-scale: 1;
     --a-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
     --a-display: "Geist", system-ui, -apple-system, sans-serif;
   }
@@ -976,161 +944,6 @@ const TD_DATA = {
     flex-wrap: wrap;
   }
 
-  /* Tweaks */
-  #td-tweaks-btn {
-    position: fixed;
-    right: 20px;
-    top: 20px;
-    width: 36px;
-    height: 36px;
-    border-radius: 2px;
-    background: var(--a-surf);
-    border: 1px solid var(--a-line);
-    color: var(--a-accent);
-    font-size: 16px;
-    cursor: pointer;
-    z-index: 9998;
-    display: grid;
-    place-items: center;
-    transition:
-      transform 0.2s,
-      border-color 0.15s;
-    font-family: var(--a-mono);
-  }
-  #td-tweaks-btn:hover {
-    transform: rotate(90deg);
-    border-color: var(--a-accent);
-  }
-  #td-tweaks-panel {
-    position: fixed;
-    right: 20px;
-    top: 64px;
-    width: 320px;
-    max-width: calc(100vw - 40px);
-    background: var(--a-surf);
-    border: 1px solid var(--a-line);
-    border-radius: 3px;
-    padding: 18px 20px;
-    font-family: var(--a-mono);
-    font-size: 12px;
-    color: var(--a-ink);
-    z-index: 9999;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-  }
-  #td-tweaks-panel[hidden] {
-    display: none;
-  }
-  .td-tw-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid var(--a-line);
-  }
-  .td-tw-head strong {
-    letter-spacing: 0.04em;
-  }
-  .td-tw-head span {
-    color: var(--a-faint);
-    font-size: 10.5px;
-    letter-spacing: 0.08em;
-  }
-  .td-tw-field {
-    margin-bottom: 14px;
-  }
-  .td-tw-field:last-child {
-    margin-bottom: 0;
-  }
-  .td-tw-lbl {
-    font-size: 10px;
-    color: var(--a-faint);
-    letter-spacing: 0.1em;
-    margin-bottom: 6px;
-  }
-  .td-tw-accents {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-  .td-tw-sw {
-    width: 28px;
-    height: 28px;
-    border-radius: 2px;
-    border: 1px solid var(--a-line);
-    cursor: pointer;
-    padding: 0;
-    box-shadow: none;
-    transition: box-shadow 0.15s, transform 0.15s;
-  }
-  .td-tw-sw:hover {
-    transform: translateY(-1px);
-  }
-  .td-tw-sw.active {
-    border-color: var(--a-surf);
-    box-shadow:
-      0 0 0 1px var(--a-surf),
-      0 0 0 3px var(--a-accent);
-  }
-  .td-tw-seg {
-    display: grid;
-    border: 1px solid var(--a-line);
-    border-radius: 2px;
-    overflow: hidden;
-  }
-  .td-tw-seg button {
-    padding: 7px 8px;
-    background: transparent;
-    color: var(--a-muted);
-    border: none;
-    font-family: var(--a-mono);
-    font-size: 11px;
-    cursor: pointer;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    transition: color 0.15s, background 0.15s;
-  }
-  .td-tw-seg button:hover:not(.active) {
-    color: var(--a-ink);
-  }
-  .td-tw-seg button + button {
-    border-left: 1px solid var(--a-line);
-  }
-  .td-tw-seg button.active {
-    background: color-mix(in srgb, var(--a-accent) 14%, transparent);
-    color: var(--a-accent);
-  }
-  #td-tw-tone {
-    width: 100%;
-    background: transparent;
-    border: 1px solid var(--a-line);
-    color: var(--a-ink);
-    font-family: var(--a-mono);
-    font-size: 12px;
-    padding: 6px 10px;
-    border-radius: 2px;
-    outline: none;
-  }
-  #td-tw-tone:focus {
-    border-color: var(--a-accent);
-  }
-  #td-tw-thoughts {
-    width: 100%;
-    padding: 6px 10px;
-    background: transparent;
-    border: 1px solid var(--a-line);
-    color: var(--a-muted);
-    font-family: var(--a-mono);
-    font-size: 11px;
-    cursor: pointer;
-    border-radius: 2px;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-  }
-  #td-tw-thoughts[data-on="1"] {
-    color: var(--a-accent);
-  }
-
   /* Caret blink */
   @keyframes td-blink {
     0%,
@@ -1236,163 +1049,12 @@ const TD_DATA = {
     const inputWrap = $("#td-input-wrap");
     const cmdsEl = $("#td-cmds");
     const uptimeEl = $("#td-uptime");
-    const tweaksBtn = document.getElementById("td-tweaks-btn");
-    const tweaksPanel = document.getElementById("td-tweaks-panel");
 
-    // ───── Tweaks ─────
-    const TWEAK_KEY = "td-agent-tweaks-v1";
-    const DEFAULTS = {
-      accent: "#7CFF6B",
-      scheme: "default",
-      density: "default",
+    // Locked config (what the Tweaks panel used to control)
+    const CONFIG = Object.freeze({
       tone: "playful, dry, confident",
       showThoughts: true,
-    };
-    let tweaks = loadTweaks();
-
-    function loadTweaks() {
-      try {
-        const raw = localStorage.getItem(TWEAK_KEY);
-        if (!raw) return { ...DEFAULTS };
-        return { ...DEFAULTS, ...JSON.parse(raw) };
-      } catch {
-        return { ...DEFAULTS };
-      }
-    }
-    function saveTweaks() {
-      try {
-        localStorage.setItem(TWEAK_KEY, JSON.stringify(tweaks));
-      } catch {}
-    }
-    function applyTweaks() {
-      const r = document.documentElement;
-      r.style.setProperty("--a-accent", tweaks.accent);
-      r.style.setProperty(
-        "--a-bg",
-        tweaks.scheme === "ink"
-          ? "#080810"
-          : tweaks.scheme === "graphite"
-            ? "#0F1012"
-            : "#0B0B0E",
-      );
-      r.style.setProperty(
-        "--a-surf",
-        tweaks.scheme === "ink"
-          ? "#0E0E18"
-          : tweaks.scheme === "graphite"
-            ? "#17181C"
-            : "#121217",
-      );
-      const s =
-        tweaks.density === "compact"
-          ? 0.92
-          : tweaks.density === "loose"
-            ? 1.1
-            : 1;
-      r.style.setProperty("--a-scale", s);
-      renderTweaksPanel();
-    }
-
-    const ACCENTS = [
-      ["#7CFF6B", "acid"],
-      ["#FF7B3D", "ember"],
-      ["#6BB7FF", "ice"],
-      ["#C478FF", "amethyst"],
-      ["#FFDA47", "sulfur"],
-      ["#FF5677", "coral"],
-      ["#EAEAEE", "mono"],
-    ];
-    const SCHEMES = [
-      ["default", "onyx"],
-      ["graphite", "graphite"],
-      ["ink", "ink"],
-    ];
-    const DENSITIES = [
-      ["compact", "cozy"],
-      ["default", "default"],
-      ["loose", "airy"],
-    ];
-
-    function renderTweaksPanel() {
-      const accentsEl = document.getElementById("td-tw-accents");
-      if (accentsEl) {
-        accentsEl.innerHTML = "";
-        ACCENTS.forEach(([c, name]) => {
-          const b = document.createElement("button");
-          b.type = "button";
-          b.className = "td-tw-sw" + (tweaks.accent === c ? " active" : "");
-          b.style.background = c;
-          b.title = name;
-          b.addEventListener("click", () => {
-            tweaks.accent = c;
-            saveTweaks();
-            applyTweaks();
-          });
-          accentsEl.appendChild(b);
-        });
-      }
-
-      [
-        ["td-tw-scheme", SCHEMES, "scheme"],
-        ["td-tw-density", DENSITIES, "density"],
-      ].forEach(([id, opts, key]) => {
-        const segEl = document.getElementById(id);
-        if (!segEl) return;
-        segEl.innerHTML = "";
-        segEl.style.gridTemplateColumns = `repeat(${opts.length}, 1fr)`;
-        opts.forEach(([k, lbl]) => {
-          const b = document.createElement("button");
-          b.type = "button";
-          b.textContent = lbl;
-          if (tweaks[key] === k) b.classList.add("active");
-          b.addEventListener("click", () => {
-            tweaks[key] = k;
-            saveTweaks();
-            applyTweaks();
-          });
-          segEl.appendChild(b);
-        });
-      });
-
-      const toneEl = document.getElementById("td-tw-tone");
-      if (toneEl && toneEl.value !== tweaks.tone) toneEl.value = tweaks.tone;
-
-      const thoughtsEl = document.getElementById("td-tw-thoughts");
-      if (thoughtsEl) {
-        thoughtsEl.textContent = tweaks.showThoughts
-          ? "● visible"
-          : "○ hidden";
-        thoughtsEl.dataset.on = tweaks.showThoughts ? "1" : "0";
-      }
-    }
-
-    // Wire tone input (persists on input)
-    document.getElementById("td-tw-tone")?.addEventListener("input", (e) => {
-      tweaks.tone = e.target.value;
-      saveTweaks();
     });
-    document
-      .getElementById("td-tw-thoughts")
-      ?.addEventListener("click", () => {
-        tweaks.showThoughts = !tweaks.showThoughts;
-        saveTweaks();
-        applyTweaks();
-      });
-
-    tweaksBtn?.addEventListener("click", () => {
-      tweaksPanel.hidden = !tweaksPanel.hidden;
-    });
-    document.addEventListener("click", (e) => {
-      if (!tweaksPanel || tweaksPanel.hidden) return;
-      if (
-        !tweaksPanel.contains(e.target) &&
-        !tweaksBtn.contains(e.target)
-      ) {
-        tweaksPanel.hidden = true;
-      }
-    });
-
-    applyTweaks();
 
     // ───── Commands ─────
     const suggestions = [
@@ -1473,7 +1135,7 @@ const TD_DATA = {
       return d;
     }
     function rowThought(text) {
-      if (!tweaks.showThoughts) return null;
+      if (!CONFIG.showThoughts) return null;
       const d = document.createElement("div");
       d.className = "td-row-thought";
       d.textContent = `· ${text}`;
@@ -1911,7 +1573,7 @@ Counter-weight: none of these have cost anyone money. Yet.`,
         const res = await fetch("/api/agent", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ query, tone: tweaks.tone }),
+          body: JSON.stringify({ query, tone: CONFIG.tone }),
         });
         if (!res.ok) throw new Error("agent http " + res.status);
         const data = await res.json();
