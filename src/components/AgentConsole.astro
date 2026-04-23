@@ -381,7 +381,7 @@ const TD_DATA = {
       </div>
       <div class="td-input-foot">
         <span
-          >type a command or ask anything — free-form → claude-haiku fallback</span
+          >type a command or ask anything — free-form → llm fallback</span
         >
         <span>© 2026 td</span>
       </div>
@@ -1813,7 +1813,7 @@ Counter-weight: none of these have cost anyone money. Yet.`,
 
     // ───── Fallback to Claude via /api/agent ─────
     async function claudeFallback(query) {
-      pushEvent({ type: "thought", text: "no pattern match — routing to claude-haiku." });
+      pushEvent({ type: "thought", text: "no pattern match — routing to llm." });
       await sleep(200);
       const priorHistory = buildClaudeHistory();
       try {

@@ -1,7 +1,9 @@
 import type { APIRoute } from 'astro';
 
 const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
-const MODEL = 'anthropic/claude-haiku-4.5';
+// Grok 4 Fast: very fast TTFB, reasonable smarts, competitive pricing.
+// Override with AGENT_MODEL env var without code changes.
+const MODEL = process.env.AGENT_MODEL ?? 'x-ai/grok-4-fast';
 
 const SYSTEM_FACTS = [
   // Role + highlights
