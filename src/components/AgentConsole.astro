@@ -1029,15 +1029,27 @@ const TD_DATA = {
   (function () {
     "use strict";
 
-    // Idempotent init — safe to run again on view transitions
-    if (window.__tdAgentInit && window.__tdAgentInit.cleanup) {
-      window.__tdAgentInit.cleanup();
+    // Shared across init/cleanup — survives across view transitions because
+    // this script-level closure is only created once by the browser.
+    let ctx = null;
+
+    function cleanup() {
+      if (!ctx) return;
+      clearInterval(ctx.uptimeTimer);
+      ctx = null;
     }
 
-    const root = document.querySelector(".td-agent");
-    if (!root) return;
+    function init() {
+      // Tear down any previous instance (navigating back to "/")
+      cleanup();
 
-    const D = TD_DATA;
+      const root = document.querySelector(".td-agent");
+      if (!root) return;
+      // Guard against double-init on the same DOM instance
+      if (root.dataset.tdReady === "1") return;
+      root.dataset.tdReady = "1";
+
+      const D = TD_DATA;
 
     const $ = (sel) => root.querySelector(sel);
     const $$ = (sel) => Array.from(root.querySelectorAll(sel));
@@ -1055,6 +1067,34 @@ const TD_DATA = {
       tone: "playful, dry, confident",
       showThoughts: true,
     });
+
+    // ───── Session history (sessionStorage) ─────
+    // We record every rendered row as a serializable event and replay the
+    // event log on navigation return, so the user's chat is preserved within
+    // the tab session. Cleared on `clear`/`reset` and when the tab closes.
+    const HISTORY_KEY = "td-agent-history-v1";
+    let history = [];
+    function loadHistory() {
+      try {
+        const raw = sessionStorage.getItem(HISTORY_KEY);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) && parsed.length ? parsed : null;
+      } catch {
+        return null;
+      }
+    }
+    function saveHistory() {
+      try {
+        sessionStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+      } catch {}
+    }
+    function clearHistoryStore() {
+      history = [];
+      try {
+        sessionStorage.removeItem(HISTORY_KEY);
+      } catch {}
+    }
 
     // ───── Commands ─────
     const suggestions = [
@@ -1340,6 +1380,68 @@ const TD_DATA = {
       });
     }
 
+    // Non-animated assistant row — used when replaying saved history.
+    function rowAssistantStatic(text) {
+      const d = document.createElement("div");
+      d.className = "td-row-assistant";
+      d.textContent = text;
+      return d;
+    }
+
+    // ───── Event dispatcher ─────
+    // Each log row the agent produces is represented as a small serializable
+    // event. `pushEvent` appends to history + persists + renders. `renderEvent`
+    // just renders (used for replay on navigation return).
+    //
+    // Event shapes:
+    //   { type: "system",    text }
+    //   { type: "user",      text }
+    //   { type: "thought",   text }
+    //   { type: "assistant", text }                         (animated when live, static on replay)
+    //   { type: "tool",      name, status, kind, data? }
+    //     kind ∈ "work" | "exp" | "pubs" | "stack" | "project" | "json"
+    const TOOL_RENDER = {
+      work:    (box)        => renderWork(box),
+      exp:     (box)        => renderExp(box),
+      pubs:    (box)        => renderPubs(box),
+      stack:   (box)        => renderStack(box),
+      project: (box, data)  => renderProject(box, data),
+      json:    (box, data)  => renderJSON(box, data || {}),
+    };
+
+    function renderEvent(ev, opts) {
+      const instant = !!(opts && opts.instant);
+      let node = null;
+      switch (ev.type) {
+        case "system":
+          node = rowSystem(ev.text);
+          break;
+        case "user":
+          node = rowUser(ev.text);
+          break;
+        case "thought":
+          if (!CONFIG.showThoughts) return;
+          node = rowThought(ev.text);
+          break;
+        case "assistant":
+          node = instant ? rowAssistantStatic(ev.text) : rowAssistant(ev.text);
+          break;
+        case "tool":
+          node = rowTool(ev.name, ev.status, (box) => {
+            const r = TOOL_RENDER[ev.kind];
+            if (r) r(box, ev.data);
+          });
+          break;
+      }
+      if (node) pushRow(node);
+    }
+
+    function pushEvent(ev) {
+      history.push(ev);
+      saveHistory();
+      renderEvent(ev);
+    }
+
     // ───── Intents & handlers ─────
     const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -1379,59 +1481,44 @@ const TD_DATA = {
 
     const handlers = {
       async tour() {
-        const t = rowThought("rolling the 30-second version.");
-        if (t) pushRow(t);
+        pushEvent({ type: "thought", text: "rolling the 30-second version." });
         await sleep(350);
-        pushRow(
-          rowTool("tour()", "ok", (box) =>
-            renderJSON(box, {
-              now: "AI Engineer @ Redbrick · Seoul · open to senior IC",
-              shipped:
-                "$1.2M RAG/agent pipeline · 3.2s→0.8s · 18%→4% hallucination",
-              before: "Modernized Redbrick 3D engine — 54M plays",
-              earlier: "10 peer-reviewed papers, 6 patents (HRI + embedded)",
-              next: "try: show work · why hire you · tell me about RAG",
-            }),
-          ),
-        );
+        pushEvent({
+          type: "tool", name: "tour()", status: "ok", kind: "json",
+          data: {
+            now: "AI Engineer @ Redbrick · Seoul · open to senior IC",
+            shipped:
+              "$1.2M RAG/agent pipeline · 3.2s→0.8s · 18%→4% hallucination",
+            before: "Modernized Redbrick 3D engine — 54M plays",
+            earlier: "10 peer-reviewed papers, 6 patents (HRI + embedded)",
+            next: "try: show work · why hire you · tell me about RAG",
+          },
+        });
       },
 
       async listWork() {
-        const t = rowThought("listing 6 of 18 projects, newest first.");
-        if (t) pushRow(t);
+        pushEvent({ type: "thought", text: "listing 6 of 18 projects, newest first." });
         await sleep(300);
-        pushRow(rowTool("list_work(limit=6)", "ok", renderWork));
+        pushEvent({ type: "tool", name: "list_work(limit=6)", status: "ok", kind: "work" });
       },
 
-      async rag() {
-        await projectCard("rag-15k");
-      },
-      async aiGames() {
-        await projectCard("ai-games");
-      },
-      async cache() {
-        await projectCard("semantic-cache");
-      },
-      async engine() {
-        await projectCard("engine");
-      },
-      async robot() {
-        await projectCard("robot-face");
-      },
-      async fitts() {
-        await projectCard("fitts");
-      },
+      async rag()     { await projectCard("rag-15k"); },
+      async aiGames() { await projectCard("ai-games"); },
+      async cache()   { await projectCard("semantic-cache"); },
+      async engine()  { await projectCard("engine"); },
+      async robot()   { await projectCard("robot-face"); },
+      async fitts()   { await projectCard("fitts"); },
 
       async career() {
-        pushRow(rowTool("timeline()", "ok", renderExp));
+        pushEvent({ type: "tool", name: "timeline()", status: "ok", kind: "exp" });
       },
 
       async pubs() {
-        pushRow(rowTool("publications(limit=6)", "ok", renderPubs));
+        pushEvent({ type: "tool", name: "publications(limit=6)", status: "ok", kind: "pubs" });
       },
 
       async stack() {
-        pushRow(rowTool("stack()", "ok", renderStack));
+        pushEvent({ type: "tool", name: "stack()", status: "ok", kind: "stack" });
       },
 
       async skills() {
@@ -1449,8 +1536,7 @@ If you want depth on any of these, ask me.`,
       },
 
       async pitch() {
-        const t = rowThought("being honest, not a salesperson.");
-        if (t) pushRow(t);
+        pushEvent({ type: "thought", text: "being honest, not a salesperson." });
         await sleep(450);
         await typeAssistant(
           `Three honest answers:
@@ -1464,8 +1550,7 @@ Not the person who'll build your fourteenth demo. The person who makes demo #1 a
       },
 
       async weakness() {
-        const t = rowThought("these are real answers, not interview answers.");
-        if (t) pushRow(t);
+        pushEvent({ type: "thought", text: "these are real answers, not interview answers." });
         await sleep(350);
         await typeAssistant(
           `Three things I'm working on:
@@ -1479,43 +1564,40 @@ Counter-weight: none of these have cost anyone money. Yet.`,
       },
 
       async contact() {
-        pushRow(
-          rowTool("contact()", "ok", (box) =>
-            renderJSON(box, {
-              email: D.email,
-              github: "github.com/" + D.github,
-              linkedin: "linkedin.com/in/" + D.linkedin,
-              timezone: D.tz,
-              reply_sla: "usually <24h",
-            }),
-          ),
-        );
+        pushEvent({
+          type: "tool", name: "contact()", status: "ok", kind: "json",
+          data: {
+            email: D.email,
+            github: "github.com/" + D.github,
+            linkedin: "linkedin.com/in/" + D.linkedin,
+            timezone: D.tz,
+            reply_sla: "usually <24h",
+          },
+        });
       },
 
       async location() {
-        pushRow(
-          rowTool("whereami()", "ok", (box) =>
-            renderJSON(box, {
-              city: D.location,
-              timezone: D.tz,
-              remote: "yes · friendly to NA/EU teams",
-              relocate: "open to discussion",
-            }),
-          ),
-        );
+        pushEvent({
+          type: "tool", name: "whereami()", status: "ok", kind: "json",
+          data: {
+            city: D.location,
+            timezone: D.tz,
+            remote: "yes · friendly to NA/EU teams",
+            relocate: "open to discussion",
+          },
+        });
       },
 
       async ping() {
         const latency = (Math.random() * 40 + 12).toFixed(1);
-        pushRow(
-          rowTool("ping()", "ok", (box) =>
-            renderJSON(box, {
-              status: "alive",
-              latency_ms: latency,
-              model: "td-agent@0.4.2",
-            }),
-          ),
-        );
+        pushEvent({
+          type: "tool", name: "ping()", status: "ok", kind: "json",
+          data: {
+            status: "alive",
+            latency_ms: latency,
+            model: "td-agent@0.4.2",
+          },
+        });
       },
 
       async joke() {
@@ -1528,36 +1610,40 @@ Counter-weight: none of these have cost anyone money. Yet.`,
       },
 
       async help() {
-        pushRow(
-          rowTool("help()", "ok", (box) =>
-            renderJSON(box, {
-              work: "show work · tell me about RAG · cache · engine · games",
-              me: "tour · why hire you · weakness · skills · experience",
-              meta: "contact · pubs · stack · ping · location",
-              easter_egg: "ask me a joke",
-            }),
-          ),
-        );
+        pushEvent({
+          type: "tool", name: "help()", status: "ok", kind: "json",
+          data: {
+            work: "show work · tell me about RAG · cache · engine · games",
+            me: "tour · why hire you · weakness · skills · experience",
+            meta: "contact · pubs · stack · ping · location",
+            easter_egg: "ask me a joke",
+          },
+        });
       },
 
       async clear() {
         logEl.innerHTML = "";
+        clearHistoryStore();
       },
     };
 
     async function projectCard(id) {
       const w = D.work.find((x) => x.id === id);
       if (!w) return;
-      const t = rowThought(`opening ${w.id}…`);
-      if (t) pushRow(t);
+      pushEvent({ type: "thought", text: `opening ${w.id}…` });
       await sleep(200);
-      pushRow(rowTool(`open(project="${w.id}")`, "ok", (box) => renderProject(box, id)));
+      pushEvent({
+        type: "tool",
+        name: `open(project="${w.id}")`,
+        status: "ok",
+        kind: "project",
+        data: id,
+      });
     }
 
     function typeAssistant(text) {
       return new Promise((resolve) => {
-        const node = rowAssistant(text);
-        pushRow(node);
+        pushEvent({ type: "assistant", text });
         const total = text.length;
         const dur = total > 200 ? (total / 4) * 8 + 80 : total * 12 + 80;
         setTimeout(resolve, Math.min(dur, 4000));
@@ -1566,8 +1652,7 @@ Counter-weight: none of these have cost anyone money. Yet.`,
 
     // ───── Fallback to Claude via /api/agent ─────
     async function claudeFallback(query) {
-      const t = rowThought("no pattern match — routing to claude-haiku.");
-      if (t) pushRow(t);
+      pushEvent({ type: "thought", text: "no pattern match — routing to claude-haiku." });
       await sleep(200);
       try {
         const res = await fetch("/api/agent", {
@@ -1596,7 +1681,7 @@ Counter-weight: none of these have cost anyone money. Yet.`,
       updateSendState();
       setBusy(true);
 
-      pushRow(rowUser(query));
+      pushEvent({ type: "user", text: query });
       await sleep(200);
 
       const fn = match(query);
@@ -1633,41 +1718,54 @@ Counter-weight: none of these have cost anyone money. Yet.`,
       send();
     });
 
-    // ───── Intro seed ─────
+    // ───── Intro seed (or replay from sessionStorage) ─────
     async function seed() {
-      pushRow(
-        rowSystem(
-          `td-agent v0.4.2 — session started · ${new Date().toISOString().slice(0, 10)}`,
-        ),
-      );
-      pushRow(
-        rowSystem(
-          "type a question or click a suggestion. `help` for commands.",
-        ),
-      );
+      // If the user navigated away and came back, restore the prior chat.
+      const saved = loadHistory();
+      if (saved) {
+        history = saved;
+        saved.forEach((ev) => renderEvent(ev, { instant: true }));
+        // Land at the bottom after all rows paint.
+        requestAnimationFrame(() => scrollLog());
+        setTimeout(() => inputEl.focus(), 50);
+        return;
+      }
+
+      // Fresh session — run the normal intro.
+      pushEvent({
+        type: "system",
+        text: `td-agent v0.4.2 — session started · ${new Date().toISOString().slice(0, 10)}`,
+      });
+      pushEvent({
+        type: "system",
+        text: "type a question or click a suggestion. `help` for commands.",
+      });
       await sleep(500);
-      pushRow(rowUser("whoami"));
+      pushEvent({ type: "user", text: "whoami" });
       await sleep(200);
-      pushRow(
-        rowTool("identity()", "ok", (box) =>
-          renderJSON(box, {
-            name: D.name,
-            role: D.role + " · Redbrick, Seoul",
-            status: "● open to senior IC — AI / applied LLM",
-            summary: D.tagline,
-            metrics: `${D.metrics.plays} plays · ${D.metrics.grant} grant · ${D.metrics.papers} papers, ${D.metrics.patents} patents`,
-          }),
-        ),
-      );
+      pushEvent({
+        type: "tool", name: "identity()", status: "ok", kind: "json",
+        data: {
+          name: D.name,
+          role: D.role + " · Redbrick, Seoul",
+          status: "● open to senior IC — AI / applied LLM",
+          summary: D.tagline,
+          metrics: `${D.metrics.plays} plays · ${D.metrics.grant} grant · ${D.metrics.papers} papers, ${D.metrics.patents} patents`,
+        },
+      });
       setTimeout(() => inputEl.focus(), 50);
     }
     seed();
 
-    // ───── Cleanup handle for astro:before-swap ─────
-    window.__tdAgentInit = {
-      cleanup() {
-        clearInterval(uptimeTimer);
-      },
-    };
+    // Expose uptime timer for cleanup()
+    ctx = { uptimeTimer };
+    }
+
+    // Astro ClientRouter hooks — fire on first load AND on every navigation.
+    // Because this script runs once per document, the listeners we register
+    // here persist across view transitions. `init` re-binds to the new DOM
+    // after each swap; `cleanup` tears down the interval before the swap.
+    document.addEventListener("astro:page-load", init);
+    document.addEventListener("astro:before-swap", cleanup);
   })();
 </script>
