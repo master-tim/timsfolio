@@ -154,6 +154,8 @@ const TD_DATA = {
     },
   ],
 
+  // 10 peer-reviewed papers from CV (4 journals + 6 conference), 2020–2024.
+  // Also 6 co-filed patents from DECS Lab (titles redacted by employer).
   pubs: [
     {
       year: "2024",
@@ -192,14 +194,71 @@ const TD_DATA = {
     },
     {
       year: "2022",
+      venue: "ICROS",
+      title:
+        "Driving Performance & Pedestrian Recognition Algorithm for Indoor Shared Mobility",
+      role: "co-author",
+    },
+    {
+      year: "2022",
       venue: "HCI Korea",
       title:
         "Comparison of Face & Eye Tracking for Scrolling a Web Browser on Mobile",
       role: "first author",
     },
+    {
+      year: "2021",
+      venue: "Archives of Design Research",
+      title:
+        "Design Guidelines for Contextual Awareness of Hygiene in Daily Life with Infectious Viruses",
+      role: "co-author",
+    },
+    {
+      year: "2021",
+      venue: "KSDS",
+      title:
+        "Interactive System Design for Environmental Hygiene Perception in Pandemic Situations",
+      role: "co-author",
+    },
+    {
+      year: "2020",
+      venue: "DIS",
+      title:
+        "DayClo: An Everyday Table Clock with Personal Schedule Data for Self-reflection",
+      role: "co-author",
+    },
   ],
 
+  patents: {
+    count: 6,
+    note: "Co-filed at UNIST DECS Lab (2021–2023). Areas: HRI expression models, pedestrian-aware indoor mobility, contextual HCI systems.",
+  },
+
+  education: [
+    { degree: "M.S. Design (HCI)", school: "UNIST", date: "Feb 2023", tags: ["Lotte Scholarship", "GPA 4.0/4.3"] },
+    { degree: "B.S. Computer Science + Industrial Design", school: "UNIST", date: "Feb 2021", tags: ["Dual degree", "UNISTAR Silver Scholarship"] },
+    { degree: "Korean Language (Intermediate)", school: "Korea University", date: "2018–19", tags: [] },
+  ],
+
+  certs: [
+    "Advanced RAG with Vector Databases · IBM · 2025",
+    "Foundation — LangChain (Python) · LangChain · 2025",
+    "Gen AI Agents · Google Cloud · 2025",
+    "Build RAG Applications · IBM · 2025",
+    "Three.js Journey · 2023",
+    "Advanced React · Meta · 2023",
+    "Principles of UX/UI Design · Meta",
+    "Algorithmic Toolbox · UC San Diego",
+    "First Degree Diploma — Physics National Olympiad (Kyrgyzstan)",
+  ],
+
+  langs: ["English", "Korean", "Russian"],
+
   stack: [
+    [
+      "Languages",
+      ["TypeScript", "JavaScript", "Python", "C / C++"],
+    ],
     [
       "AI / LLM",
       [
@@ -220,7 +279,7 @@ const TD_DATA = {
       ["React", "Next.js", "Astro", "TypeScript", "Tailwind", "Vite"],
     ],
     ["3D / WebGL", ["Three.js", "WebGL", "GLSL", "WebXR", "Rapier", "Blender"]],
-    ["Backend", ["Node.js", "Python", "Redis", "Docker", "AWS", "CI/CD"]],
+    ["Backend / Infra", ["Node.js", "Redis", "Docker", "AWS", "CI/CD", "Git"]],
     [
       "Research",
       ["HCI", "HRI", "Computer Vision", "Embedded C", "ARM Cortex-M"],
@@ -241,11 +300,6 @@ const TD_DATA = {
   <!-- ─── Sidebar ─── -->
   <aside class="td-sidebar">
     <div class="td-ident">
-      <div class="td-ident-row">
-        <span class="td-dot"></span>
-        <strong class="td-brand">td-agent</strong>
-        <span class="td-ver">v0.4.2</span>
-      </div>
       <div class="td-name">
         Temirlan<br />Dzhoroev<span class="td-accent-dot">.</span>
       </div>
@@ -1105,6 +1159,8 @@ const TD_DATA = {
       { t: "weakness" },
       { t: "experience" },
       { t: "publications" },
+      { t: "education" },
+      { t: "certs" },
       { t: "stack" },
       { t: "contact" },
     ];
@@ -1459,17 +1515,30 @@ const TD_DATA = {
       { re: /robot|ro.?man|hri|thesis/i, fn: "robot" },
       { re: /fitt|eye.?track|face.?track/i, fn: "fitts" },
       { re: /hire|why|pitch|strength|should i/i, fn: "pitch" },
-      { re: /experience|resume|cv|career|where.*work/i, fn: "career" },
-      { re: /paper|publication|research|academ|phd/i, fn: "pubs" },
-      { re: /stack|tool|tech|language/i, fn: "stack" },
+      {
+        re: /experience|resume|cv|career|where.*work/i,
+        fn: "career",
+        // "experience with/in/using X" is a skill-check, not a timeline request — let it fall through.
+        guard: (q) => !/\bexperience\s+(with|in|using|of|on)\b/i.test(q),
+      },
+      { re: /paper|publication|research|academ|phd|patent/i, fn: "pubs" },
+      { re: /cert|certific|award|olympiad|course|badge/i, fn: "certs" },
+      { re: /educat|school|degree|university|unist|thesis|gpa|scholarship/i, fn: "education" },
+      {
+        re: /stack|tool|tech|language/i,
+        fn: "stack",
+        // "languages you speak" → spoken, not programming — let Claude handle it.
+        guard: (q) => !/\b(speak|spoken|fluent|native)\b/i.test(q),
+      },
       { re: /contact|email|reach|available|open/i, fn: "contact" },
       { re: /skills|what.*(can|do) you (do|build)/i, fn: "skills" },
       { re: /where.*live|location|seoul|timezone|gmt/i, fn: "location" },
       { re: /weak|fail|worst|fuck.?up|mistake/i, fn: "weakness" },
       { re: /joke|fun|haha|lol/i, fn: "joke" },
       { re: /ping|status|alive/i, fn: "ping" },
-      { re: /clear|reset/i, fn: "clear" },
-      { re: /help|\?|commands/i, fn: "help" },
+      { re: /^(clear|reset)\b/i, fn: "clear" },
+      // Only bare "?", "help", or "commands" — not any query ending in "?".
+      { re: /^\s*(help|commands|\?)\s*$/i, fn: "help" },
     ];
 
     function match(q) {
@@ -1514,11 +1583,42 @@ const TD_DATA = {
       },
 
       async pubs() {
-        pushEvent({ type: "tool", name: "publications(limit=6)", status: "ok", kind: "pubs" });
+        pushEvent({ type: "tool", name: `publications(total=${D.pubs.length})`, status: "ok", kind: "pubs" });
+        await sleep(200);
+        pushEvent({
+          type: "tool", name: `patents(count=${D.patents.count})`, status: "ok", kind: "json",
+          data: {
+            count: `${D.patents.count} co-filed`,
+            period: "2021–2023 · UNIST DECS Lab",
+            areas: "HRI expression models · indoor mobility · contextual HCI",
+            titles: "redacted by employer",
+          },
+        });
       },
 
       async stack() {
         pushEvent({ type: "tool", name: "stack()", status: "ok", kind: "stack" });
+      },
+
+      async education() {
+        pushEvent({
+          type: "tool", name: "education()", status: "ok", kind: "json",
+          data: Object.fromEntries(
+            D.education.map((e, i) => [
+              `${i + 1}. ${e.date}`,
+              `${e.degree} — ${e.school}${e.tags.length ? " · " + e.tags.join(", ") : ""}`,
+            ])
+          ),
+        });
+      },
+
+      async certs() {
+        pushEvent({
+          type: "tool", name: `certs(count=${D.certs.length})`, status: "ok", kind: "json",
+          data: Object.fromEntries(
+            D.certs.map((c, i) => [String(i + 1).padStart(2, "0"), c])
+          ),
+        });
       },
 
       async skills() {
@@ -1615,7 +1715,8 @@ Counter-weight: none of these have cost anyone money. Yet.`,
           data: {
             work: "show work · tell me about RAG · cache · engine · games",
             me: "tour · why hire you · weakness · skills · experience",
-            meta: "contact · pubs · stack · ping · location",
+            research: "publications · patents · education · certs",
+            meta: "contact · stack · ping · location",
             easter_egg: "ask me a joke",
           },
         });
@@ -1650,15 +1751,76 @@ Counter-weight: none of these have cost anyone money. Yet.`,
       });
     }
 
+    // Summarize a tool card as text so Claude sees what was already shown
+    // in the chat (otherwise follow-ups like "give me full list" are blind).
+    function toolSummary(ev) {
+      switch (ev.kind) {
+        case "work":
+          return `(shown) my work: ${D.work.map((w) => `${w.title} — ${w.oneliner}`).join(" | ")}`;
+        case "exp":
+          return `(shown) my timeline: ${D.exp
+            .map((e) => `${e.role} @ ${e.co} (${e.date})`)
+            .join("; ")}`;
+        case "pubs":
+          return `(shown) all ${D.pubs.length} publications: ${D.pubs
+            .map((p) => `"${p.title}" — ${p.venue} ${p.year} (${p.role})`)
+            .join("; ")}`;
+        case "stack":
+          return `(shown) my stack: ${D.stack
+            .map(([k, items]) => `${k}: ${items.join(", ")}`)
+            .join(" · ")}`;
+        case "project": {
+          const w = D.work.find((x) => x.id === ev.data);
+          if (!w) return `(shown) a project card`;
+          return `(shown) ${w.title}: ${w.oneliner} Stack: ${w.stack.join(", ")}. ${w.metric}.`;
+        }
+        case "json":
+          return `(shown) ${ev.name} → ${JSON.stringify(ev.data)}`;
+        default:
+          return `(shown) ${ev.name}`;
+      }
+    }
+
+    // Convert the rendered event log into a Claude-compatible message list,
+    // collapsing consecutive same-role messages and bounding length.
+    function buildClaudeHistory() {
+      const msgs = [];
+      for (const ev of history) {
+        let role = null;
+        let content = null;
+        if (ev.type === "user") {
+          role = "user";
+          content = ev.text;
+        } else if (ev.type === "assistant") {
+          role = "assistant";
+          content = ev.text;
+        } else if (ev.type === "tool") {
+          role = "assistant";
+          content = toolSummary(ev);
+        }
+        if (!role || !content) continue;
+        const prev = msgs[msgs.length - 1];
+        if (prev && prev.role === role) {
+          prev.content += "\n" + content;
+        } else {
+          msgs.push({ role, content });
+        }
+      }
+      // Drop a trailing user message — that's the live query we're about to send.
+      if (msgs.length && msgs[msgs.length - 1].role === "user") msgs.pop();
+      return msgs.slice(-12);
+    }
+
     // ───── Fallback to Claude via /api/agent ─────
     async function claudeFallback(query) {
       pushEvent({ type: "thought", text: "no pattern match — routing to claude-haiku." });
       await sleep(200);
+      const priorHistory = buildClaudeHistory();
       try {
         const res = await fetch("/api/agent", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ query, tone: CONFIG.tone }),
+          body: JSON.stringify({ query, tone: CONFIG.tone, history: priorHistory }),
         });
         if (!res.ok) throw new Error("agent http " + res.status);
         const data = await res.json();
