@@ -296,11 +296,12 @@ const TD_DATA = {
   rel="stylesheet"
 />
 
+<a class="td-skip-link" href="#td-input">Skip to console input</a>
 <section class="td-agent" aria-label="td-agent console">
   <!-- ─── Sidebar ─── -->
   <aside class="td-sidebar">
     <div class="td-ident">
-      <div class="td-name">
+      <div class="td-name" translate="no">
         Temirlan<br />Dzhoroev<span class="td-accent-dot">.</span>
       </div>
       <div class="td-subline">
@@ -365,21 +366,23 @@ const TD_DATA = {
 
   <!-- ─── Main console ─── -->
   <main class="td-main">
-    <div id="td-log" class="td-log" aria-live="polite"></div>
+    <div id="td-log" class="td-log" role="log" aria-live="polite" aria-label="Conversation log"></div>
 
     <form id="td-form" class="td-input-bar" autocomplete="off">
+      <label class="sr-only" for="td-input">Ask the td-agent a question</label>
       <div class="td-input-wrap" id="td-input-wrap">
-        <span class="td-prompt">td &gt;</span>
+        <span class="td-prompt" aria-hidden="true">td &gt;</span>
         <input
           id="td-input"
           type="text"
-          placeholder="ask anything · 'why hire you' · 'tell me about RAG' · 'weakness'…"
+          placeholder="ask anything · ‘why hire you’ · ‘tell me about RAG’ · ‘weakness’…"
           autocomplete="off"
-          autofocus
+          spellcheck="false"
+          aria-describedby="td-input-help"
         />
         <button id="td-send" type="submit" disabled>↵ send</button>
       </div>
-      <div class="td-input-foot">
+      <div id="td-input-help" class="td-input-foot">
         <span>type a command or ask anything</span>
         <span>© 2026 td</span>
       </div>
@@ -426,6 +429,38 @@ const TD_DATA = {
     background: var(--a-accent);
     color: var(--a-bg);
   }
+
+  /* Visually hidden but available to screen readers */
+  body.td-home .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* Skip link — invisible until focused */
+  body.td-home .td-skip-link {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    padding: 8px 14px;
+    background: var(--a-accent);
+    color: var(--a-bg);
+    font-family: var(--a-mono);
+    font-size: 12px;
+    border-radius: 2px;
+    text-decoration: none;
+    transform: translateY(-200%);
+    z-index: 200;
+  }
+  body.td-home .td-skip-link:focus {
+    transform: translateY(0);
+  }
   body.td-home ::-webkit-scrollbar {
     width: 10px;
     height: 10px;
@@ -457,7 +492,7 @@ const TD_DATA = {
   /* Sidebar */
   .td-sidebar {
     border-right: 1px solid var(--a-line);
-    padding: 28px 24px;
+    padding: max(28px, env(safe-area-inset-top)) 24px 28px max(24px, env(safe-area-inset-left));
     display: flex;
     flex-direction: column;
     gap: 24px;
@@ -537,7 +572,9 @@ const TD_DATA = {
     font-family: var(--a-mono);
     font-size: 12.5px;
     color: var(--a-muted);
-    padding: 6px 0;
+    padding: 6px 4px;
+    margin: 0 -4px;
+    border-radius: 2px;
     cursor: pointer;
     display: flex;
     gap: 8px;
@@ -553,6 +590,11 @@ const TD_DATA = {
   }
   .td-cmd:hover:not([disabled]) {
     color: var(--a-accent);
+  }
+  .td-cmd:focus-visible {
+    outline: 2px solid var(--a-accent);
+    outline-offset: 2px;
+    color: var(--a-ink);
   }
   .td-cmd[disabled] {
     opacity: 0.5;
@@ -587,11 +629,18 @@ const TD_DATA = {
   .td-links a {
     color: var(--a-muted);
     text-decoration: none;
-    padding: 2px 0;
+    padding: 2px 4px;
+    margin: 0 -4px;
+    border-radius: 2px;
     transition: color 0.15s;
   }
   .td-links a:hover {
     color: var(--a-accent);
+  }
+  .td-links a:focus-visible {
+    outline: 2px solid var(--a-accent);
+    outline-offset: 2px;
+    color: var(--a-ink);
   }
 
   /* Main */
@@ -599,7 +648,7 @@ const TD_DATA = {
     display: grid;
     grid-template-rows: 1fr auto;
     height: 100%;
-    padding: 0 36px;
+    padding: 0 max(36px, env(safe-area-inset-right)) 0 36px;
     min-width: 0;
     overflow: hidden;
   }
@@ -675,6 +724,11 @@ const TD_DATA = {
     color: var(--a-accent);
     text-decoration: underline;
     text-underline-offset: 2px;
+    border-radius: 2px;
+  }
+  .td-row-assistant a:focus-visible {
+    outline: 2px solid var(--a-accent);
+    outline-offset: 2px;
   }
   .td-row-assistant ul,
   .td-row-assistant ol {
@@ -745,12 +799,22 @@ const TD_DATA = {
     cursor: pointer;
     transition: background 0.15s;
     align-items: baseline;
+    background: transparent;
+    border: none;
+    width: 100%;
+    color: inherit;
+    font-family: inherit;
+    text-align: left;
   }
   .td-work-row + .td-work-row {
     border-top: 1px solid var(--a-line);
   }
   .td-work-row:hover {
     background: rgba(255, 255, 255, 0.03);
+  }
+  .td-work-row:focus-visible {
+    outline: 2px solid var(--a-accent);
+    outline-offset: -2px;
   }
   .td-work-row .y {
     color: var(--a-muted);
@@ -989,7 +1053,8 @@ const TD_DATA = {
     border-radius: 2px;
     transition: border-color 0.2s;
   }
-  .td-input-wrap.active {
+  .td-input-wrap.active,
+  .td-input-wrap:focus-within {
     border-color: var(--a-accent);
   }
   .td-input-wrap .td-prompt {
@@ -1030,6 +1095,10 @@ const TD_DATA = {
     background: var(--a-accent);
     border-color: var(--a-accent);
     cursor: pointer;
+  }
+  .td-input-wrap button:focus-visible {
+    outline: 2px solid var(--a-accent);
+    outline-offset: 2px;
   }
   .td-input-foot {
     font-size: 10.5px;
@@ -1407,8 +1476,10 @@ const TD_DATA = {
       head.innerHTML = `<span>year</span><span>project</span><span>what</span><span>kind</span>`;
       box.appendChild(head);
       D.work.forEach((w) => {
-        const r = document.createElement("div");
+        const r = document.createElement("button");
+        r.type = "button";
         r.className = "td-work-row";
+        r.setAttribute("aria-label", `Open project: ${w.title}`);
         r.innerHTML = `
           <span class="y">${escHtml(w.year)}</span>
           <span class="t">${escHtml(w.title)}</span>
@@ -1983,7 +2054,10 @@ Counter-weight: none of these have cost anyone money. Yet.`,
       }
 
       setBusy(false);
-      setTimeout(() => inputEl.focus(), 20);
+      // Skip auto-refocus on touch — popping the keyboard back up after a response is intrusive.
+      if (matchMedia("(hover: hover) and (pointer: fine)").matches) {
+        setTimeout(() => inputEl.focus(), 20);
+      }
     }
 
     function setBusy(b) {
@@ -2014,7 +2088,9 @@ Counter-weight: none of these have cost anyone money. Yet.`,
         saved.forEach((ev) => renderEvent(ev, { instant: true }));
         // Land at the bottom after all rows paint.
         requestAnimationFrame(() => scrollLog());
-        setTimeout(() => inputEl.focus(), 50);
+        if (matchMedia("(hover: hover) and (pointer: fine)").matches) {
+          setTimeout(() => inputEl.focus(), 50);
+        }
         return;
       }
 
@@ -2040,7 +2116,9 @@ Counter-weight: none of these have cost anyone money. Yet.`,
           metrics: `${D.metrics.plays} plays · ${D.metrics.grant} grant · ${D.metrics.papers} papers, ${D.metrics.patents} patents`,
         },
       });
-      setTimeout(() => inputEl.focus(), 50);
+      if (matchMedia("(hover: hover) and (pointer: fine)").matches) {
+        setTimeout(() => inputEl.focus(), 50);
+      }
     }
     seed();
 

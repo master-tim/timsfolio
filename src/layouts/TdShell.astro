@@ -44,19 +44,21 @@ const NAV: { key: Props["active"]; label: string; href: string }[] = [
     />
   </head>
   <body class="td-page">
+    <a class="td-skip-link" href="#td-main">Skip to main content</a>
     <header class="td-topbar">
       <div class="td-topbar-inner">
         <a class="td-topbar-brand" href="/" aria-label="Home">
           <span class="td-topbar-dot" aria-hidden="true"></span>
-          <strong>td-agent</strong>
+          <strong translate="no">td-agent</strong>
           <span class="td-topbar-slash" aria-hidden="true">/</span>
-          <span class="td-topbar-name">temirlan dzhoroev</span>
+          <span class="td-topbar-name" translate="no">temirlan dzhoroev</span>
         </a>
         <nav class="td-topbar-nav" aria-label="Primary">
           {
             NAV.map((n) => (
               <a
                 href={n.href}
+                aria-current={n.key === active ? "page" : undefined}
                 class:list={[
                   "td-topbar-link",
                   { active: n.key === active },
@@ -70,7 +72,7 @@ const NAV: { key: Props["active"]; label: string; href: string }[] = [
       </div>
     </header>
 
-    <main class="td-shell-main" style={`--td-shell-max:${maxWidth}`}>
+    <main id="td-main" class="td-shell-main" style={`--td-shell-max:${maxWidth}`}>
       <slot />
     </main>
 
@@ -79,8 +81,8 @@ const NAV: { key: Props["active"]; label: string; href: string }[] = [
         <span>© 2026 Temirlan Dzhoroev · Seoul, KR</span>
         <span class="td-shell-footer-links">
           <a href="mailto:dzhoroev1@gmail.com">email</a>
-          <a href="https://github.com/master-tim" target="_blank" rel="noopener">github</a>
-          <a href="https://linkedin.com/in/dzhoroev7" target="_blank" rel="noopener">linkedin</a>
+          <a href="https://github.com/master-tim" target="_blank" rel="noopener noreferrer">github</a>
+          <a href="https://linkedin.com/in/dzhoroev7" target="_blank" rel="noopener noreferrer">linkedin</a>
         </span>
       </div>
     </footer>
@@ -140,6 +142,25 @@ const NAV: { key: Props["active"]; label: string; href: string }[] = [
     background: var(--a-muted);
   }
 
+  /* ───── Skip link ───── */
+  .td-skip-link {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    padding: 8px 14px;
+    background: var(--a-accent);
+    color: var(--a-bg);
+    font-family: var(--a-mono);
+    font-size: 12px;
+    border-radius: 2px;
+    text-decoration: none;
+    transform: translateY(-200%);
+    z-index: 200;
+  }
+  .td-skip-link:focus {
+    transform: translateY(0);
+  }
+
   /* ───── Top bar ───── */
   .td-topbar {
     position: sticky;
@@ -149,11 +170,12 @@ const NAV: { key: Props["active"]; label: string; href: string }[] = [
     backdrop-filter: saturate(180%) blur(10px);
     -webkit-backdrop-filter: saturate(180%) blur(10px);
     border-bottom: 1px solid var(--a-line);
+    padding-top: env(safe-area-inset-top);
   }
   .td-topbar-inner {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 14px 28px;
+    padding: 14px max(28px, env(safe-area-inset-right)) 14px max(28px, env(safe-area-inset-left));
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -195,8 +217,9 @@ const NAV: { key: Props["active"]; label: string; href: string }[] = [
   .td-topbar-link {
     color: var(--a-muted);
     text-decoration: none;
-    padding: 4px 0;
+    padding: 4px 2px;
     border-bottom: 1px solid transparent;
+    border-radius: 2px;
     transition:
       color 0.15s,
       border-color 0.15s;
@@ -204,7 +227,13 @@ const NAV: { key: Props["active"]; label: string; href: string }[] = [
   .td-topbar-link:hover {
     color: var(--a-ink);
   }
-  .td-topbar-link.active {
+  .td-topbar-link:focus-visible {
+    outline: 2px solid var(--a-accent);
+    outline-offset: 3px;
+    color: var(--a-ink);
+  }
+  .td-topbar-link.active,
+  .td-topbar-link[aria-current="page"] {
     color: var(--a-accent);
     border-bottom-color: var(--a-accent);
   }
@@ -213,9 +242,14 @@ const NAV: { key: Props["active"]; label: string; href: string }[] = [
   .td-shell-main {
     max-width: var(--td-shell-max, 880px);
     margin: 0 auto;
-    padding: 56px 28px 80px;
+    padding: 56px max(28px, env(safe-area-inset-right)) 80px max(28px, env(safe-area-inset-left));
     font-size: 14px;
     line-height: 1.7;
+  }
+  .td-shell-main :is(a, button):focus-visible {
+    outline: 2px solid var(--a-accent);
+    outline-offset: 3px;
+    border-radius: 2px;
   }
 
   /* Helpers usable inside slotted content */
@@ -280,12 +314,12 @@ const NAV: { key: Props["active"]; label: string; href: string }[] = [
   /* ───── Footer ───── */
   .td-shell-footer {
     border-top: 1px solid var(--a-line);
-    padding: 20px 0 28px;
+    padding: 20px 0 calc(28px + env(safe-area-inset-bottom));
   }
   .td-shell-footer-inner {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 28px;
+    padding: 0 max(28px, env(safe-area-inset-right)) 0 max(28px, env(safe-area-inset-left));
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -444,7 +478,7 @@ const NAV: { key: Props["active"]; label: string; href: string }[] = [
   /* ───── Responsive ───── */
   @media (max-width: 640px) {
     .td-topbar-inner {
-      padding: 12px 18px;
+      padding: 12px max(18px, env(safe-area-inset-right)) 12px max(18px, env(safe-area-inset-left));
       gap: 12px;
     }
     .td-topbar-name {
@@ -455,10 +489,10 @@ const NAV: { key: Props["active"]; label: string; href: string }[] = [
       font-size: 12px;
     }
     .td-shell-main {
-      padding: 40px 20px 60px;
+      padding: 40px max(20px, env(safe-area-inset-right)) 60px max(20px, env(safe-area-inset-left));
     }
     .td-shell-footer-inner {
-      padding: 0 20px;
+      padding: 0 max(20px, env(safe-area-inset-right)) 0 max(20px, env(safe-area-inset-left));
     }
   }
 </style>

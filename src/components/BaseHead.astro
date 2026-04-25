@@ -15,8 +15,10 @@ const { title, description, image = "/screenshot.webp" } = Astro.props;
 
 <!-- Global Metadata -->
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
 <meta name="generator" content={Astro.generator} />
+<meta name="color-scheme" content="dark" />
+<meta name="theme-color" content="#0f1012" />
 
 <!-- Font preloads -->
 <link rel="preload" href="/fonts/Alexandria-Bold.woff2" as="font" type="font/woff2" crossorigin />
