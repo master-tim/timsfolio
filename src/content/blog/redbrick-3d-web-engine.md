@@ -1,11 +1,13 @@
 ---
 title: "3D Web Engine — Redbrick Studio"
 description: "A browser-based 3D engine and creator studio that lets users build, script, and publish 3D games and virtual worlds — no install, no native runtime. Powers the games that ship on redbrick.land."
-pubDate: "Jan 15 2026"
+pubDate: "Jul 01 2024"
 heroImage: "/images/projects/redbrick/cover-01.png"
 icon: "1"
 tags: ["three.js", "wasm", "webgl", "game-engine", "blockly", "multiplayer", "vite"]
 ---
+
+**Timeline.** Jul 2023 — Jul 2024
 
 A browser-based 3D engine and creator studio that lets users build, script, and publish 3D games and virtual worlds — no install, no native runtime. Powers the games that ship on [redbrick.land](https://redbrick.land).
 
