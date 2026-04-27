@@ -50,7 +50,7 @@ window.TD_AGENT = (() => {
         name: "tour()",
         status: "ok",
         result: {
-          now: "AI Engineer @ Redbrick · Seoul · open to senior IC",
+          now: "AI Engineer @ Redbrick · Seoul · open to AI Engineer roles",
           shipped:
             "$1.2M RAG/agent pipeline · 3.2s→0.8s · 18%→4% hallucination",
           before: "Modernized Redbrick 3D engine — 54M plays",

@@ -47,7 +47,7 @@ function Agent() {
       result: {
         name: D.name,
         role: D.role + " · Redbrick, Seoul",
-        status: "● open to senior IC — AI / applied LLM",
+        status: "● open to AI Engineer roles — applied LLM",
         summary: D.tagline,
         metrics: `${D.metrics.plays} plays · ${D.metrics.grant} grant · ${D.metrics.papers} papers, ${D.metrics.patents} patents`,
       },
@@ -248,7 +248,7 @@ function Agent() {
             <div>
               <span style={{ color: "var(--a-faint)" }}>open</span>{" "}
               <span style={{ float: "right", color: "var(--a-accent)" }}>
-                ● senior IC
+                ● AI Engineer
               </span>
             </div>
             <div>
